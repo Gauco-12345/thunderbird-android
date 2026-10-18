@@ -30,6 +30,7 @@ class K9NotificationResourceProvider(private val context: Context) : Notificatio
         "bolt" -> Icons.Outlined.Bolt
         "folder" -> Icons.Outlined.Folder
         "notifications" -> Icons.Outlined.Notifications
+        "kangaroo" -> R.drawable.ic_dcmail_notification_kangaroo
         else -> iconNewMail
     }
     override val iconSendingMail: Int = Icons.Outlined.Sync

@@ -170,6 +170,7 @@
         <item>Lightning</item>
         <item>Folder</item>
         <item>Bell</item>
+        <item>Kangaroo</item>
     </string-array>
     <string-array name="dcmail_notification_icon_values" translatable="false">
         <item>default</item>
@@ -184,6 +185,7 @@
         <item>bolt</item>
         <item>folder</item>
         <item>notifications</item>
+        <item>kangaroo</item>
     </string-array>
 
     <!-- DC Mail: favicons -->
