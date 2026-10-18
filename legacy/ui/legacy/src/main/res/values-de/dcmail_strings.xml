@@ -10,4 +10,19 @@
     <string name="dcmail_day_friday">Freitag</string>
     <string name="dcmail_day_saturday">Samstag</string>
     <string name="dcmail_day_sunday">Sonntag</string>
+
+    <!-- DC Mail: templates -->
+    <string name="dcmail_templates_title">Vorlagen</string>
+    <string name="dcmail_templates_summary">Wiederkehrende Texte, die du beim Schreiben einfügen kannst</string>
+    <string name="dcmail_templates_empty">Du hast noch keine Vorlagen. Jetzt eine anlegen?</string>
+    <string name="dcmail_templates_manage">Vorlagen verwalten</string>
+    <string name="dcmail_template_insert">Vorlage einfügen</string>
+    <string name="dcmail_template_add">+ Neue Vorlage</string>
+    <string name="dcmail_template_new">Neue Vorlage</string>
+    <string name="dcmail_template_edit">Vorlage bearbeiten</string>
+    <string name="dcmail_template_name_hint">Name, z. B. Angebot folgt</string>
+    <string name="dcmail_template_text_hint">Text</string>
+    <string name="dcmail_template_save">Speichern</string>
+    <string name="dcmail_template_delete">Löschen</string>
+    <string name="dcmail_template_delete_confirm">Vorlage „%s“ löschen?</string>
 </resources>

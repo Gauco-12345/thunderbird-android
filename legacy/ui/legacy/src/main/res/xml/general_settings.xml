@@ -388,6 +388,12 @@
         search:ignore="true"
         >
 
+        <Preference
+            android:key="dcmail_templates"
+            android:summary="@string/dcmail_templates_summary"
+            android:title="@string/dcmail_templates_title"
+            />
+
         <CheckBoxPreference
             android:key="volume_navigation"
             android:title="@string/volume_navigation_title_short"

@@ -32,4 +32,19 @@
     <string name="dcmail_day_friday">Friday</string>
     <string name="dcmail_day_saturday">Saturday</string>
     <string name="dcmail_day_sunday">Sunday</string>
+
+    <!-- DC Mail: templates -->
+    <string name="dcmail_templates_title">Templates</string>
+    <string name="dcmail_templates_summary">Reusable texts you can insert while writing</string>
+    <string name="dcmail_templates_empty">You have no templates yet. Create one now?</string>
+    <string name="dcmail_templates_manage">Manage templates</string>
+    <string name="dcmail_template_insert">Insert template</string>
+    <string name="dcmail_template_add">+ New template</string>
+    <string name="dcmail_template_new">New template</string>
+    <string name="dcmail_template_edit">Edit template</string>
+    <string name="dcmail_template_name_hint">Name, e.g. Offer follows</string>
+    <string name="dcmail_template_text_hint">Text</string>
+    <string name="dcmail_template_save">Save</string>
+    <string name="dcmail_template_delete">Delete</string>
+    <string name="dcmail_template_delete_confirm">Delete template “%s”?</string>
 </resources>

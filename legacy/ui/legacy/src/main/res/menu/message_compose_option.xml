@@ -16,6 +16,11 @@
         app:showAsAction="always"
         />
     <item
+        android:id="@+id/dcmail_insert_template"
+        android:title="@string/dcmail_template_insert"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/add_from_contacts"
         android:title="@string/add_from_contacts"
         />

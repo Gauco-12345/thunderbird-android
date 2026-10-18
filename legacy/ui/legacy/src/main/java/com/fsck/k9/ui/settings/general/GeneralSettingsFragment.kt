@@ -20,6 +20,7 @@ import com.fsck.k9.job.K9JobManager
 import com.fsck.k9.ui.BuildConfig
 import com.fsck.k9.ui.R
 import com.fsck.k9.ui.base.extensions.withArguments
+import com.fsck.k9.ui.dcmail.DcTemplatesActivity
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.notificationactions.NotificationActionsSettingsActivity
 import com.fsck.k9.ui.settings.remove
@@ -85,6 +86,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("notification_actions_settings")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 context?.let { NotificationActionsSettingsActivity.start(it) }
+                true
+            }
+        findPreference<Preference>("dcmail_templates")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                context?.let { DcTemplatesActivity.start(it) }
                 true
             }
         findPreference<Preference>("remote_feature_flag")?.onPreferenceClickListener =

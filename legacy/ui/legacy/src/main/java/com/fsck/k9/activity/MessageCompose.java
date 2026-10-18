@@ -131,6 +131,7 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.ui.R;
 import com.fsck.k9.ui.base.BaseActivity;
+import com.fsck.k9.ui.dcmail.DcTemplatePicker;
 import com.fsck.k9.ui.compose.IntentData;
 import com.fsck.k9.ui.compose.IntentDataMapper;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
@@ -1285,6 +1286,8 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
             checkToSaveDraftAndSave();
         } else if (id == R.id.discard) {
             askBeforeDiscard();
+        } else if (id == R.id.dcmail_insert_template) {
+            DcTemplatePicker.show(this, messageContentView);
         } else if (id == R.id.add_from_contacts) {
             recipientPresenter.onMenuAddFromContacts();
         } else if (id == R.id.openpgp_encrypt_disable) {
