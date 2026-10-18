@@ -185,4 +185,8 @@
         <item>folder</item>
         <item>notifications</item>
     </string-array>
+
+    <!-- DC Mail: favicons -->
+    <string name="dcmail_favicons_title">Show sender logos</string>
+    <string name="dcmail_favicons_summary">Load the favicon from the sender\'s domain when there is no contact picture. The domain sees the request once.</string>
 </resources>

@@ -20,7 +20,9 @@ internal class ContactImageBitmapDecoder(
     override fun decode(contactImage: ContactImage, width: Int, height: Int, options: Options): Resource<Bitmap>? {
         val size = max(width, height)
 
-        val bitmap = loadContactPhoto(contactImage) ?: createContactLetterBitmap(contactImage, size)
+        val bitmap = loadContactPhoto(contactImage)
+            ?: loadFavicon(contactImage, size)
+            ?: createContactLetterBitmap(contactImage, size)
 
         return BitmapResource.obtain(bitmap, bitmapPool)
     }
@@ -29,6 +31,13 @@ internal class ContactImageBitmapDecoder(
         if (contactImage.contactLetterOnly) return null
 
         return contactPhotoLoader.loadContactPhoto(contactImage.address.address)
+    }
+
+    // DC Mail: favicon of the sender's domain when there is no contact photo
+    private fun loadFavicon(contactImage: ContactImage, size: Int): Bitmap? {
+        if (contactImage.contactLetterOnly) return null
+
+        return com.fsck.k9.ui.dcmail.DcFaviconLoader.loadAvatar(contactImage.address.address, size)
     }
 
     private fun createContactLetterBitmap(contactImage: ContactImage, size: Int): Bitmap {

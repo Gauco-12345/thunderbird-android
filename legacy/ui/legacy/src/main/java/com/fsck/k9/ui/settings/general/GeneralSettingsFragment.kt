@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.preference.CheckBoxPreference
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -22,6 +23,7 @@ import com.fsck.k9.ui.BuildConfig
 import com.fsck.k9.ui.R
 import com.fsck.k9.ui.base.extensions.withArguments
 import com.fsck.k9.ui.dcmail.DcAiSettingsActivity
+import com.fsck.k9.ui.dcmail.DcFaviconLoader
 import com.fsck.k9.ui.dcmail.DcMessageActions
 import com.fsck.k9.ui.dcmail.DcTemplatesActivity
 import com.fsck.k9.ui.dcmail.DcUpdateActivity
@@ -107,6 +109,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 context?.let { DcTemplatesActivity.start(it) }
                 true
             }
+        findPreference<CheckBoxPreference>("dcmail_favicons")?.let { preference ->
+            preference.isChecked = DcFaviconLoader.isEnabled(preference.context)
+            preference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                DcFaviconLoader.setEnabled(pref.context, newValue == true)
+                true
+            }
+        }
         findPreference<MultiSelectListPreference>("dcmail_message_actions")?.let { preference ->
             preference.values = DcMessageActions.load(preference.context)
             preference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
