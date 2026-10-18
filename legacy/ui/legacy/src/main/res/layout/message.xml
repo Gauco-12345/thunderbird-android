@@ -115,6 +115,24 @@ the 'message view theme' setting).
 
     </com.fsck.k9.view.NonLockingScrollView>
 
+    <!-- DC Mail: customizable action bar below the message -->
+    <View
+        android:id="@+id/dcmail_action_bar_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        />
+
+    <LinearLayout
+        android:id="@+id/dcmail_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="2dp"
+        />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/download_remainder"
         style="?attr/materialButtonOutlinedStyle"

@@ -364,6 +364,16 @@
                 android:title="@string/global_settings_messageview_visible_refile_actions_title"
                 />
 
+            <MultiSelectListPreference
+                android:dialogTitle="@string/dcmail_message_actions_title"
+                android:entries="@array/dcmail_message_actions_entries"
+                android:entryValues="@array/dcmail_message_actions_values"
+                android:key="dcmail_message_actions"
+                android:persistent="false"
+                android:summary="@string/dcmail_message_actions_summary"
+                android:title="@string/dcmail_message_actions_title"
+                />
+
             <CheckBoxPreference
                 android:key="messageview_autofit_width"
                 android:summary="@string/global_settings_messageview_autofit_width_summary"
@@ -461,15 +471,6 @@
         android:title="@string/notifications_title"
         search:ignore="true"
         >
-
-        <MultiSelectListPreference
-            android:dialogTitle="@string/dcmail_quiet_days_title"
-            android:entries="@array/dcmail_quiet_days_entries"
-            android:entryValues="@array/dcmail_quiet_days_values"
-            android:key="dcmail_quiet_days"
-            android:summary="@string/dcmail_quiet_days_summary"
-            android:title="@string/dcmail_quiet_days_title"
-            />
 
         <CheckBoxPreference
             android:key="quiet_time_enabled"

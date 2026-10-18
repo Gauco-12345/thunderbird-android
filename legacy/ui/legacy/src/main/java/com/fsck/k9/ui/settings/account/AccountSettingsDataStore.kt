@@ -65,6 +65,7 @@ class AccountSettingsDataStore(
             "autocrypt_prefer_encrypt" -> account.autocryptPreferEncryptMutual
             "upload_sent_messages" -> account.isUploadSentMessages
             "ignore_chat_messages" -> account.isIgnoreChatMessages
+            "dcmail_account_quiet_time_enabled" -> account.isDcQuietTimeEnabled
             "subscribed_folders_only" -> account.isSubscribedFoldersOnly
             else -> defValue
         }
@@ -90,6 +91,7 @@ class AccountSettingsDataStore(
             "autocrypt_prefer_encrypt" -> updateValue { it.copy(autocryptPreferEncryptMutual = value) }
             "upload_sent_messages" -> updateValue { it.copy(isUploadSentMessages = value) }
             "ignore_chat_messages" -> updateValue { it.copy(isIgnoreChatMessages = value) }
+            "dcmail_account_quiet_time_enabled" -> updateValue { it.copy(isDcQuietTimeEnabled = value) }
             "subscribed_folders_only" -> updateSubscribedFoldersOnly(value)
             else -> return
         }
@@ -166,8 +168,30 @@ class AccountSettingsDataStore(
             "account_remote_search_num_results" -> account.remoteSearchNumResults.toString()
             "account_ringtone" -> account.notificationSettings.ringtone
             "notification_light" -> account.notificationSettings.light.name
+            "dcmail_account_quiet_time_starts" -> account.dcQuietTimeStarts
+            "dcmail_account_quiet_time_ends" -> account.dcQuietTimeEnds
             else -> defValue
         }
+    }
+
+    override fun getStringSet(key: String, defValues: Set<String>?): Set<String>? {
+        return when (key) {
+            "dcmail_account_quiet_days" -> account.dcQuietDays.map { it.toString() }.toSet()
+            else -> defValues
+        }
+    }
+
+    override fun putStringSet(key: String, values: MutableSet<String>?) {
+        when (key) {
+            "dcmail_account_quiet_days" -> {
+                val days = values.orEmpty().mapNotNull { it.toIntOrNull() }.toSet()
+                updateValue { it.copy(dcQuietDays = days) }
+            }
+
+            else -> return
+        }
+
+        saveSettingsInBackground()
     }
 
     override fun putString(key: String, value: String?) {
@@ -219,6 +243,8 @@ class AccountSettingsDataStore(
             "account_remote_search_num_results" -> updateValue { it.copy(remoteSearchNumResults = value.toInt()) }
             "account_ringtone" -> setNotificationSound(value)
             "notification_light" -> setNotificationLight(value)
+            "dcmail_account_quiet_time_starts" -> updateValue { it.copy(dcQuietTimeStarts = value) }
+            "dcmail_account_quiet_time_ends" -> updateValue { it.copy(dcQuietTimeEnds = value) }
             else -> return
         }
 

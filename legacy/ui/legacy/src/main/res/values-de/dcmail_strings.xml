@@ -25,4 +25,12 @@
     <string name="dcmail_template_save">Speichern</string>
     <string name="dcmail_template_delete">Löschen</string>
     <string name="dcmail_template_delete_confirm">Vorlage „%s“ löschen?</string>
+
+    <!-- DC Mail: message action bar -->
+    <string name="dcmail_message_actions_title">Aktionsleiste unter der Nachricht</string>
+    <string name="dcmail_message_actions_summary">Symbole, die unter einer geöffneten Nachricht angezeigt werden</string>
+
+    <!-- DC Mail: per-account quiet hours -->
+    <string name="dcmail_account_quiet_time_title">Ruhezeit für dieses Konto</string>
+    <string name="dcmail_account_quiet_time_summary">In diesem Zeitraum keine Benachrichtigungen für dieses Konto</string>
 </resources>

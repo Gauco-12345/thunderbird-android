@@ -40,6 +40,11 @@ data class LegacyAccount(
     val isNotifySelfNewMail: Boolean = false,
     val isNotifyContactsMailOnly: Boolean = false,
     val isIgnoreChatMessages: Boolean = false,
+    // DC Mail: per-account quiet days (Calendar.DAY_OF_WEEK) and quiet hours without notifications
+    val dcQuietDays: Set<Int> = emptySet(),
+    val isDcQuietTimeEnabled: Boolean = false,
+    val dcQuietTimeStarts: String = "21:00",
+    val dcQuietTimeEnds: String = "07:00",
     val legacyInboxFolder: String? = null,
     val importedDraftsFolder: String? = null,
     val importedSentFolder: String? = null,

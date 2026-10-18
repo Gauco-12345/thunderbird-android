@@ -129,6 +129,14 @@ class LegacyAccountStorageHandler(
             isNotifySelfNewMail = storage.getBoolean(keyGen.create("notifySelfNewMail"), true),
             isNotifyContactsMailOnly = storage.getBoolean(keyGen.create("notifyContactsMailOnly"), false),
             isIgnoreChatMessages = storage.getBoolean(keyGen.create("ignoreChatMessages"), false),
+            dcQuietDays = storage.getStringOrNull(keyGen.create("dcmailQuietDays")).orEmpty()
+                .split(",")
+                .mapNotNull { it.trim().toIntOrNull() }
+                .filter { it in 1..7 }
+                .toSet(),
+            isDcQuietTimeEnabled = storage.getBoolean(keyGen.create("dcmailQuietTimeEnabled"), false),
+            dcQuietTimeStarts = storage.getStringOrNull(keyGen.create("dcmailQuietTimeStarts")) ?: "21:00",
+            dcQuietTimeEnds = storage.getStringOrNull(keyGen.create("dcmailQuietTimeEnds")) ?: "07:00",
             isNotifySync = storage.getBoolean(keyGen.create("notifyMailCheck"), false),
             messagesNotificationChannelVersion = storage.getInt(keyGen.create("messagesNotificationChannelVersion"), 0),
             deletePolicy = DeletePolicy.fromInt(
@@ -350,6 +358,10 @@ class LegacyAccountStorageHandler(
             editor.putBoolean(keyGen.create("notifySelfNewMail"), isNotifySelfNewMail)
             editor.putBoolean(keyGen.create("notifyContactsMailOnly"), isNotifyContactsMailOnly)
             editor.putBoolean(keyGen.create("ignoreChatMessages"), isIgnoreChatMessages)
+            editor.putString(keyGen.create("dcmailQuietDays"), dcQuietDays.sorted().joinToString(","))
+            editor.putBoolean(keyGen.create("dcmailQuietTimeEnabled"), isDcQuietTimeEnabled)
+            editor.putString(keyGen.create("dcmailQuietTimeStarts"), dcQuietTimeStarts)
+            editor.putString(keyGen.create("dcmailQuietTimeEnds"), dcQuietTimeEnds)
             editor.putBoolean(keyGen.create("notifyMailCheck"), isNotifySync)
             editor.putInt(keyGen.create("messagesNotificationChannelVersion"), messagesNotificationChannelVersion)
             editor.putInt(keyGen.create("deletePolicy"), deletePolicy.setting)

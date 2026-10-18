@@ -47,4 +47,36 @@
     <string name="dcmail_template_save">Save</string>
     <string name="dcmail_template_delete">Delete</string>
     <string name="dcmail_template_delete_confirm">Delete template “%s”?</string>
+
+    <!-- DC Mail: message action bar -->
+    <string name="dcmail_message_actions_title">Action bar below the message</string>
+    <string name="dcmail_message_actions_summary">Icons shown below an opened message</string>
+
+    <string-array name="dcmail_message_actions_entries" translatable="false">
+        <item>@string/reply_action</item>
+        <item>@string/reply_all_action</item>
+        <item>@string/forward_action</item>
+        <item>@string/archive_action</item>
+        <item>@string/move_action</item>
+        <item>@string/spam_action</item>
+        <item>@string/mark_as_unread_action</item>
+        <item>@string/flag_action</item>
+        <item>@string/delete_action</item>
+    </string-array>
+
+    <string-array name="dcmail_message_actions_values" translatable="false">
+        <item>reply</item>
+        <item>reply_all</item>
+        <item>forward</item>
+        <item>archive</item>
+        <item>move</item>
+        <item>spam</item>
+        <item>unread</item>
+        <item>flag</item>
+        <item>delete</item>
+    </string-array>
+
+    <!-- DC Mail: per-account quiet hours -->
+    <string name="dcmail_account_quiet_time_title">Quiet hours for this account</string>
+    <string name="dcmail_account_quiet_time_summary">No notifications for this account during these hours</string>
 </resources>

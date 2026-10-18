@@ -15,7 +15,17 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.util.TypedValue
 import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import androidx.appcompat.widget.TooltipCompat
+import app.k9mail.core.ui.legacy.designsystem.R as DesignSystemR
+import com.fsck.k9.ui.dcmail.DcMessageAction
+import com.fsck.k9.ui.dcmail.DcMessageActions
+import com.google.android.material.color.MaterialColors
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -303,6 +313,82 @@ class MessageViewFragment :
         messageTopView.setOnDownloadButtonClickListener {
             onDownloadButtonClicked()
         }
+
+        setupDcActionBar(messageTopView)
+    }
+
+    // DC Mail: icon bar with the actions the user picked in the settings
+    private fun setupDcActionBar(rootView: View) {
+        val bar = rootView.findViewById<LinearLayout>(R.id.dcmail_action_bar) ?: return
+        val divider = rootView.findViewById<View>(R.id.dcmail_action_bar_divider)
+        val context = rootView.context
+
+        bar.removeAllViews()
+        val actions = DcMessageActions.enabledActions(context)
+        val visibility = if (actions.isEmpty()) View.GONE else View.VISIBLE
+        bar.visibility = visibility
+        divider?.visibility = visibility
+
+        val background = TypedValue()
+        context.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, background, true)
+        val iconTint = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorOnSurfaceVariant,
+            Color.GRAY,
+        )
+        val buttonHeight = (DC_ACTION_BUTTON_HEIGHT_DP * resources.displayMetrics.density).toInt()
+
+        for (action in actions) {
+            val label = getString(dcActionLabel(action))
+            val button = ImageButton(context)
+            button.setImageResource(dcActionIcon(action))
+            button.imageTintList = ColorStateList.valueOf(iconTint)
+            button.setBackgroundResource(background.resourceId)
+            button.contentDescription = label
+            TooltipCompat.setTooltipText(button, label)
+            button.setOnClickListener { onDcAction(action) }
+            bar.addView(button, LinearLayout.LayoutParams(0, buttonHeight, 1f))
+        }
+    }
+
+    private fun onDcAction(action: DcMessageAction) {
+        if (message == null) return
+
+        when (action) {
+            DcMessageAction.REPLY -> onReply()
+            DcMessageAction.REPLY_ALL -> onReplyAll()
+            DcMessageAction.FORWARD -> onForward()
+            DcMessageAction.ARCHIVE -> onArchive()
+            DcMessageAction.MOVE -> onMove()
+            DcMessageAction.SPAM -> onSpam()
+            DcMessageAction.UNREAD -> onToggleRead()
+            DcMessageAction.FLAG -> onToggleFlagged()
+            DcMessageAction.DELETE -> onDelete()
+        }
+    }
+
+    private fun dcActionIcon(action: DcMessageAction): Int = when (action) {
+        DcMessageAction.REPLY -> DesignSystemR.drawable.ic_reply
+        DcMessageAction.REPLY_ALL -> DesignSystemR.drawable.ic_reply_all
+        DcMessageAction.FORWARD -> DesignSystemR.drawable.ic_forward
+        DcMessageAction.ARCHIVE -> DesignSystemR.drawable.ic_archive
+        DcMessageAction.MOVE -> DesignSystemR.drawable.ic_drive_file_move
+        DcMessageAction.SPAM -> DesignSystemR.drawable.ic_report
+        DcMessageAction.UNREAD -> DesignSystemR.drawable.ic_mark_email_unread
+        DcMessageAction.FLAG -> DesignSystemR.drawable.ic_star
+        DcMessageAction.DELETE -> DesignSystemR.drawable.ic_delete
+    }
+
+    private fun dcActionLabel(action: DcMessageAction): Int = when (action) {
+        DcMessageAction.REPLY -> R.string.reply_action
+        DcMessageAction.REPLY_ALL -> R.string.reply_all_action
+        DcMessageAction.FORWARD -> R.string.forward_action
+        DcMessageAction.ARCHIVE -> R.string.archive_action
+        DcMessageAction.MOVE -> R.string.move_action
+        DcMessageAction.SPAM -> R.string.spam_action
+        DcMessageAction.UNREAD -> R.string.mark_as_unread_action
+        DcMessageAction.FLAG -> R.string.flag_action
+        DcMessageAction.DELETE -> R.string.delete_action
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -1294,6 +1380,8 @@ class MessageViewFragment :
 
         private const val STATE_WAS_MESSAGE_MARKED_AS_OPENED = "wasMessageMarkedAsOpened"
         private const val STATE_IS_ACTIVE = "isActive"
+
+        private const val DC_ACTION_BUTTON_HEIGHT_DP = 48
 
         fun newInstance(reference: MessageReference, showAccountIndicator: Boolean): MessageViewFragment {
             return MessageViewFragment().withArguments(

@@ -108,6 +108,40 @@
             android:title="@string/account_settings_notify_self_label"
             />
 
+        <MultiSelectListPreference
+            android:dependency="account_notify"
+            android:dialogTitle="@string/dcmail_quiet_days_title"
+            android:entries="@array/dcmail_quiet_days_entries"
+            android:entryValues="@array/dcmail_quiet_days_values"
+            android:key="dcmail_account_quiet_days"
+            android:summary="@string/dcmail_quiet_days_summary"
+            android:title="@string/dcmail_quiet_days_title"
+            />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="account_notify"
+            android:key="dcmail_account_quiet_time_enabled"
+            android:summary="@string/dcmail_account_quiet_time_summary"
+            android:title="@string/dcmail_account_quiet_time_title"
+            />
+
+        <com.takisoft.preferencex.TimePickerPreference
+            android:dependency="dcmail_account_quiet_time_enabled"
+            android:key="dcmail_account_quiet_time_starts"
+            android:title="@string/quiet_time_starts"
+            app:pref_hourFormat="h24"
+            app:pref_summaryHasTime="%s"
+            />
+
+        <com.takisoft.preferencex.TimePickerPreference
+            android:dependency="dcmail_account_quiet_time_enabled"
+            android:key="dcmail_account_quiet_time_ends"
+            android:title="@string/quiet_time_ends"
+            app:pref_hourFormat="h24"
+            app:pref_summaryHasTime="%s"
+            />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="account_notify"
