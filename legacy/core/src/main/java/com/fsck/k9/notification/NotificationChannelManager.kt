@@ -106,7 +106,8 @@ class NotificationChannelManager(
     private fun getChannelPush(): NotificationChannel {
         val channelName = resourceProvider.pushChannelName
         val channelDescription = resourceProvider.pushChannelDescription
-        val importance = NotificationManager.IMPORTANCE_LOW
+        // DC Mail: minimal importance, so "Waiting for new mail" stays out of the status bar
+        val importance = NotificationManager.IMPORTANCE_MIN
 
         return NotificationChannel(pushChannelId, channelName, importance).apply {
             description = channelDescription

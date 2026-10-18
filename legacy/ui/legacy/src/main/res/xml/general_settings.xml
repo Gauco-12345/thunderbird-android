@@ -494,6 +494,12 @@
         search:ignore="true"
         >
 
+        <Preference
+            android:key="dcmail_push_notification"
+            android:summary="@string/dcmail_push_notification_summary"
+            android:title="@string/dcmail_push_notification_title"
+            />
+
         <CheckBoxPreference
             android:key="quiet_time_enabled"
             android:summary="@string/quiet_time_description"

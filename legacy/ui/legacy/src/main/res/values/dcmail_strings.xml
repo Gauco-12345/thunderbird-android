@@ -192,4 +192,8 @@
     <string name="dcmail_favicons_title">Show sender logos</string>
     <string name="dcmail_favicons_summary">Load the favicon from the sender\'s domain when there is no contact picture. The domain sees the request once.</string>
     <string name="dcmail_update_auto_check">Check automatically when the app is opened</string>
+
+    <!-- DC Mail: push notification -->
+    <string name="dcmail_push_notification_title">Hide \"Waiting for new mail\"</string>
+    <string name="dcmail_push_notification_summary">Opens the system settings of the push notification. Switch it off there; push keeps working.</string>
 </resources>

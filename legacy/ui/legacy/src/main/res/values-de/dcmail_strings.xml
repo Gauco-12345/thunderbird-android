@@ -118,4 +118,8 @@
     <string name="dcmail_favicons_title">Absender-Logos anzeigen</string>
     <string name="dcmail_favicons_summary">Lädt das Favicon von der Domain des Absenders, wenn kein Kontaktbild vorhanden ist. Die Domain sieht den Abruf einmalig.</string>
     <string name="dcmail_update_auto_check">Beim Öffnen der App automatisch prüfen</string>
+
+    <!-- DC Mail: push notification -->
+    <string name="dcmail_push_notification_title">„Warte auf neue E-Mails“ ausblenden</string>
+    <string name="dcmail_push_notification_summary">Öffnet die Android-Einstellung des Push-Hinweises. Dort ausschalten, Push läuft trotzdem weiter.</string>
 </resources>
