@@ -64,6 +64,16 @@
         <item>@string/delete_action</item>
     </string-array>
 
+    <!-- Must not be empty: a non-persistent MultiSelectListPreference needs a default set -->
+    <string-array name="dcmail_message_actions_default" translatable="false">
+        <item>reply</item>
+        <item>reply_all</item>
+        <item>forward</item>
+        <item>archive</item>
+        <item>spam</item>
+        <item>delete</item>
+    </string-array>
+
     <string-array name="dcmail_message_actions_values" translatable="false">
         <item>reply</item>
         <item>reply_all</item>
@@ -96,4 +106,24 @@
     <string name="dcmail_ai_generate">Write reply</string>
     <string name="dcmail_ai_working">Claude is writing…</string>
     <string name="dcmail_ai_error_title">Claude could not write a reply</string>
+
+    <!-- DC Mail: Claude reply style -->
+    <string name="dcmail_ai_address_label">Form of address</string>
+    <string name="dcmail_ai_length_label">Length</string>
+    <string name="dcmail_ai_tone_label">Tone</string>
+    <string-array name="dcmail_ai_address_options">
+        <item>Like the original message</item>
+        <item>Informal (Du)</item>
+        <item>Formal (Sie)</item>
+    </string-array>
+    <string-array name="dcmail_ai_length_options">
+        <item>Short</item>
+        <item>Medium</item>
+        <item>Detailed</item>
+    </string-array>
+    <string-array name="dcmail_ai_tone_options">
+        <item>Factual</item>
+        <item>Friendly</item>
+        <item>Casual</item>
+    </string-array>
 </resources>

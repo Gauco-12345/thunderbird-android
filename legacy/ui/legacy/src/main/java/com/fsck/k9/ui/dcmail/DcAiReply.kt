@@ -4,8 +4,10 @@ import android.app.Activity
 import android.text.InputType
 import android.view.Gravity
 import android.widget.EditText
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.fsck.k9.ui.R
@@ -60,18 +62,39 @@ object DcAiReply {
         notesInput.gravity = Gravity.TOP or Gravity.START
         notesInput.setText(target.text.toString())
 
+        val style = DcAiSettings.loadStyle(activity)
+        val addressSpinner = optionSpinner(activity, R.array.dcmail_ai_address_options, style.address)
+        val lengthSpinner = optionSpinner(activity, R.array.dcmail_ai_length_options, style.length)
+        val toneSpinner = optionSpinner(activity, R.array.dcmail_ai_tone_options, style.tone)
+
         val container = LinearLayout(activity)
         container.orientation = LinearLayout.VERTICAL
         container.setPadding(padding, padding / 2, padding, 0)
         container.addView(notesInput)
+        container.addView(optionLabel(activity, R.string.dcmail_ai_address_label, padding))
+        container.addView(addressSpinner)
+        container.addView(optionLabel(activity, R.string.dcmail_ai_length_label, padding))
+        container.addView(lengthSpinner)
+        container.addView(optionLabel(activity, R.string.dcmail_ai_tone_label, padding))
+        container.addView(toneSpinner)
+
+        val scrollView = android.widget.ScrollView(activity)
+        scrollView.addView(container)
 
         AlertDialog.Builder(activity)
             .setTitle(R.string.dcmail_ai_reply)
-            .setView(container)
+            .setView(scrollView)
             .setPositiveButton(R.string.dcmail_ai_generate) { _, _ ->
+                val chosenStyle = DcAiStyle(
+                    address = addressSpinner.selectedItemPosition,
+                    length = lengthSpinner.selectedItemPosition,
+                    tone = toneSpinner.selectedItemPosition,
+                )
+                DcAiSettings.saveStyle(activity, chosenStyle)
+
                 val notes = notesInput.text.toString().trim()
                 if (notes.isNotEmpty()) {
-                    generate(activity, target, config, notes, subject, sender, originalText)
+                    generate(activity, target, config, chosenStyle, notes, subject, sender, originalText)
                 }
             }
             .setNeutralButton(R.string.dcmail_ai_settings_title) { _, _ ->
@@ -86,6 +109,7 @@ object DcAiReply {
         activity: Activity,
         target: EditText,
         config: DcAiConfig,
+        style: DcAiStyle,
         notes: String,
         subject: String?,
         sender: String?,
@@ -93,6 +117,12 @@ object DcAiReply {
     ) {
         val system = buildString {
             append(BASE_SYSTEM_PROMPT)
+            append("\n\n")
+            append(ADDRESS_RULES.getOrElse(style.address) { ADDRESS_RULES[0] })
+            append("\n")
+            append(LENGTH_RULES.getOrElse(style.length) { LENGTH_RULES[1] })
+            append("\n")
+            append(TONE_RULES.getOrElse(style.tone) { TONE_RULES[1] })
             if (config.instructions.isNotBlank()) {
                 append("\n\nZusätzliche Anweisungen des Nutzers:\n")
                 append(config.instructions.trim())
@@ -146,6 +176,43 @@ object DcAiReply {
             }
         }.start()
     }
+
+    private fun optionSpinner(activity: Activity, optionsResId: Int, selection: Int): Spinner {
+        val adapter = ArrayAdapter.createFromResource(activity, optionsResId, android.R.layout.simple_spinner_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val spinner = Spinner(activity)
+        spinner.adapter = adapter
+        if (selection in 0 until adapter.count) {
+            spinner.setSelection(selection)
+        }
+        return spinner
+    }
+
+    private fun optionLabel(activity: Activity, textResId: Int, padding: Int): TextView {
+        val label = TextView(activity)
+        label.setText(textResId)
+        label.setPadding(0, padding / 2, 0, 0)
+        return label
+    }
+
+    // Order must match the string arrays dcmail_ai_*_options
+    private val ADDRESS_RULES = listOf(
+        "Anrede: Übernimm Du oder Sie aus der Original-E-Mail. Ohne Original-E-Mail siezen.",
+        "Anrede: Duze den Empfänger.",
+        "Anrede: Sieze den Empfänger.",
+    )
+
+    private val LENGTH_RULES = listOf(
+        "Länge: Sehr kurz, höchstens zwei bis drei Sätze.",
+        "Länge: Knapp, etwa ein kurzer Absatz.",
+        "Länge: Ausführlich, gehe auf alle Punkte vollständig ein.",
+    )
+
+    private val TONE_RULES = listOf(
+        "Ton: Sachlich und professionell.",
+        "Ton: Freundlich und herzlich, aber professionell.",
+        "Ton: Locker und umgangssprachlich.",
+    )
 
     private fun showProgress(activity: Activity): AlertDialog {
         val padding = (PADDING_DP * activity.resources.displayMetrics.density).toInt()

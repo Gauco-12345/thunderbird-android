@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -25,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import app.k9mail.core.android.common.database.EmptyCursor;
 import com.fsck.k9.ui.R;
+import com.fsck.k9.ui.dcmail.DcReceivedAddresses;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
@@ -197,6 +201,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
             fillContactDataFromEmailContentUri(contactUri, recipients, recipientMap);
         } else if (query != null) {
             fillContactDataFromQuery(query, recipients, recipientMap);
+            fillContactDataFromReceivedMessages(query, recipients, recipientMap);
 
             if (cryptoProvider != null) {
                 fillContactDataFromCryptoProvider(query, recipients, recipientMap);
@@ -347,6 +352,32 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
             registerContentObserver();
         }
 
+    }
+
+    private static final int MAX_RECEIVED_SUGGESTIONS = 10;
+
+    // DC Mail: also suggest senders of messages that were already received
+    private void fillContactDataFromReceivedMessages(String query, List<Recipient> recipients,
+            Map<String, Recipient> recipientMap) {
+        Set<String> known = new HashSet<>();
+        for (String key : recipientMap.keySet()) {
+            if (key != null) {
+                known.add(key.toLowerCase(Locale.ROOT));
+            }
+        }
+
+        for (Address address : DcReceivedAddresses.find(query, MAX_RECEIVED_SUGGESTIONS)) {
+            String email = address.getAddress();
+            String normalized = email.toLowerCase(Locale.ROOT);
+            if (!isSupportedEmailAddress(email) || known.contains(normalized)) {
+                continue;
+            }
+
+            Recipient recipient = new Recipient(address);
+            recipients.add(recipient);
+            recipientMap.put(email, recipient);
+            known.add(normalized);
+        }
     }
 
     private void registerContentObserver() {

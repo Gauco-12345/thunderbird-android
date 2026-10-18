@@ -50,4 +50,24 @@
     <string name="dcmail_ai_generate">Antwort formulieren</string>
     <string name="dcmail_ai_working">Claude formuliert …</string>
     <string name="dcmail_ai_error_title">Claude konnte keine Antwort formulieren</string>
+
+    <!-- DC Mail: Claude reply style -->
+    <string name="dcmail_ai_address_label">Anrede</string>
+    <string name="dcmail_ai_length_label">Länge</string>
+    <string name="dcmail_ai_tone_label">Ton</string>
+    <string-array name="dcmail_ai_address_options">
+        <item>Wie in der Original-Mail</item>
+        <item>Du</item>
+        <item>Sie</item>
+    </string-array>
+    <string-array name="dcmail_ai_length_options">
+        <item>Kurz</item>
+        <item>Mittel</item>
+        <item>Ausführlich</item>
+    </string-array>
+    <string-array name="dcmail_ai_tone_options">
+        <item>Sachlich</item>
+        <item>Freundlich</item>
+        <item>Locker</item>
+    </string-array>
 </resources>
