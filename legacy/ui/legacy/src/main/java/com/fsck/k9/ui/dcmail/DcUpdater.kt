@@ -35,6 +35,7 @@ object DcUpdater {
     private const val KEY_TOKEN = "github_token"
     private const val KEY_LAST_CHECK = "last_check"
     private const val KEY_SKIPPED_BUILD = "skipped_build"
+    private const val KEY_AUTO_CHECK = "auto_check"
     private const val AUTO_CHECK_INTERVAL_MS = 6L * 60 * 60 * 1000
 
     private const val CONNECT_TIMEOUT_MS = 15_000
@@ -53,6 +54,14 @@ object DcUpdater {
         DcSecretStore.write(context, PREFERENCES_NAME, KEY_TOKEN, token.trim())
     }
 
+    fun isAutoCheckEnabled(context: Context): Boolean =
+        context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE).getBoolean(KEY_AUTO_CHECK, false)
+
+    fun setAutoCheckEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_AUTO_CHECK, enabled).apply()
+    }
+
     fun currentBuildNumber(context: Context): Long {
         val info = context.packageManager.getPackageInfo(context.packageName, 0)
         val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -69,6 +78,8 @@ object DcUpdater {
      */
     @JvmStatic
     fun checkAutomatically(activity: Activity) {
+        if (!isAutoCheckEnabled(activity)) return
+
         val preferences = activity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
         val now = System.currentTimeMillis()
         if (now - preferences.getLong(KEY_LAST_CHECK, 0) < AUTO_CHECK_INTERVAL_MS) return

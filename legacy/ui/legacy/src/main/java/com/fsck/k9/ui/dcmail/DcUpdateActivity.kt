@@ -7,6 +7,7 @@ import android.text.InputType
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -37,6 +38,12 @@ class DcUpdateActivity : BaseActivity() {
         val buildInfo = TextView(this)
         buildInfo.text = getString(R.string.dcmail_update_current_build, DcUpdater.currentBuildNumber(this))
         column.addView(buildInfo)
+
+        val autoCheck = CheckBox(this)
+        autoCheck.setText(R.string.dcmail_update_auto_check)
+        autoCheck.isChecked = DcUpdater.isAutoCheckEnabled(this)
+        autoCheck.setOnCheckedChangeListener { _, isChecked -> DcUpdater.setAutoCheckEnabled(this, isChecked) }
+        column.addView(autoCheck)
 
         val intro = TextView(this)
         intro.setText(R.string.dcmail_update_token_intro)

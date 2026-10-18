@@ -141,7 +141,7 @@
     <string name="dcmail_update_settings_title">Updates</string>
     <string name="dcmail_update_settings_summary">Check for new DC Mail builds</string>
     <string name="dcmail_update_current_build">Installed build: %1$d</string>
-    <string name="dcmail_update_token_intro">DC Mail checks your GitHub builds on start. To download and install updates directly, enter a GitHub token: github.com → Settings → Developer settings → Fine-grained tokens → repository thunderbird-android → permission Actions: read. Without a token the update page opens in the browser.</string>
+    <string name="dcmail_update_token_intro">To download and install updates directly, enter a GitHub token: github.com → Settings → Developer settings → Fine-grained tokens → repository thunderbird-android → permission Actions: read. Without a token the update page opens in the browser.</string>
     <string name="dcmail_update_token_hint">GitHub token (github_pat_…)</string>
     <string name="dcmail_update_check_now">Check now</string>
     <string name="dcmail_update_none">DC Mail is up to date.</string>
@@ -189,4 +189,5 @@
     <!-- DC Mail: favicons -->
     <string name="dcmail_favicons_title">Show sender logos</string>
     <string name="dcmail_favicons_summary">Load the favicon from the sender\'s domain when there is no contact picture. The domain sees the request once.</string>
+    <string name="dcmail_update_auto_check">Check automatically when the app is opened</string>
 </resources>
