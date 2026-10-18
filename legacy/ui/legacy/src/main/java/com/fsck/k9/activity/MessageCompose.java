@@ -113,6 +113,7 @@ import com.fsck.k9.helper.SimpleTextWatcher;
 import com.fsck.k9.helper.Utility;
 import net.thunderbird.core.android.network.ConnectivityManager;
 import net.thunderbird.core.common.mail.Flag;
+import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import net.thunderbird.core.common.exception.MessagingException;
@@ -131,7 +132,9 @@ import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.ui.R;
 import com.fsck.k9.ui.base.BaseActivity;
+import com.fsck.k9.ui.dcmail.DcAiReply;
 import com.fsck.k9.ui.dcmail.DcTemplatePicker;
+import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.ui.compose.IntentData;
 import com.fsck.k9.ui.compose.IntentDataMapper;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
@@ -265,6 +268,12 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
     private final Set<Integer> activeInAppNotifications = new HashSet<>();
 
     private QuotedMessagePresenter quotedMessagePresenter;
+
+    // DC Mail: original message, used as context for replies drafted by Claude
+    private static final String STATE_DCMAIL_ORIGINAL_TEXT = "dcmailOriginalText";
+    private static final String STATE_DCMAIL_ORIGINAL_SENDER = "dcmailOriginalSender";
+    private String dcOriginalText;
+    private String dcOriginalSender;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
     private SizeFormatter sizeFormatter;
@@ -774,6 +783,8 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
         recipientPresenter.onSaveInstanceState(outState);
         quotedMessagePresenter.onSaveInstanceState(outState);
         attachmentPresenter.onSaveInstanceState(outState);
+        outState.putString(STATE_DCMAIL_ORIGINAL_TEXT, dcOriginalText);
+        outState.putString(STATE_DCMAIL_ORIGINAL_SENDER, dcOriginalSender);
         cameraCaptureHandler.saveInstanceState(outState);
     }
 
@@ -797,6 +808,8 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
         recipientPresenter.onRestoreInstanceState(savedInstanceState);
         quotedMessagePresenter.onRestoreInstanceState(savedInstanceState);
         attachmentPresenter.onRestoreInstanceState(savedInstanceState);
+        dcOriginalText = savedInstanceState.getString(STATE_DCMAIL_ORIGINAL_TEXT);
+        dcOriginalSender = savedInstanceState.getString(STATE_DCMAIL_ORIGINAL_SENDER);
 
         if (savedInstanceState.containsKey(STATE_KEY_DRAFT_ID)) {
             draftMessageId = savedInstanceState.getLong(STATE_KEY_DRAFT_ID);
@@ -1286,6 +1299,9 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
             checkToSaveDraftAndSave();
         } else if (id == R.id.discard) {
             askBeforeDiscard();
+        } else if (id == R.id.dcmail_ai_reply) {
+            DcAiReply.show(this, messageContentView, subjectView.getText().toString(), dcOriginalSender,
+                    dcOriginalText);
         } else if (id == R.id.dcmail_insert_template) {
             DcTemplatePicker.show(this, messageContentView);
         } else if (id == R.id.add_from_contacts) {
@@ -1555,6 +1571,16 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
 
     private void processMessageToReplyTo(MessageViewInfo messageViewInfo) throws MessagingException {
         Message message = messageViewInfo.message;
+
+        if (messageViewInfo.textPlainFormatted != null && !messageViewInfo.textPlainFormatted.isEmpty()) {
+            dcOriginalText = messageViewInfo.textPlainFormatted;
+        } else if (messageViewInfo.text != null) {
+            dcOriginalText = HtmlConverter.htmlToText(messageViewInfo.text);
+        }
+        Address[] dcFrom = message.getFrom();
+        if (dcFrom != null && dcFrom.length > 0) {
+            dcOriginalSender = dcFrom[0].toString();
+        }
 
         if (messageViewInfo.subject != null) {
             final String subject = PREFIX.matcher(messageViewInfo.subject).replaceFirst("");

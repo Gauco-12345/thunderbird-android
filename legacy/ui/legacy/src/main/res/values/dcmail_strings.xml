@@ -79,4 +79,21 @@
     <!-- DC Mail: per-account quiet hours -->
     <string name="dcmail_account_quiet_time_title">Quiet hours for this account</string>
     <string name="dcmail_account_quiet_time_summary">No notifications for this account during these hours</string>
+
+    <!-- DC Mail: Claude replies -->
+    <string name="dcmail_ai_reply">Reply with Claude</string>
+    <string name="dcmail_ai_settings_title">Claude replies</string>
+    <string name="dcmail_ai_settings_summary">API key, model and your instructions</string>
+    <string name="dcmail_ai_settings_intro">Write your key points and Claude turns them into a finished reply to the original message. You need your own API key from console.anthropic.com; usage is billed by Anthropic. The original message and your notes are sent to Anthropic.</string>
+    <string name="dcmail_ai_api_key_label">API key</string>
+    <string name="dcmail_ai_api_key_hint">sk-ant-…</string>
+    <string name="dcmail_ai_model_label">Model</string>
+    <string name="dcmail_ai_instructions_label">Your instructions</string>
+    <string name="dcmail_ai_instructions_hint">e.g. I am Stefan from Datacreate. Friendly, factual, address customers formally.</string>
+    <string name="dcmail_ai_saved">Saved</string>
+    <string name="dcmail_ai_missing_key">Please enter your Claude API key in the settings first.</string>
+    <string name="dcmail_ai_notes_hint">Your key points, e.g. Tuesday works, 10 am, please send documents beforehand</string>
+    <string name="dcmail_ai_generate">Write reply</string>
+    <string name="dcmail_ai_working">Claude is writing…</string>
+    <string name="dcmail_ai_error_title">Claude could not write a reply</string>
 </resources>

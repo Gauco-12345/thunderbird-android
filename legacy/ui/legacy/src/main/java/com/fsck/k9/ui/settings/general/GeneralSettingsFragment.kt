@@ -21,6 +21,7 @@ import com.fsck.k9.job.K9JobManager
 import com.fsck.k9.ui.BuildConfig
 import com.fsck.k9.ui.R
 import com.fsck.k9.ui.base.extensions.withArguments
+import com.fsck.k9.ui.dcmail.DcAiSettingsActivity
 import com.fsck.k9.ui.dcmail.DcMessageActions
 import com.fsck.k9.ui.dcmail.DcTemplatesActivity
 import com.fsck.k9.ui.observe
@@ -88,6 +89,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("notification_actions_settings")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 context?.let { NotificationActionsSettingsActivity.start(it) }
+                true
+            }
+        findPreference<Preference>("dcmail_ai_settings")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                context?.let { DcAiSettingsActivity.start(it) }
                 true
             }
         findPreference<Preference>("dcmail_templates")?.onPreferenceClickListener =

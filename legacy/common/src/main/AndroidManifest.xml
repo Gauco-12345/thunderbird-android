@@ -165,6 +165,12 @@
             />
 
         <activity
+            android:name="com.fsck.k9.ui.dcmail.DcAiSettingsActivity"
+            android:label="@string/dcmail_ai_settings_title"
+            android:windowSoftInputMode="adjustResize"
+            />
+
+        <activity
             android:name="com.fsck.k9.ui.dcmail.DcTemplatesActivity"
             android:label="@string/dcmail_templates_title"
             />
