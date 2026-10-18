@@ -7,6 +7,7 @@ import com.fsck.k9.mail.K9MailLib
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.LocalMessage
+import java.util.Calendar
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import net.thunderbird.core.android.account.LegacyAccountManager
@@ -33,6 +34,11 @@ class K9NotificationStrategy(
         isOldMessage: Boolean,
     ): Boolean {
         val account = accountManager.findById(accountId) ?: return false
+
+        if (generalSettingsManager.getConfig().notification.isQuietDay) {
+            Log.v(TAG, "No notification: Today is a quiet day")
+            return false
+        }
 
         if (!generalSettingsManager.getConfig().notification.isNotificationDuringQuietTimeEnabled &&
             generalSettingsManager.getConfig().notification.isQuietTime
@@ -90,9 +96,21 @@ class K9NotificationStrategy(
         get() = getHeader(K9MailLib.CHAT_HEADER).isNotEmpty()
 
     @OptIn(ExperimentalTime::class)
+    private val NotificationPreference.isQuietDay: Boolean
+        get() {
+            if (quietDays.isEmpty()) {
+                return false
+            }
+
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = DI.get<Clock>().now().toEpochMilliseconds()
+            return calendar[Calendar.DAY_OF_WEEK] in quietDays
+        }
+
+    @OptIn(ExperimentalTime::class)
     private val NotificationPreference.isQuietTime: Boolean
         get() {
-            if (!isQuietTimeEnabled) {
+            if (!isQuietTimeEnabled && quietDays.isEmpty()) {
                 return false
             }
 
@@ -101,6 +119,8 @@ class K9NotificationStrategy(
                 clock = clock,
                 quietTimeStart = quietTimeStarts,
                 quietTimeEnd = quietTimeEnds,
+                isQuietTimeEnabled = isQuietTimeEnabled,
+                quietDays = quietDays,
             )
             return quietTimeChecker.isQuietTime
         }

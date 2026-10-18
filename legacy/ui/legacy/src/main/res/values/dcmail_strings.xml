@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- DC Mail: quiet days -->
+    <string name="dcmail_quiet_days_title">Quiet days</string>
+    <string name="dcmail_quiet_days_summary">No notifications at all on these days, e.g. on the weekend. Mail is still received.</string>
+
+    <string-array name="dcmail_quiet_days_entries" translatable="false">
+        <item>@string/dcmail_day_monday</item>
+        <item>@string/dcmail_day_tuesday</item>
+        <item>@string/dcmail_day_wednesday</item>
+        <item>@string/dcmail_day_thursday</item>
+        <item>@string/dcmail_day_friday</item>
+        <item>@string/dcmail_day_saturday</item>
+        <item>@string/dcmail_day_sunday</item>
+    </string-array>
+
+    <!-- java.util.Calendar.DAY_OF_WEEK: 1 = Sunday, 2 = Monday … 7 = Saturday -->
+    <string-array name="dcmail_quiet_days_values" translatable="false">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>1</item>
+    </string-array>
+
+    <string name="dcmail_day_monday">Monday</string>
+    <string name="dcmail_day_tuesday">Tuesday</string>
+    <string name="dcmail_day_wednesday">Wednesday</string>
+    <string name="dcmail_day_thursday">Thursday</string>
+    <string name="dcmail_day_friday">Friday</string>
+    <string name="dcmail_day_saturday">Saturday</string>
+    <string name="dcmail_day_sunday">Sunday</string>
+</resources>

@@ -456,6 +456,15 @@
         search:ignore="true"
         >
 
+        <MultiSelectListPreference
+            android:dialogTitle="@string/dcmail_quiet_days_title"
+            android:entries="@array/dcmail_quiet_days_entries"
+            android:entryValues="@array/dcmail_quiet_days_values"
+            android:key="dcmail_quiet_days"
+            android:summary="@string/dcmail_quiet_days_summary"
+            android:title="@string/dcmail_quiet_days_title"
+            />
+
         <CheckBoxPreference
             android:key="quiet_time_enabled"
             android:summary="@string/quiet_time_description"

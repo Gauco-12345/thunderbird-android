@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dcmail_quiet_days_title">Ruhige Tage</string>
+    <string name="dcmail_quiet_days_summary">An diesen Tagen gibt es gar keine Benachrichtigungen, z. B. am Wochenende. E-Mails werden trotzdem empfangen.</string>
+
+    <string name="dcmail_day_monday">Montag</string>
+    <string name="dcmail_day_tuesday">Dienstag</string>
+    <string name="dcmail_day_wednesday">Mittwoch</string>
+    <string name="dcmail_day_thursday">Donnerstag</string>
+    <string name="dcmail_day_friday">Freitag</string>
+    <string name="dcmail_day_saturday">Samstag</string>
+    <string name="dcmail_day_sunday">Sonntag</string>
+</resources>

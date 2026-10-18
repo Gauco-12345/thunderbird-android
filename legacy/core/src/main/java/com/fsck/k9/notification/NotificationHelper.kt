@@ -173,7 +173,7 @@ internal fun NotificationCompat.Builder.setAppearance(
 @OptIn(ExperimentalTime::class)
 internal val NotificationPreference.isQuietTime: Boolean
     get() {
-        if (!isQuietTimeEnabled) {
+        if (!isQuietTimeEnabled && quietDays.isEmpty()) {
             return false
         }
 
@@ -182,6 +182,8 @@ internal val NotificationPreference.isQuietTime: Boolean
             clock = clock,
             quietTimeStart = quietTimeStarts,
             quietTimeEnd = quietTimeEnds,
+            isQuietTimeEnabled = isQuietTimeEnabled,
+            quietDays = quietDays,
         )
         return quietTimeChecker.isQuietTime
     }

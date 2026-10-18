@@ -11,20 +11,31 @@ constructor(
     private val clock: Clock,
     quietTimeStart: String,
     quietTimeEnd: String,
+    private val isQuietTimeEnabled: Boolean = true,
+    private val quietDays: Set<Int> = emptySet(),
 ) {
     private val quietTimeStart: Int = parseTime(quietTimeStart)
     private val quietTimeEnd: Int = parseTime(quietTimeEnd)
 
     val isQuietTime: Boolean
         get() {
+            val calendar = Calendar.getInstance()
+            @OptIn(ExperimentalTime::class)
+            calendar.timeInMillis = clock.now().toEpochMilliseconds()
+
+            // DC Mail: whole days without notifications, e.g. the weekend
+            if (calendar[Calendar.DAY_OF_WEEK] in quietDays) {
+                return true
+            }
+
+            if (!isQuietTimeEnabled) {
+                return false
+            }
+
             // If start and end times are the same, we're never quiet
             if (quietTimeStart == quietTimeEnd) {
                 return false
             }
-
-            val calendar = Calendar.getInstance()
-            @OptIn(ExperimentalTime::class)
-            calendar.timeInMillis = clock.now().toEpochMilliseconds()
 
             val minutesSinceMidnight =
                 (calendar[Calendar.HOUR_OF_DAY] * MINUTES_PER_HOUR) + calendar[Calendar.MINUTE]

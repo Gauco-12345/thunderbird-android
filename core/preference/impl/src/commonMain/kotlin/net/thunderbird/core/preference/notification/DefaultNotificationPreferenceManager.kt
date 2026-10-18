@@ -73,6 +73,12 @@ class DefaultNotificationPreferenceManager(
                 key = NotificationSettingKey.NotificationDuringQuietTimeEnabled.value,
                 defValue = NOTIFICATION_PREFERENCE_DEFAULT_IS_NOTIFICATION_DURING_QUIET_TIME_ENABLED,
             ),
+            quietDays = parseQuietDays(
+                storage.getStringOrDefault(
+                    key = NotificationSettingKey.QuietDays.value,
+                    defValue = "",
+                ),
+            ),
             messageActionsOrder = NotificationActionTokens.parseOrder(
                 storage.getStringOrDefault(
                     key = NotificationSettingKey.MessageActionsOrder.value,
@@ -135,6 +141,10 @@ class DefaultNotificationPreferenceManager(
                     config.isNotificationDuringQuietTimeEnabled,
                 )
                 storageEditor.putString(
+                    NotificationSettingKey.QuietDays.value,
+                    config.quietDays.sorted().joinToString(","),
+                )
+                storageEditor.putString(
                     NotificationSettingKey.MessageActionsOrder.value,
                     NotificationActionTokens.serializeOrder(config.messageActionsOrder),
                 )
@@ -169,3 +179,12 @@ class DefaultNotificationPreferenceManager(
         }
     }
 }
+
+private const val FIRST_DAY_OF_WEEK = 1
+private const val LAST_DAY_OF_WEEK = 7
+
+internal fun parseQuietDays(value: String): Set<Int> =
+    value.split(",")
+        .mapNotNull { it.trim().toIntOrNull() }
+        .filter { it in FIRST_DAY_OF_WEEK..LAST_DAY_OF_WEEK }
+        .toSet()

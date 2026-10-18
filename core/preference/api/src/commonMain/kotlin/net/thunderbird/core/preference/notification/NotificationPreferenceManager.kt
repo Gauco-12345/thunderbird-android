@@ -8,6 +8,7 @@ enum class NotificationSettingKey(val value: String) {
     QuietTimeStarts("quietTimeStarts"),
     QuietTimeEnabled("quietTimeEnabled"),
     NotificationDuringQuietTimeEnabled("notificationDuringQuietTimeEnabled"),
+    QuietDays("dcmailQuietDays"),
     MessageActionsOrder("messageActionsOrder"),
     MessageActionsCutoff("messageActionsCutoff"),
     IsSummaryDeleteActionEnabled("isSummaryDeleteActionEnabled"),

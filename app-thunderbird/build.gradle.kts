@@ -13,13 +13,13 @@ android {
     namespace = "net.thunderbird.android"
 
     defaultConfig {
-        applicationId = "net.thunderbird.android"
-        testApplicationId = "net.thunderbird.android.tests"
+        applicationId = "de.datacreate.dcmail"
+        testApplicationId = "de.datacreate.dcmail.tests"
 
         versionCode = 4
         versionName = "26.0"
 
-        buildConfigField("String", "CLIENT_INFO_APP_NAME", "\"Thunderbird for Android\"")
+        buildConfigField("String", "CLIENT_INFO_APP_NAME", "\"DC Mail\"")
     }
 
     androidResources {

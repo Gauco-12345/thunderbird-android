@@ -1,0 +1,80 @@
+---
+name: DC Mail - APK bauen
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dcmail-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: APK bauen
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - name: Signaturschlüssel erzeugen
+        env:
+          DCMAIL_SIGNING_PASSPHRASE: ${{ secrets.DCMAIL_SIGNING_PASSPHRASE }}
+        run: |
+          if [ -z "$DCMAIL_SIGNING_PASSPHRASE" ]; then
+            echo "::error::Das Secret DCMAIL_SIGNING_PASSPHRASE fehlt. Bitte unter Settings > Secrets and variables > Actions anlegen."
+            exit 1
+          fi
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet cryptography
+          STORE_PASSWORD="$(openssl rand -hex 24)"
+          echo "::add-mask::$STORE_PASSWORD"
+          mkdir -p .signing
+          "$RUNNER_TEMP/venv/bin/python" -I scripts/dcmail/make_keystore.py "$RUNNER_TEMP/dcmail.p12" "$STORE_PASSWORD"
+          {
+            echo "tb.release.storeFile=$RUNNER_TEMP/dcmail.p12"
+            echo "tb.release.storePassword=$STORE_PASSWORD"
+            echo "tb.release.keyAlias=dcmail"
+            echo "tb.release.keyPassword=$STORE_PASSWORD"
+          } > .signing/tb.release.upload.properties
+
+      - name: Speicherplatz freigeben
+        uses: ./.github/actions/disk-cleanup
+
+      - name: Gradle einrichten
+        uses: ./.github/actions/setup-gradle
+        with:
+          write-cache: 'true'
+
+      - name: APK bauen
+        run: ./gradlew --no-daemon :app-thunderbird:assembleFossRelease -Pci=true
+
+      - name: APK umbenennen
+        id: apk
+        run: |
+          APK="$(find app-thunderbird/build/outputs/apk/foss/release -name '*.apk' | head -n 1)"
+          if [ -z "$APK" ]; then
+            echo "::error::Keine APK gefunden."
+            exit 1
+          fi
+          cp "$APK" "DC-Mail-${{ github.run_number }}.apk"
+          echo "file=DC-Mail-${{ github.run_number }}.apk" >> "$GITHUB_OUTPUT"
+
+      - name: APK als Artefakt sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: DC-Mail-APK
+          retention-days: 30
+          path: ${{ steps.apk.outputs.file }}

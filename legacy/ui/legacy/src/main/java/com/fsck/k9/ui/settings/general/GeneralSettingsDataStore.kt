@@ -255,6 +255,10 @@ class GeneralSettingsDataStore(
                 }
             }
 
+            "dcmail_quiet_days" -> {
+                generalSettingsManager.getConfig().notification.quietDays.map { it.toString() }.toSet()
+            }
+
             else -> defValues
         }
     }
@@ -290,6 +294,17 @@ class GeneralSettingsDataStore(
                                 isMessageViewCopyActionVisible = "copy" in checkedValues,
                                 isMessageViewSpamActionVisible = "spam" in checkedValues,
                             ),
+                        ),
+                    )
+                }
+            }
+
+            "dcmail_quiet_days" -> {
+                skipSaveSettings = true
+                generalSettingsManager.update { settings ->
+                    settings.copy(
+                        notification = settings.notification.copy(
+                            quietDays = checkedValues.mapNotNull { it.toIntOrNull() }.toSet(),
                         ),
                     )
                 }
