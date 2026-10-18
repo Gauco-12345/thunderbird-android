@@ -19,6 +19,7 @@ internal data class BaseNotificationData(
     val newMessagesCount: Int,
     val lockScreenNotificationData: LockScreenNotificationData,
     val appearance: NotificationAppearance,
+    val dcNotificationIcon: String = "default",
 )
 
 internal sealed interface LockScreenNotificationData {

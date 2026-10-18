@@ -62,7 +62,7 @@ internal class SummaryNotificationCreator(
             .setGroup(baseNotificationData.groupKey)
             .setGroupSummary(true)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
-            .setSmallIcon(resourceProvider.iconNewMail)
+            .setSmallIcon(resourceProvider.iconNewMail(baseNotificationData.dcNotificationIcon))
             .setColor(baseNotificationData.color)
             .setWhen(notificationData.timestamp)
             .setNumber(notificationData.additionalMessagesCount)

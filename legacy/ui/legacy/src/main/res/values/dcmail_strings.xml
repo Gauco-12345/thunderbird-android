@@ -61,6 +61,7 @@
         <item>@string/spam_action</item>
         <item>@string/mark_as_unread_action</item>
         <item>@string/flag_action</item>
+        <item>@string/dcmail_ai_summarize</item>
         <item>@string/delete_action</item>
     </string-array>
 
@@ -71,6 +72,7 @@
         <item>forward</item>
         <item>archive</item>
         <item>spam</item>
+        <item>summarize</item>
         <item>delete</item>
     </string-array>
 
@@ -83,6 +85,7 @@
         <item>spam</item>
         <item>unread</item>
         <item>flag</item>
+        <item>summarize</item>
         <item>delete</item>
     </string-array>
 
@@ -125,5 +128,61 @@
         <item>Factual</item>
         <item>Friendly</item>
         <item>Casual</item>
+    </string-array>
+
+    <!-- DC Mail: Claude summary -->
+    <string name="dcmail_ai_summarize">Summarize with Claude</string>
+    <string name="dcmail_ai_summary_title">Summary</string>
+    <string name="dcmail_ai_summary_working">Claude is summarizing…</string>
+    <string name="dcmail_ai_summary_empty">This message has no text to summarize.</string>
+    <string name="dcmail_ai_copy">Copy</string>
+
+    <!-- DC Mail: updates -->
+    <string name="dcmail_update_settings_title">Updates</string>
+    <string name="dcmail_update_settings_summary">Check for new DC Mail builds</string>
+    <string name="dcmail_update_current_build">Installed build: %1$d</string>
+    <string name="dcmail_update_token_intro">DC Mail checks your GitHub builds on start. To download and install updates directly, enter a GitHub token: github.com → Settings → Developer settings → Fine-grained tokens → repository thunderbird-android → permission Actions: read. Without a token the update page opens in the browser.</string>
+    <string name="dcmail_update_token_hint">GitHub token (github_pat_…)</string>
+    <string name="dcmail_update_check_now">Check now</string>
+    <string name="dcmail_update_none">DC Mail is up to date.</string>
+    <string name="dcmail_update_title">Update available</string>
+    <string name="dcmail_update_available">Build %1$d is available, installed is build %2$d.</string>
+    <string name="dcmail_update_no_token">Without a GitHub token the download opens in the browser. You can add a token under Settings → Updates.</string>
+    <string name="dcmail_update_install">Install</string>
+    <string name="dcmail_update_open_browser">Open in browser</string>
+    <string name="dcmail_update_later">Later</string>
+    <string name="dcmail_update_downloading">Downloading update…</string>
+    <string name="dcmail_update_error_title">Update failed</string>
+    <string name="dcmail_update_install_failed">Installation failed: %1$s</string>
+
+    <!-- DC Mail: per-account notification icon -->
+    <string name="dcmail_notification_icon_title">Status bar icon</string>
+    <string-array name="dcmail_notification_icon_entries">
+        <item>Standard (envelope)</item>
+        <item>Letter</item>
+        <item>Inbox</item>
+        <item>Person</item>
+        <item>Group</item>
+        <item>Work (monitor)</item>
+        <item>Speech bubbles</item>
+        <item>Star</item>
+        <item>Heart</item>
+        <item>Lightning</item>
+        <item>Folder</item>
+        <item>Bell</item>
+    </string-array>
+    <string-array name="dcmail_notification_icon_values" translatable="false">
+        <item>default</item>
+        <item>mail</item>
+        <item>inbox</item>
+        <item>person</item>
+        <item>group</item>
+        <item>work</item>
+        <item>forum</item>
+        <item>star</item>
+        <item>heart</item>
+        <item>bolt</item>
+        <item>folder</item>
+        <item>notifications</item>
     </string-array>
 </resources>

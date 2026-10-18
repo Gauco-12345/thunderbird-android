@@ -653,6 +653,8 @@ open class MessageHomeActivity :
     public override fun onResume() {
         super.onResume()
 
+        com.fsck.k9.ui.dcmail.DcUpdater.checkAutomatically(this)
+
         if (messageListActivityConfig == null) {
             messageListActivityConfig = MessageListActivityConfig.create(generalSettingsManager)
         } else if (messageListActivityConfig != MessageListActivityConfig.create(generalSettingsManager)) {

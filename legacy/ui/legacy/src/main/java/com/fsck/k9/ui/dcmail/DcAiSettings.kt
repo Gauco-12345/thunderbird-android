@@ -54,16 +54,16 @@ object DcAiSettings {
     fun load(context: Context): DcAiConfig {
         val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
         return DcAiConfig(
-            apiKey = preferences.getString(KEY_API_KEY, null).orEmpty(),
+            apiKey = DcSecretStore.read(context, PREFERENCES_NAME, KEY_API_KEY),
             model = preferences.getString(KEY_MODEL, null)?.takeIf { it.isNotBlank() } ?: DEFAULT_MODEL,
             instructions = preferences.getString(KEY_INSTRUCTIONS, null).orEmpty(),
         )
     }
 
     fun save(context: Context, config: DcAiConfig) {
+        DcSecretStore.write(context, PREFERENCES_NAME, KEY_API_KEY, config.apiKey.trim())
         context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
             .edit()
-            .putString(KEY_API_KEY, config.apiKey.trim())
             .putString(KEY_MODEL, config.model.trim())
             .putString(KEY_INSTRUCTIONS, config.instructions)
             .apply()

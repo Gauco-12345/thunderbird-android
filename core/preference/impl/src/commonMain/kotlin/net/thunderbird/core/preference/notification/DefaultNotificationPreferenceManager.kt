@@ -73,12 +73,9 @@ class DefaultNotificationPreferenceManager(
                 key = NotificationSettingKey.NotificationDuringQuietTimeEnabled.value,
                 defValue = NOTIFICATION_PREFERENCE_DEFAULT_IS_NOTIFICATION_DURING_QUIET_TIME_ENABLED,
             ),
-            quietDays = parseQuietDays(
-                storage.getStringOrDefault(
-                    key = NotificationSettingKey.QuietDays.value,
-                    defValue = "",
-                ),
-            ),
+            // DC Mail: quiet days moved to the account settings. Ignore an old global value so it can't
+            // silently suppress all notifications.
+            quietDays = emptySet(),
             messageActionsOrder = NotificationActionTokens.parseOrder(
                 storage.getStringOrDefault(
                     key = NotificationSettingKey.MessageActionsOrder.value,

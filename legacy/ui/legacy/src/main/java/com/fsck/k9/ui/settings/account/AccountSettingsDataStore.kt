@@ -170,6 +170,7 @@ class AccountSettingsDataStore(
             "notification_light" -> account.notificationSettings.light.name
             "dcmail_account_quiet_time_starts" -> account.dcQuietTimeStarts
             "dcmail_account_quiet_time_ends" -> account.dcQuietTimeEnds
+            "dcmail_account_notification_icon" -> account.dcNotificationIcon
             else -> defValue
         }
     }
@@ -245,6 +246,7 @@ class AccountSettingsDataStore(
             "notification_light" -> setNotificationLight(value)
             "dcmail_account_quiet_time_starts" -> updateValue { it.copy(dcQuietTimeStarts = value) }
             "dcmail_account_quiet_time_ends" -> updateValue { it.copy(dcQuietTimeEnds = value) }
+            "dcmail_account_notification_icon" -> updateValue { it.copy(dcNotificationIcon = value) }
             else -> return
         }
 

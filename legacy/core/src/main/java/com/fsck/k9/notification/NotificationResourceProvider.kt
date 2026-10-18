@@ -13,6 +13,9 @@ interface NotificationResourceProvider {
     val iconMarkAsSpam: Int
     val iconStar: Int
     val iconNewMail: Int
+
+    /** DC Mail: status bar icon for new mail, chosen per account. */
+    fun iconNewMail(choice: String): Int = iconNewMail
     val iconSendingMail: Int
     val iconCheckingMail: Int
     val iconBackgroundWorkNotification: Int

@@ -18,6 +18,7 @@ internal class BaseNotificationDataCreator {
             newMessagesCount = notificationData.newMessagesCount,
             lockScreenNotificationData = createLockScreenNotificationData(notificationData),
             appearance = createNotificationAppearance(account),
+            dcNotificationIcon = account.dcNotificationIcon,
         )
     }
 

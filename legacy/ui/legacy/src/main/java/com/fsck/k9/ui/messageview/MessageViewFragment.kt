@@ -23,6 +23,8 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.widget.TooltipCompat
 import app.k9mail.core.ui.legacy.designsystem.R as DesignSystemR
+import com.fsck.k9.message.html.HtmlConverter
+import com.fsck.k9.ui.dcmail.DcAiSummary
 import com.fsck.k9.ui.dcmail.DcMessageAction
 import com.fsck.k9.ui.dcmail.DcMessageActions
 import com.google.android.material.color.MaterialColors
@@ -317,6 +319,9 @@ class MessageViewFragment :
         setupDcActionBar(messageTopView)
     }
 
+    // DC Mail: last shown message, used for the Claude summary
+    private var dcMessageViewInfo: MessageViewInfo? = null
+
     // DC Mail: icon bar with the actions the user picked in the settings
     private fun setupDcActionBar(rootView: View) {
         val bar = rootView.findViewById<LinearLayout>(R.id.dcmail_action_bar) ?: return
@@ -363,8 +368,17 @@ class MessageViewFragment :
             DcMessageAction.SPAM -> onSpam()
             DcMessageAction.UNREAD -> onToggleRead()
             DcMessageAction.FLAG -> onToggleFlagged()
+            DcMessageAction.SUMMARIZE -> onDcSummarize()
             DcMessageAction.DELETE -> onDelete()
         }
+    }
+
+    private fun onDcSummarize() {
+        val info = dcMessageViewInfo ?: return
+        val plainText = info.textPlainFormatted?.takeIf { it.isNotBlank() }
+            ?: info.text?.let { HtmlConverter.htmlToText(it) }
+        val sender = info.message?.from?.firstOrNull()?.toString()
+        DcAiSummary.show(requireActivity(), info.subject, sender, plainText)
     }
 
     private fun dcActionIcon(action: DcMessageAction): Int = when (action) {
@@ -376,6 +390,7 @@ class MessageViewFragment :
         DcMessageAction.SPAM -> DesignSystemR.drawable.ic_report
         DcMessageAction.UNREAD -> DesignSystemR.drawable.ic_mark_email_unread
         DcMessageAction.FLAG -> DesignSystemR.drawable.ic_star
+        DcMessageAction.SUMMARIZE -> DesignSystemR.drawable.ic_description
         DcMessageAction.DELETE -> DesignSystemR.drawable.ic_delete
     }
 
@@ -388,6 +403,7 @@ class MessageViewFragment :
         DcMessageAction.SPAM -> R.string.spam_action
         DcMessageAction.UNREAD -> R.string.mark_as_unread_action
         DcMessageAction.FLAG -> R.string.flag_action
+        DcMessageAction.SUMMARIZE -> R.string.dcmail_ai_summarize
         DcMessageAction.DELETE -> R.string.delete_action
     }
 
@@ -626,6 +642,7 @@ class MessageViewFragment :
 
     private fun showMessage(messageViewInfo: MessageViewInfo) {
         hideKeyboard()
+        dcMessageViewInfo = messageViewInfo
 
         val handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
             messageTopView,

@@ -24,6 +24,7 @@ import com.fsck.k9.ui.base.extensions.withArguments
 import com.fsck.k9.ui.dcmail.DcAiSettingsActivity
 import com.fsck.k9.ui.dcmail.DcMessageActions
 import com.fsck.k9.ui.dcmail.DcTemplatesActivity
+import com.fsck.k9.ui.dcmail.DcUpdateActivity
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.notificationactions.NotificationActionsSettingsActivity
 import com.fsck.k9.ui.settings.remove
@@ -89,6 +90,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("notification_actions_settings")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 context?.let { NotificationActionsSettingsActivity.start(it) }
+                true
+            }
+        findPreference<Preference>("dcmail_update")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                context?.let { DcUpdateActivity.start(it) }
                 true
             }
         findPreference<Preference>("dcmail_ai_settings")?.onPreferenceClickListener =

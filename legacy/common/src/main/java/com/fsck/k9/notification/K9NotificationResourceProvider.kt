@@ -17,6 +17,21 @@ class K9NotificationResourceProvider(private val context: Context) : Notificatio
     override val iconMarkAsSpam: Int = Icons.Outlined.Report
     override val iconStar: Int = Icons.Outlined.Star
     override val iconNewMail: Int = Icons.Outlined.MarkEmailUnread
+
+    override fun iconNewMail(choice: String): Int = when (choice) {
+        "mail" -> Icons.Outlined.Mail
+        "inbox" -> Icons.Outlined.Inbox
+        "person" -> Icons.Outlined.Person
+        "group" -> Icons.Outlined.Group
+        "work" -> Icons.Outlined.Monitor
+        "forum" -> Icons.Outlined.Forum
+        "star" -> Icons.Outlined.Star
+        "heart" -> Icons.Outlined.Favorite
+        "bolt" -> Icons.Outlined.Bolt
+        "folder" -> Icons.Outlined.Folder
+        "notifications" -> Icons.Outlined.Notifications
+        else -> iconNewMail
+    }
     override val iconSendingMail: Int = Icons.Outlined.Sync
     override val iconCheckingMail: Int = Icons.Outlined.Sync
     override val iconBackgroundWorkNotification: Int = Icons.Outlined.Bolt

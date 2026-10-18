@@ -137,6 +137,7 @@ class LegacyAccountStorageHandler(
             isDcQuietTimeEnabled = storage.getBoolean(keyGen.create("dcmailQuietTimeEnabled"), false),
             dcQuietTimeStarts = storage.getStringOrNull(keyGen.create("dcmailQuietTimeStarts")) ?: "21:00",
             dcQuietTimeEnds = storage.getStringOrNull(keyGen.create("dcmailQuietTimeEnds")) ?: "07:00",
+            dcNotificationIcon = storage.getStringOrNull(keyGen.create("dcmailNotificationIcon")) ?: "default",
             isNotifySync = storage.getBoolean(keyGen.create("notifyMailCheck"), false),
             messagesNotificationChannelVersion = storage.getInt(keyGen.create("messagesNotificationChannelVersion"), 0),
             deletePolicy = DeletePolicy.fromInt(
@@ -362,6 +363,7 @@ class LegacyAccountStorageHandler(
             editor.putBoolean(keyGen.create("dcmailQuietTimeEnabled"), isDcQuietTimeEnabled)
             editor.putString(keyGen.create("dcmailQuietTimeStarts"), dcQuietTimeStarts)
             editor.putString(keyGen.create("dcmailQuietTimeEnds"), dcQuietTimeEnds)
+            editor.putString(keyGen.create("dcmailNotificationIcon"), dcNotificationIcon)
             editor.putBoolean(keyGen.create("notifyMailCheck"), isNotifySync)
             editor.putInt(keyGen.create("messagesNotificationChannelVersion"), messagesNotificationChannelVersion)
             editor.putInt(keyGen.create("deletePolicy"), deletePolicy.setting)

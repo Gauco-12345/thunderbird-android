@@ -145,7 +145,7 @@ object DcAiReply {
             append(notes)
         }
 
-        val progress = showProgress(activity)
+        val progress = showProgress(activity, R.string.dcmail_ai_working)
 
         Thread {
             val result = try {
@@ -214,7 +214,7 @@ object DcAiReply {
         "Ton: Locker und umgangssprachlich.",
     )
 
-    private fun showProgress(activity: Activity): AlertDialog {
+    internal fun showProgress(activity: Activity, messageResId: Int): AlertDialog {
         val padding = (PADDING_DP * activity.resources.displayMetrics.density).toInt()
         val row = LinearLayout(activity)
         row.orientation = LinearLayout.HORIZONTAL
@@ -222,7 +222,7 @@ object DcAiReply {
         row.setPadding(padding, padding, padding, padding)
         row.addView(ProgressBar(activity))
         val message = TextView(activity)
-        message.setText(R.string.dcmail_ai_working)
+        message.setText(messageResId)
         message.setPadding(padding, 0, 0, 0)
         row.addView(message)
 

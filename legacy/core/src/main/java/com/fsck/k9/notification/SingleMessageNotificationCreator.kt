@@ -37,7 +37,7 @@ internal class SingleMessageNotificationCreator(
             .setGroup(baseNotificationData.groupKey)
             .setGroupSummary(isGroupSummary)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
-            .setSmallIcon(resourceProvider.iconNewMail)
+            .setSmallIcon(resourceProvider.iconNewMail(baseNotificationData.dcNotificationIcon))
             .setAvatar(singleNotificationData.content)
             .setColor(baseNotificationData.color)
             .setWhen(singleNotificationData.timestamp)

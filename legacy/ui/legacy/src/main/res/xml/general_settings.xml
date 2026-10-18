@@ -400,6 +400,12 @@
         >
 
         <Preference
+            android:key="dcmail_update"
+            android:summary="@string/dcmail_update_settings_summary"
+            android:title="@string/dcmail_update_settings_title"
+            />
+
+        <Preference
             android:key="dcmail_ai_settings"
             android:summary="@string/dcmail_ai_settings_summary"
             android:title="@string/dcmail_ai_settings_title"

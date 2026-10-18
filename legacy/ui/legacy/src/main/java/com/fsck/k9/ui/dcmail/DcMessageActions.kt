@@ -16,6 +16,7 @@ enum class DcMessageAction(val key: String) {
     SPAM("spam"),
     UNREAD("unread"),
     FLAG("flag"),
+    SUMMARIZE("summarize"),
     DELETE("delete"),
 }
 
@@ -32,6 +33,7 @@ object DcMessageActions {
         DcMessageAction.FORWARD.key,
         DcMessageAction.ARCHIVE.key,
         DcMessageAction.SPAM.key,
+        DcMessageAction.SUMMARIZE.key,
         DcMessageAction.DELETE.key,
     )
 

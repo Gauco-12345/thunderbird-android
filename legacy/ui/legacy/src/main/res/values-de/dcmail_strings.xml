@@ -70,4 +70,46 @@
         <item>Freundlich</item>
         <item>Locker</item>
     </string-array>
+
+    <!-- DC Mail: Claude summary -->
+    <string name="dcmail_ai_summarize">Mit Claude zusammenfassen</string>
+    <string name="dcmail_ai_summary_title">Zusammenfassung</string>
+    <string name="dcmail_ai_summary_working">Claude fasst zusammen …</string>
+    <string name="dcmail_ai_summary_empty">Diese Nachricht enthält keinen Text zum Zusammenfassen.</string>
+    <string name="dcmail_ai_copy">Kopieren</string>
+
+    <!-- DC Mail: updates -->
+    <string name="dcmail_update_settings_title">Updates</string>
+    <string name="dcmail_update_settings_summary">Nach neuen DC-Mail-Versionen suchen</string>
+    <string name="dcmail_update_current_build">Installierter Build: %1$d</string>
+    <string name="dcmail_update_token_intro">DC Mail prüft beim Start deine GitHub-Builds. Damit Updates direkt geladen und installiert werden, trage einen GitHub-Token ein: github.com → Settings → Developer settings → Fine-grained tokens → Repository thunderbird-android → Berechtigung Actions: Read. Ohne Token öffnet sich die Update-Seite im Browser.</string>
+    <string name="dcmail_update_token_hint">GitHub-Token (github_pat_…)</string>
+    <string name="dcmail_update_check_now">Jetzt suchen</string>
+    <string name="dcmail_update_none">DC Mail ist aktuell.</string>
+    <string name="dcmail_update_title">Update verfügbar</string>
+    <string name="dcmail_update_available">Build %1$d ist verfügbar, installiert ist Build %2$d.</string>
+    <string name="dcmail_update_no_token">Ohne GitHub-Token öffnet sich der Download im Browser. Einen Token kannst du unter Einstellungen → Updates hinterlegen.</string>
+    <string name="dcmail_update_install">Installieren</string>
+    <string name="dcmail_update_open_browser">Im Browser öffnen</string>
+    <string name="dcmail_update_later">Später</string>
+    <string name="dcmail_update_downloading">Update wird geladen …</string>
+    <string name="dcmail_update_error_title">Update fehlgeschlagen</string>
+    <string name="dcmail_update_install_failed">Installation fehlgeschlagen: %1$s</string>
+
+    <!-- DC Mail: per-account notification icon -->
+    <string name="dcmail_notification_icon_title">Symbol in der Statusleiste</string>
+    <string-array name="dcmail_notification_icon_entries">
+        <item>Standard (Umschlag)</item>
+        <item>Brief</item>
+        <item>Posteingang</item>
+        <item>Person</item>
+        <item>Gruppe</item>
+        <item>Arbeit (Bildschirm)</item>
+        <item>Sprechblasen</item>
+        <item>Stern</item>
+        <item>Herz</item>
+        <item>Blitz</item>
+        <item>Ordner</item>
+        <item>Glocke</item>
+    </string-array>
 </resources>

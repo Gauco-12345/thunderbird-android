@@ -108,6 +108,17 @@
             android:title="@string/account_settings_notify_self_label"
             />
 
+        <ListPreference
+            android:defaultValue="default"
+            android:dependency="account_notify"
+            android:dialogTitle="@string/dcmail_notification_icon_title"
+            android:entries="@array/dcmail_notification_icon_entries"
+            android:entryValues="@array/dcmail_notification_icon_values"
+            android:key="dcmail_account_notification_icon"
+            android:title="@string/dcmail_notification_icon_title"
+            app:useSimpleSummaryProvider="true"
+            />
+
         <MultiSelectListPreference
             android:dependency="account_notify"
             android:dialogTitle="@string/dcmail_quiet_days_title"

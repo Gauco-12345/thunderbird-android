@@ -16,8 +16,10 @@ android {
         applicationId = "de.datacreate.dcmail"
         testApplicationId = "de.datacreate.dcmail.tests"
 
-        versionCode = 4
-        versionName = "26.0"
+        // DC Mail: GitHub run number becomes part of the version, so the app can detect newer builds
+        val dcBuildNumber = providers.gradleProperty("dcBuildNumber").orNull?.toIntOrNull()
+        versionCode = if (dcBuildNumber != null) 1000 + dcBuildNumber else 4
+        versionName = if (dcBuildNumber != null) "26.0-dc$dcBuildNumber" else "26.0"
 
         buildConfigField("String", "CLIENT_INFO_APP_NAME", "\"DC Mail\"")
     }

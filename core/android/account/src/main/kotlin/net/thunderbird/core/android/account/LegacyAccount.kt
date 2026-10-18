@@ -45,6 +45,8 @@ data class LegacyAccount(
     val isDcQuietTimeEnabled: Boolean = false,
     val dcQuietTimeStarts: String = "21:00",
     val dcQuietTimeEnds: String = "07:00",
+    // DC Mail: status bar icon for new mail notifications of this account
+    val dcNotificationIcon: String = "default",
     val legacyInboxFolder: String? = null,
     val importedDraftsFolder: String? = null,
     val importedSentFolder: String? = null,

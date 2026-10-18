@@ -59,7 +59,7 @@ jobs:
           write-cache: 'true'
 
       - name: APK bauen
-        run: ./gradlew --no-daemon :app-thunderbird:assembleFossRelease -Pci=true
+        run: ./gradlew --no-daemon :app-thunderbird:assembleFossRelease -Pci=true -PdcBuildNumber=${{ github.run_number }}
 
       - name: APK umbenennen
         id: apk
