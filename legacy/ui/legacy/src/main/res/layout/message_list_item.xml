@@ -234,7 +234,7 @@
     <!-- DC Mail: colour code stripe (contact, newsletter, spam suspicion, warning) -->
     <View
         android:id="@+id/dcmail_category_stripe"
-        android:layout_width="4dp"
+        android:layout_width="8dp"
         android:layout_height="0dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

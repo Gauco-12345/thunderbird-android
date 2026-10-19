@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "Farbcode: Kontakte werden jetzt auch erkannt, wenn du ihnen aus einem anderen Programm (z. B. eM Client oder Roundcube) geantwortet hast."
+        },
+        {
+          "type": "changed",
+          "text": "Farbstreifen in der Mailliste ist doppelt so breit."
+        }
+      ]
+    },
+    {
       "build": 28,
       "date": "2026-10-19",
       "notes": [

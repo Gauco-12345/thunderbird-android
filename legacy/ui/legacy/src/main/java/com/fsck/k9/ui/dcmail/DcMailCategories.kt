@@ -163,24 +163,34 @@ object DcMailCategories {
         return result
     }
 
+    /**
+     * Known = people you replied to (the \Answered flag is set by every mail program, also eM Client or Roundcube)
+     * plus recipients of mails you sent (Sent folder or any mail with your own address as sender).
+     */
     private fun collectSentRecipients(provider: LocalStoreProvider, account: LegacyAccount, result: MutableSet<String>) {
-        val sentFolderId = account.sentFolderId ?: return
+        val own = account.email.lowercase(Locale.ROOT)
+        val sentFolderId = account.sentFolderId ?: -1L
         try {
             provider.getInstance(account.id).database.execute(
                 false,
                 LockableDatabase.DbCallback<Unit> { db: SQLiteDatabase ->
                     db.rawQuery(
-                        "SELECT to_list, cc_list FROM messages WHERE folder_id = ? AND deleted = 0 " +
+                        "SELECT sender_list FROM messages WHERE deleted = 0 AND empty = 0 AND answered = 1 " +
                             "ORDER BY date DESC LIMIT $MAX_SENT_ROWS",
-                        arrayOf(sentFolderId.toString()),
+                        null,
                     ).use { cursor ->
                         while (cursor.moveToNext()) {
-                            for (column in 0..1) {
-                                val packed = cursor.getString(column) ?: continue
-                                for (address in Address.unpack(packed)) {
-                                    address.address?.lowercase(Locale.ROOT)?.let { result.add(it) }
-                                }
-                            }
+                            addAll(cursor.getString(0), result)
+                        }
+                    }
+                    db.rawQuery(
+                        "SELECT to_list, cc_list FROM messages WHERE deleted = 0 AND empty = 0 AND " +
+                            "(folder_id = ? OR sender_list LIKE ? ESCAPE '\\') ORDER BY date DESC LIMIT $MAX_SENT_ROWS",
+                        arrayOf(sentFolderId.toString(), "%" + escapeLike(own) + "%"),
+                    ).use { cursor ->
+                        while (cursor.moveToNext()) {
+                            addAll(cursor.getString(0), result)
+                            addAll(cursor.getString(1), result)
                         }
                     }
                 },
@@ -189,6 +199,15 @@ object DcMailCategories {
             // ignore this account
         }
     }
+
+    private fun addAll(packed: String?, result: MutableSet<String>) {
+        if (packed.isNullOrEmpty()) return
+        for (address in Address.unpack(packed)) {
+            address.address?.lowercase(Locale.ROOT)?.let { result.add(it) }
+        }
+    }
+
+    private fun escapeLike(value: String) = value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
     // --- headers: newsletter, spam score, authentication ---
 
