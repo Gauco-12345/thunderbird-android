@@ -149,4 +149,7 @@
     <string name="dcmail_vacation_scripts">Filter-Skripte auf dem Server:</string>
     <string name="dcmail_vacation_active">aktiv</string>
     <string name="dcmail_vacation_failed">✗ Keine Verbindung: %1$s\n\nVermutlich erlaubt der Server keinen Sieve-Zugriff von außen. Schick mir diese Meldung bitte.</string>
+    <string name="dcmail_vacation_no_account">Konto nicht gefunden. Bitte die Abwesenheitsnotiz erneut aus den Kontoeinstellungen öffnen.</string>
+    <string name="dcmail_crash_title">Letzter Absturz</string>
+    <string name="dcmail_crash_copied">Kopiert</string>
 </resources>

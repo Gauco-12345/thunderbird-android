@@ -653,6 +653,7 @@ open class MessageHomeActivity :
     public override fun onResume() {
         super.onResume()
 
+        com.fsck.k9.ui.dcmail.DcCrashLog.install(this)
         com.fsck.k9.ui.dcmail.DcUpdater.checkAutomatically(this)
 
         if (messageListActivityConfig == null) {

@@ -27,6 +27,7 @@ class DcVacationActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DcCrashLog.install(this)
         setLayout(R.layout.general_settings)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -41,7 +42,11 @@ class DcVacationActivity : BaseActivity() {
         }
         val account = accountId?.let { DI.get(LegacyAccountManager::class.java).findById(it) }
         if (account == null) {
-            finish()
+            val message = TextView(this)
+            val padding = (PADDING_DP * resources.displayMetrics.density).toInt()
+            message.setPadding(padding, padding, padding, padding)
+            message.text = getString(R.string.dcmail_vacation_no_account)
+            findViewById<FrameLayout>(R.id.content_container).addView(message)
             return
         }
         val server = account.incomingServerSettings
@@ -95,7 +100,11 @@ class DcVacationActivity : BaseActivity() {
             testButton.isEnabled = false
             resultView.setText(R.string.dcmail_vacation_testing)
             Thread {
-                val message = runTest(host, port, server.username, password)
+                val message = try {
+                    runTest(host, port, server.username, password)
+                } catch (e: Throwable) {
+                    getString(R.string.dcmail_vacation_failed, DcCrashLog.describe(e))
+                }
                 runOnUiThread {
                     if (!isFinishing && !isDestroyed) {
                         testButton.isEnabled = true

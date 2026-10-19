@@ -80,6 +80,43 @@ class DcUpdateActivity : BaseActivity() {
 
         column.addView(buttons)
 
+        // DC Mail: last crash, so it can be copied and sent for analysis
+        DcCrashLog.read(this)?.let { crash ->
+            val crashTitle = TextView(this)
+            crashTitle.setText(R.string.dcmail_crash_title)
+            crashTitle.setPadding(0, padding * 2, 0, 0)
+            crashTitle.setTypeface(crashTitle.typeface, android.graphics.Typeface.BOLD)
+            column.addView(crashTitle)
+
+            val crashText = TextView(this)
+            crashText.text = crash
+            crashText.setTextIsSelectable(true)
+            crashText.textSize = CRASH_TEXT_SIZE_SP
+            column.addView(crashText)
+
+            val crashButtons = LinearLayout(this)
+            crashButtons.orientation = LinearLayout.HORIZONTAL
+            crashButtons.gravity = Gravity.END
+            val copyButton = Button(this)
+            copyButton.setText(R.string.dcmail_ai_copy)
+            copyButton.setOnClickListener {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                clipboard?.setPrimaryClip(android.content.ClipData.newPlainText("DC Mail crash", crash))
+                Toast.makeText(this, R.string.dcmail_crash_copied, Toast.LENGTH_SHORT).show()
+            }
+            crashButtons.addView(copyButton)
+            val clearButton = Button(this)
+            clearButton.setText(R.string.dcmail_template_delete)
+            clearButton.setOnClickListener {
+                DcCrashLog.clear(this)
+                crashTitle.visibility = android.view.View.GONE
+                crashText.visibility = android.view.View.GONE
+                crashButtons.visibility = android.view.View.GONE
+            }
+            crashButtons.addView(clearButton)
+            column.addView(crashButtons)
+        }
+
         val scrollView = ScrollView(this)
         scrollView.isNestedScrollingEnabled = true
         scrollView.addView(column)
@@ -97,6 +134,7 @@ class DcUpdateActivity : BaseActivity() {
 
     companion object {
         private const val PADDING_DP = 16
+        private const val CRASH_TEXT_SIZE_SP = 11f
 
         @JvmStatic
         fun start(context: Context) {
