@@ -7,7 +7,6 @@ import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.LocalMessage
 import net.thunderbird.core.android.account.LegacyAccountManager
 import net.thunderbird.core.featureflag.FeatureFlagProvider
-import net.thunderbird.core.featureflag.keys.GeneratedFeatureFlagKey
 import net.thunderbird.feature.account.AccountId
 import net.thunderbird.legacy.logging.Log
 
@@ -82,11 +81,8 @@ internal class ArchiveOperations(
         messages: List<LocalMessage>,
         archiveFolderId: Long,
     ) {
-        val operation = featureFlagProvider.provide(GeneratedFeatureFlagKey.ARCHIVE_MARKS_AS_READ)
-            .whenEnabledOrNot(
-                onEnabled = { MoveOrCopyFlavor.MOVE_AND_MARK_AS_READ },
-                onDisabledOrUnavailable = { MoveOrCopyFlavor.MOVE },
-            )
+        // DC Mail: archiving always marks messages as read
+        val operation = MoveOrCopyFlavor.MOVE_AND_MARK_AS_READ
         messagingController.moveOrCopyMessageSynchronous(
             accountId,
             sourceFolderId,

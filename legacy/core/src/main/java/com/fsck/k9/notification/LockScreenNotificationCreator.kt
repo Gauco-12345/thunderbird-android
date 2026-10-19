@@ -58,7 +58,7 @@ internal class LockScreenNotificationCreator(
             NotificationChannelManager.ChannelType.MESSAGES,
             baseNotificationData.messagesNotificationChannelVersion,
         )
-            .setSmallIcon(resourceProvider.iconNewMail(baseNotificationData.dcNotificationIcon))
+            .setDcSmallIcon(resourceProvider.iconNewMail(baseNotificationData.dcNotificationIcon), newMessagesCount)
             .setColor(baseNotificationData.color)
             .setNumber(newMessagesCount)
             .setContentTitle(title)

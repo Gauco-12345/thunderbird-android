@@ -1927,6 +1927,15 @@ public class MessagingController implements MessagingControllerRegistry, Messagi
     void moveOrCopyMessageSynchronous(AccountId accountId, long srcFolderId, List<LocalMessage> inMessages,
         long destFolderId, MoveOrCopyFlavor operation) {
 
+        // DC Mail: everything moved into the archive folder is marked as read
+        if (operation == MoveOrCopyFlavor.MOVE) {
+            LegacyAccount archiveAccount = accountManager.findById(accountId);
+            Long archiveFolderId = archiveAccount != null ? archiveAccount.getArchiveFolderId() : null;
+            if (archiveFolderId != null && archiveFolderId == destFolderId) {
+                operation = MoveOrCopyFlavor.MOVE_AND_MARK_AS_READ;
+            }
+        }
+
         try {
             LocalStore localStore = localStoreProvider.getInstance(accountId);
             if (operation == MoveOrCopyFlavor.MOVE && !isMoveCapable(accountId)) {
