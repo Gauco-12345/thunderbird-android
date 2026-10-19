@@ -16,6 +16,11 @@
         app:showAsAction="always"
         />
     <item
+        android:id="@+id/dcmail_send_later"
+        android:title="@string/dcmail_send_later"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/dcmail_ai_reply"
         android:title="@string/dcmail_ai_reply"
         app:showAsAction="never"

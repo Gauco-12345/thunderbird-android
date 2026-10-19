@@ -133,6 +133,7 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.ui.R;
 import com.fsck.k9.ui.base.BaseActivity;
 import com.fsck.k9.ui.dcmail.DcAiReply;
+import com.fsck.k9.ui.dcmail.DcSendLater;
 import com.fsck.k9.ui.dcmail.DcTemplatePicker;
 import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.ui.compose.IntentData;
@@ -274,6 +275,8 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
     private static final String STATE_DCMAIL_ORIGINAL_SENDER = "dcmailOriginalSender";
     private String dcOriginalText;
     private String dcOriginalSender;
+    // DC Mail: time for "send later", 0 = send now
+    private long dcSendAt = 0;
     private MessageLoaderHelper messageLoaderHelper;
     private AttachmentPresenter attachmentPresenter;
     private SizeFormatter sizeFormatter;
@@ -1294,7 +1297,13 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
         if (id == android.R.id.home) {
             prepareToFinish(true);
         } else if (id == R.id.send) {
+            dcSendAt = 0;
             checkToSendMessage();
+        } else if (id == R.id.dcmail_send_later) {
+            DcSendLater.pickTime(this, timestamp -> {
+                dcSendAt = timestamp;
+                checkToSendMessage();
+            });
         } else if (id == R.id.save) {
             checkToSaveDraftAndSave();
         } else if (id == R.id.discard) {
@@ -1907,6 +1916,12 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
             }
         } else {
             currentMessageBuilder = null;
+            if (dcSendAt > System.currentTimeMillis()) {
+                message.setHeader(DcSendLater.HEADER, Long.toString(dcSendAt));
+                DcSendLater.schedule(getApplicationContext(), account.getId(), dcSendAt);
+                Toast.makeText(this, getString(R.string.dcmail_send_later_scheduled,
+                        DcSendLater.formatTime(this, dcSendAt)), Toast.LENGTH_LONG).show();
+            }
             new SendMessageTask(messagingController, account.getId(), contacts, message,
                     draftMessageId, plaintextSubject, relatedMessageReference, relatedFlag).execute();
             finish();

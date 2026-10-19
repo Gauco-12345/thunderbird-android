@@ -123,4 +123,13 @@
     <string name="dcmail_push_notification_title">„Warte auf neue E-Mails“ ausblenden</string>
     <string name="dcmail_push_notification_summary">Öffnet die Android-Einstellung des Push-Hinweises. Dort ausschalten, Push läuft trotzdem weiter.</string>
     <string name="dcmail_update_whats_new">Neu:</string>
+
+    <!-- DC Mail: send later -->
+    <string name="dcmail_send_later">Später senden</string>
+    <string name="dcmail_send_later_today_afternoon">Heute, 14:00 Uhr</string>
+    <string name="dcmail_send_later_tomorrow_morning">Morgen, 8:00 Uhr</string>
+    <string name="dcmail_send_later_monday_morning">Montag, 8:00 Uhr</string>
+    <string name="dcmail_send_later_custom">Datum und Uhrzeit wählen …</string>
+    <string name="dcmail_send_later_past">Bitte eine Zeit in der Zukunft wählen.</string>
+    <string name="dcmail_send_later_scheduled">Wird am %1$s gesendet. Bis dahin wartet sie im Postausgang.</string>
 </resources>

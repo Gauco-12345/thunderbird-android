@@ -1684,6 +1684,23 @@ public class MessagingController implements MessagingControllerRegistry, Messagi
                         outboxState.getNumberOfSendAttempts());
 
                     localFolder.fetch(Collections.singletonList(message), fp, null);
+
+                    // DC Mail: "send later" - keep the message in the Outbox until its time has come
+                    String[] dcSendAt = message.getHeader("X-DC-Send-At");
+                    if (dcSendAt.length > 0) {
+                        long dueAt;
+                        try {
+                            dueAt = Long.parseLong(dcSendAt[0].trim());
+                        } catch (NumberFormatException e) {
+                            dueAt = 0;
+                        }
+                        if (dueAt > System.currentTimeMillis()) {
+                            Log.v(TAG, "Message %s is scheduled for later", message.getUid());
+                            continue;
+                        }
+                        message.removeHeader("X-DC-Send-At");
+                    }
+
                     try {
                         if (message.getHeader(K9.IDENTITY_HEADER).length > 0 || message.isSet(Flag.DRAFT)) {
                             Log.v(TAG, "The user has set the Outbox and Drafts folder to the same thing. " +

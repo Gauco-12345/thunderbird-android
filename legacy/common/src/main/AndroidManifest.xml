@@ -172,6 +172,11 @@
             />
 
         <receiver
+            android:name="com.fsck.k9.ui.dcmail.DcSendLaterReceiver"
+            android:exported="false"
+            />
+
+        <receiver
             android:name="com.fsck.k9.ui.dcmail.DcUpdateInstallReceiver"
             android:exported="false"
             />

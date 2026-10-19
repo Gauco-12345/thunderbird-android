@@ -197,4 +197,13 @@
     <string name="dcmail_push_notification_title">Hide \"Waiting for new mail\"</string>
     <string name="dcmail_push_notification_summary">Opens the system settings of the push notification. Switch it off there; push keeps working.</string>
     <string name="dcmail_update_whats_new">What\'s new:</string>
+
+    <!-- DC Mail: send later -->
+    <string name="dcmail_send_later">Send later</string>
+    <string name="dcmail_send_later_today_afternoon">Today, 2:00 PM</string>
+    <string name="dcmail_send_later_tomorrow_morning">Tomorrow, 8:00 AM</string>
+    <string name="dcmail_send_later_monday_morning">Monday, 8:00 AM</string>
+    <string name="dcmail_send_later_custom">Pick date and time…</string>
+    <string name="dcmail_send_later_past">Please pick a time in the future.</string>
+    <string name="dcmail_send_later_scheduled">Will be sent on %1$s. Until then it waits in the Outbox.</string>
 </resources>
