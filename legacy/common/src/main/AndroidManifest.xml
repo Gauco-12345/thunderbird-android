@@ -25,6 +25,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- DC Mail: install updates downloaded from the own GitHub builds -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -186,6 +187,15 @@
             android:name="com.fsck.k9.ui.dcmail.DcUpdateInstallReceiver"
             android:exported="false"
             />
+
+        <receiver
+            android:name="com.fsck.k9.ui.dcmail.DcUpdateDownloadReceiver"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name="com.fsck.k9.ui.dcmail.DcAiSettingsActivity"

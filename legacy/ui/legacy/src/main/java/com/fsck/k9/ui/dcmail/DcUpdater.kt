@@ -1,6 +1,9 @@
 package com.fsck.k9.ui.dcmail
 
 import android.app.Activity
+import android.app.DownloadManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -10,6 +13,8 @@ import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.fsck.k9.ui.R
 import java.io.File
 import java.io.IOException
@@ -43,6 +48,11 @@ object DcUpdater {
     private const val HTTP_ERROR_THRESHOLD = 400
     private const val HTTP_REDIRECT_MIN = 300
     private const val APK_FILE_NAME = "dcmail-update.apk"
+    private const val ZIP_FILE_NAME = "dcmail-update.zip"
+    private const val KEY_DOWNLOAD_ID = "download_id"
+    private const val CHANNEL_ID = "dcmail_update"
+    private const val NOTIFICATION_ID = 0x0DC0
+    const val ACTION_INSTALL_AGAIN = "de.datacreate.dcmail.action.INSTALL_UPDATE"
     private const val CHANGELOG_PATH = "scripts/dcmail/changelog.json"
 
     data class DcBuild(val number: Long, val runId: Long, val pageUrl: String, val sha: String, val notes: String = "")
@@ -175,21 +185,23 @@ object DcUpdater {
         }
     }
 
+    /**
+     * Resolves the signed download address and hands the download to the system DownloadManager. It keeps running
+     * when the screen locks or DC Mail is closed; [DcUpdateDownloadReceiver] installs the APK when it is complete.
+     */
     private fun downloadAndInstall(activity: Activity, latest: DcBuild) {
         val token = getToken(activity)
-        val target = File(activity.cacheDir, APK_FILE_NAME)
         val progress = DcAiReply.showProgress(activity, R.string.dcmail_update_downloading)
         val appContext = activity.applicationContext
 
         Thread {
             val error = try {
-                downloadApk(latest.runId, token, target)
+                val location = resolveDownloadUrl(latest.runId, token)
+                enqueueDownload(appContext, location, latest.number)
                 null
             } catch (e: UpdateException) {
                 e.message
             } catch (e: IOException) {
-                e.message ?: e.javaClass.simpleName
-            } catch (e: JSONException) {
                 e.message ?: e.javaClass.simpleName
             } catch (e: RuntimeException) {
                 e.message ?: e.javaClass.simpleName
@@ -198,20 +210,160 @@ object DcUpdater {
             activity.runOnUiThread {
                 if (progress.isShowing) progress.dismiss()
                 if (activity.isFinishing || activity.isDestroyed) return@runOnUiThread
-
                 if (error != null) {
                     showError(activity, error)
                 } else {
-                    try {
-                        install(appContext, target)
-                    } catch (e: IOException) {
-                        showError(activity, e.message)
-                    } catch (e: RuntimeException) {
-                        showError(activity, e.message)
-                    }
+                    Toast.makeText(activity, R.string.dcmail_update_download_started, Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
+    }
+
+    private fun enqueueDownload(context: Context, url: String, buildNumber: Long) {
+        val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+        val previous = preferences.getLong(KEY_DOWNLOAD_ID, -1)
+        if (previous >= 0) manager.remove(previous)
+
+        val target = File(context.getExternalFilesDir(null), ZIP_FILE_NAME)
+        if (target.exists()) target.delete()
+
+        val request = DownloadManager.Request(Uri.parse(url))
+            .setTitle(context.getString(R.string.dcmail_update_download_title, buildNumber))
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            .setDestinationUri(Uri.fromFile(target))
+            .setAllowedOverMetered(true)
+            .setAllowedOverRoaming(true)
+        val id = manager.enqueue(request)
+        preferences.edit().putLong(KEY_DOWNLOAD_ID, id).apply()
+    }
+
+    /**
+     * Called by [DcUpdateDownloadReceiver] on a background thread when a download has finished.
+     */
+    internal fun onDownloadComplete(context: Context, downloadId: Long) {
+        val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+        if (downloadId != preferences.getLong(KEY_DOWNLOAD_ID, -1)) return
+
+        val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        var status = DownloadManager.STATUS_FAILED
+        var reason = 0
+        manager.query(DownloadManager.Query().setFilterById(downloadId))?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                reason = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
+            }
+        }
+        if (status != DownloadManager.STATUS_SUCCESSFUL) {
+            notifyProblem(context, context.getString(R.string.dcmail_update_download_failed, reason))
+            return
+        }
+
+        val zip = File(context.getExternalFilesDir(null), ZIP_FILE_NAME)
+        val apk = File(context.cacheDir, APK_FILE_NAME)
+        try {
+            zip.inputStream().use { extractApk(it, apk) }
+            zip.delete()
+            manager.remove(downloadId)
+            preferences.edit().remove(KEY_DOWNLOAD_ID).apply()
+            install(context, apk)
+        } catch (e: IOException) {
+            notifyProblem(context, e.message ?: e.javaClass.simpleName)
+        } catch (e: UpdateException) {
+            notifyProblem(context, e.message ?: "")
+        } catch (e: RuntimeException) {
+            notifyProblem(context, e.message ?: e.javaClass.simpleName)
+        }
+    }
+
+    /**
+     * Installs the already downloaded APK again, e.g. after the confirmation screen was closed.
+     */
+    internal fun installAgain(context: Context) {
+        val apk = File(context.cacheDir, APK_FILE_NAME)
+        if (!apk.exists()) {
+            notifyProblem(context, context.getString(R.string.dcmail_update_apk_missing))
+            return
+        }
+        try {
+            install(context, apk)
+        } catch (e: IOException) {
+            notifyProblem(context, e.message ?: e.javaClass.simpleName)
+        } catch (e: RuntimeException) {
+            notifyProblem(context, e.message ?: e.javaClass.simpleName)
+        }
+    }
+
+    private fun ensureChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(NotificationManager::class.java)
+            if (manager.getNotificationChannel(CHANNEL_ID) == null) {
+                manager.createNotificationChannel(
+                    NotificationChannel(
+                        CHANNEL_ID,
+                        context.getString(R.string.dcmail_update_channel),
+                        NotificationManager.IMPORTANCE_HIGH,
+                    ),
+                )
+            }
+        }
+    }
+
+    private fun immutableFlags(): Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+    }
+
+    /**
+     * Shows "tap to install" – needed because Android does not allow opening the install screen from the background.
+     */
+    internal fun notifyReadyToInstall(context: Context, confirm: Intent) {
+        ensureChannel(context)
+        val pendingIntent = PendingIntent.getActivity(context, NOTIFICATION_ID, confirm, immutableFlags())
+        show(
+            context,
+            NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setContentTitle(context.getString(R.string.dcmail_update_ready_title))
+                .setContentText(context.getString(R.string.dcmail_update_ready_text))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build(),
+        )
+    }
+
+    /**
+     * Shows an error; when an APK is already downloaded, tapping the notification tries the installation again.
+     */
+    internal fun notifyProblem(context: Context, message: String) {
+        ensureChannel(context)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_notify_error)
+            .setContentTitle(context.getString(R.string.dcmail_update_error_title))
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setAutoCancel(true)
+        if (File(context.cacheDir, APK_FILE_NAME).exists()) {
+            val retry = Intent(context, DcUpdateDownloadReceiver::class.java).setAction(ACTION_INSTALL_AGAIN)
+            builder.setContentIntent(PendingIntent.getBroadcast(context, NOTIFICATION_ID, retry, immutableFlags()))
+            builder.setContentText(message + " – " + context.getString(R.string.dcmail_update_tap_retry))
+        }
+        show(context, builder.build())
+    }
+
+    internal fun cancelNotification(context: Context) {
+        NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
+    }
+
+    @android.annotation.SuppressLint("MissingPermission")
+    private fun show(context: Context, notification: android.app.Notification) {
+        try {
+            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+        } catch (e: SecurityException) {
+            // Notifications not allowed; nothing else we can do in the background
+        }
     }
 
     private fun fetchLatestBuild(): DcBuild? {
@@ -257,7 +409,7 @@ object DcUpdater {
         }
     }
 
-    private fun downloadApk(runId: Long, token: String, target: File) {
+    private fun resolveDownloadUrl(runId: Long, token: String): String {
         val artifacts = try {
             JSONObject(request("$API/actions/runs/$runId/artifacts", token)).getJSONArray("artifacts")
         } catch (e: JSONException) {
@@ -268,23 +420,13 @@ object DcUpdater {
 
         // GitHub answers with a redirect to a signed storage URL that must be fetched without the token
         val redirect = open(downloadUrl, token, followRedirects = false)
-        val location = try {
+        try {
             if (redirect.responseCode !in HTTP_REDIRECT_MIN until HTTP_ERROR_THRESHOLD) {
                 throw UpdateException("GitHub: HTTP ${redirect.responseCode}. Ist der Token gültig?")
             }
-            redirect.getHeaderField("Location") ?: throw UpdateException("GitHub: Download-Adresse fehlt")
+            return redirect.getHeaderField("Location") ?: throw UpdateException("GitHub: Download-Adresse fehlt")
         } finally {
             redirect.disconnect()
-        }
-
-        val download = open(location, null, followRedirects = true)
-        try {
-            if (download.responseCode >= HTTP_ERROR_THRESHOLD) {
-                throw UpdateException("Download: HTTP ${download.responseCode}")
-            }
-            extractApk(download.inputStream, target)
-        } finally {
-            download.disconnect()
         }
     }
 
@@ -305,6 +447,11 @@ object DcUpdater {
     private fun install(context: Context, apk: File) {
         val installer = context.packageManager.packageInstaller
         val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
+        params.setAppPackageName(context.packageName)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Lets Android skip the confirmation when DC Mail updates itself (if the system allows it)
+            params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
+        }
         val sessionId = installer.createSession(params)
         installer.openSession(sessionId).use { session ->
             session.openWrite(APK_FILE_NAME, 0, apk.length()).use { output ->
@@ -365,28 +512,58 @@ object DcUpdater {
 }
 
 /**
- * DC Mail: receives the result of the install session and shows the system confirmation screen.
+ * DC Mail: receives the result of the install session. Shows the system confirmation screen (or, when Android does not
+ * allow that from the background, a "tap to install" notification) and reports failures as a notification.
  */
 class DcUpdateInstallReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)) {
+        when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)) {
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                 @Suppress("DEPRECATION")
                 val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT) ?: return
                 confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(confirm)
+                DcUpdater.notifyReadyToInstall(context, confirm)
+                try {
+                    context.startActivity(confirm)
+                } catch (e: RuntimeException) {
+                    // Not allowed from the background – the notification is still there
+                }
             }
 
-            PackageInstaller.STATUS_SUCCESS -> Unit
+            PackageInstaller.STATUS_SUCCESS -> DcUpdater.cancelNotification(context)
 
             else -> {
-                val message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.dcmail_update_install_failed, message.orEmpty()),
-                    Toast.LENGTH_LONG,
-                ).show()
+                val message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE).orEmpty()
+                val text = if (status == PackageInstaller.STATUS_FAILURE_ABORTED) {
+                    context.getString(R.string.dcmail_update_aborted)
+                } else {
+                    context.getString(R.string.dcmail_update_install_failed, message)
+                }
+                DcUpdater.notifyProblem(context, text)
             }
         }
+    }
+}
+
+/**
+ * DC Mail: reacts to the finished system download and to "tap to try again".
+ */
+class DcUpdateDownloadReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val appContext = context.applicationContext
+        val pending = goAsync()
+        Thread {
+            try {
+                when (intent.action) {
+                    DownloadManager.ACTION_DOWNLOAD_COMPLETE -> {
+                        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        DcUpdater.onDownloadComplete(appContext, id)
+                    }
+                    DcUpdater.ACTION_INSTALL_AGAIN -> DcUpdater.installAgain(appContext)
+                }
+            } finally {
+                pending.finish()
+            }
+        }.start()
     }
 }

@@ -94,6 +94,15 @@
     <string name="dcmail_update_later">Später</string>
     <string name="dcmail_update_downloading">Update wird geladen …</string>
     <string name="dcmail_update_error_title">Update fehlgeschlagen</string>
+    <string name="dcmail_update_download_started">Download läuft – Fortschritt in der Benachrichtigung. Du kannst DC Mail verlassen oder das Handy sperren.</string>
+    <string name="dcmail_update_download_title">DC Mail Build %1$d</string>
+    <string name="dcmail_update_download_failed">Download fehlgeschlagen (Code %1$d). Bitte erneut über „Jetzt suchen“ starten.</string>
+    <string name="dcmail_update_channel">Updates</string>
+    <string name="dcmail_update_ready_title">DC-Mail-Update bereit</string>
+    <string name="dcmail_update_ready_text">Tippen, um zu installieren</string>
+    <string name="dcmail_update_aborted">Installation abgebrochen</string>
+    <string name="dcmail_update_tap_retry">tippen zum erneut Versuchen</string>
+    <string name="dcmail_update_apk_missing">Update-Datei nicht mehr vorhanden. Bitte erneut über „Jetzt suchen“ laden.</string>
     <string name="dcmail_update_install_failed">Installation fehlgeschlagen: %1$s</string>
 
     <!-- DC Mail: per-account notification icon -->

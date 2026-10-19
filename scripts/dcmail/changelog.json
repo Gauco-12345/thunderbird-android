@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "Abwesenheitsnotiz und Spam-Liste blieben bei „Verbinde mit dem Mailserver …“ hängen, wenn Filter auf dem Server Umlaute enthielten."
+        },
+        {
+          "type": "changed",
+          "text": "Updates laden jetzt über den Android-Download mit Fortschritt in der Benachrichtigung – auch bei gesperrtem Bildschirm. Danach „Tippen, um zu installieren“. Bricht die Installation ab, startet ein Tipp auf die Meldung sie erneut."
+        }
+      ]
+    },
+    {
       "build": 20,
       "date": "2026-10-19",
       "notes": [
