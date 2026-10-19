@@ -73,7 +73,7 @@ object DcBanners {
             row.orientation = LinearLayout.HORIZONTAL
             row.gravity = Gravity.END
             for (action in actions) {
-                val button = MaterialButton(context, null, com.google.android.material.R.attr.borderlessButtonStyle)
+                val button = MaterialButton(context, null, android.R.attr.borderlessButtonStyle)
                 button.text = action.label
                 button.setTextColor(foreground)
                 button.setOnClickListener { action.onClick() }
