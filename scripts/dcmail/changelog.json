@@ -2,7 +2,7 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
-      "build": "next",
+      "build": 24,
       "date": "2026-10-19",
       "notes": [
         {
