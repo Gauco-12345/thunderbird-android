@@ -27,6 +27,7 @@ import com.fsck.k9.message.html.HtmlConverter
 import com.fsck.k9.ui.dcmail.DcAiSummary
 import com.fsck.k9.ui.dcmail.DcMessageAction
 import com.fsck.k9.ui.dcmail.DcMessageActions
+import com.fsck.k9.ui.dcmail.DcSieveRules
 import com.google.android.material.color.MaterialColors
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -366,11 +367,43 @@ class MessageViewFragment :
             DcMessageAction.ARCHIVE -> onArchive()
             DcMessageAction.MOVE -> onMove()
             DcMessageAction.SPAM -> onSpam()
+            DcMessageAction.BLOCK_SENDER -> onDcBlockSender()
             DcMessageAction.UNREAD -> onToggleRead()
             DcMessageAction.FLAG -> onToggleFlagged()
             DcMessageAction.SUMMARIZE -> onDcSummarize()
             DcMessageAction.DELETE -> onDelete()
         }
+    }
+
+    private fun onDcBlockSender() {
+        val address = message?.from?.firstOrNull()?.address?.trim()?.lowercase()
+        if (address.isNullOrEmpty()) return
+        val account = account
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle(R.string.dcmail_block_sender)
+            .setMessage(getString(R.string.dcmail_block_sender_confirm, address))
+            .setPositiveButton(R.string.dcmail_block_sender_ok) { _, _ ->
+                val appContext = requireContext().applicationContext
+                Thread {
+                    val error = try {
+                        DcSieveRules.blockSender(appContext, account, address)
+                        null
+                    } catch (e: Throwable) {
+                        e.message ?: e.javaClass.simpleName
+                    }
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        val text = if (error == null) {
+                            appContext.getString(R.string.dcmail_block_sender_done, address)
+                        } else {
+                            appContext.getString(R.string.dcmail_block_sender_failed, error)
+                        }
+                        Toast.makeText(appContext, text, Toast.LENGTH_LONG).show()
+                    }
+                }.start()
+                if (account.spamFolderId != null) onSpam()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun onDcSummarize() {
@@ -388,6 +421,7 @@ class MessageViewFragment :
         DcMessageAction.ARCHIVE -> DesignSystemR.drawable.ic_archive
         DcMessageAction.MOVE -> DesignSystemR.drawable.ic_drive_file_move
         DcMessageAction.SPAM -> DesignSystemR.drawable.ic_report
+        DcMessageAction.BLOCK_SENDER -> DesignSystemR.drawable.ic_block
         DcMessageAction.UNREAD -> DesignSystemR.drawable.ic_mark_email_unread
         DcMessageAction.FLAG -> DesignSystemR.drawable.ic_star
         DcMessageAction.SUMMARIZE -> DesignSystemR.drawable.ic_description
@@ -401,6 +435,7 @@ class MessageViewFragment :
         DcMessageAction.ARCHIVE -> R.string.archive_action
         DcMessageAction.MOVE -> R.string.move_action
         DcMessageAction.SPAM -> R.string.spam_action
+        DcMessageAction.BLOCK_SENDER -> R.string.dcmail_block_sender
         DcMessageAction.UNREAD -> R.string.mark_as_unread_action
         DcMessageAction.FLAG -> R.string.flag_action
         DcMessageAction.SUMMARIZE -> R.string.dcmail_ai_summarize

@@ -14,6 +14,7 @@ enum class DcMessageAction(val key: String) {
     ARCHIVE("archive"),
     MOVE("move"),
     SPAM("spam"),
+    BLOCK_SENDER("block_sender"),
     UNREAD("unread"),
     FLAG("flag"),
     SUMMARIZE("summarize"),

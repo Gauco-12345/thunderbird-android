@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Abwesenheitsnotiz direkt in DC Mail: Kontoeinstellungen → Abwesenheitsnotiz. Text, Betreff und optional Zeitraum festlegen; gilt auf dem Server, auch wenn das Handy aus ist."
+        },
+        {
+          "type": "new",
+          "text": "„Absender immer nach Spam“ in der Aktionsleiste (einschalten unter Einstellungen → Aktionsleiste). Die Sperrliste lässt sich bei der Abwesenheitsnotiz verwalten."
+        }
+      ]
+    },
+    {
       "build": 18,
       "date": "2026-10-19",
       "notes": [

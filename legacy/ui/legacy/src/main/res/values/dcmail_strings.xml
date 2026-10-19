@@ -59,6 +59,7 @@
         <item>@string/archive_action</item>
         <item>@string/move_action</item>
         <item>@string/spam_action</item>
+        <item>@string/dcmail_block_sender</item>
         <item>@string/mark_as_unread_action</item>
         <item>@string/flag_action</item>
         <item>@string/dcmail_ai_summarize</item>
@@ -83,6 +84,7 @@
         <item>archive</item>
         <item>move</item>
         <item>spam</item>
+        <item>block_sender</item>
         <item>unread</item>
         <item>flag</item>
         <item>summarize</item>
@@ -210,19 +212,36 @@
     <!-- DC Mail: out-of-office -->
     <string name="dcmail_vacation_title">Out-of-office reply</string>
     <string name="dcmail_vacation_summary">Automatic reply while you are away</string>
-    <string name="dcmail_vacation_intro">DC Mail sets the out-of-office reply directly on your mail server (Sieve). First check whether the server allows this. Your existing filter rules stay unchanged.</string>
     <string name="dcmail_vacation_host">Server</string>
     <string name="dcmail_vacation_port">Port (usually 4190)</string>
     <string name="dcmail_vacation_test">Check connection</string>
-    <string name="dcmail_vacation_testing">Checking…</string>
-    <string name="dcmail_vacation_no_password">No password is stored for this account.</string>
-    <string name="dcmail_vacation_ok">✓ Connection works. Out-of-office reply and spam rules can be managed from DC Mail.</string>
-    <string name="dcmail_vacation_server">Server: %1$s</string>
-    <string name="dcmail_vacation_supported">Out-of-office (vacation) is supported.</string>
-    <string name="dcmail_vacation_unsupported">The server does not report support for out-of-office (vacation).</string>
-    <string name="dcmail_vacation_scripts">Filter scripts on the server:</string>
-    <string name="dcmail_vacation_active">active</string>
     <string name="dcmail_vacation_failed">✗ No connection: %1$s\n\nPlease send me this message.</string>
+    <string name="dcmail_vacation_loading">Connecting to the mail server…</string>
+    <string name="dcmail_vacation_connected">Settings are stored on your mail server and apply even when your phone is off.</string>
+    <string name="dcmail_vacation_saving">Saving…</string>
+    <string name="dcmail_vacation_saved">Saved on the server</string>
+    <string name="dcmail_vacation_enabled">Out-of-office reply active</string>
+    <string name="dcmail_vacation_subject">Subject</string>
+    <string name="dcmail_vacation_subject_hint">e.g. Out of office</string>
+    <string name="dcmail_vacation_text">Message</string>
+    <string name="dcmail_vacation_text_hint">e.g. I am back on Monday. In urgent cases please contact …</string>
+    <string name="dcmail_vacation_text_missing">Please enter a message.</string>
+    <string name="dcmail_vacation_period">Period (optional)</string>
+    <string name="dcmail_vacation_period_hint">Long-press a button to remove the date.</string>
+    <string name="dcmail_vacation_from">From: %1$s</string>
+    <string name="dcmail_vacation_until">Until: %1$s</string>
+    <string name="dcmail_vacation_open">open</string>
+    <string name="dcmail_vacation_days">Reply to the same sender again after … days</string>
+    <string name="dcmail_vacation_server_section">Server (advanced)</string>
+    <string name="dcmail_blocklist_title">Senders always to spam</string>
+    <string name="dcmail_blocklist_hint">Add senders via the block icon in the action bar below a message. Tap an entry to remove it.</string>
+    <string name="dcmail_blocklist_entry">✕ %1$s</string>
+    <string name="dcmail_blocklist_remove_confirm">Stop moving mails from %1$s to spam?</string>
+    <string name="dcmail_block_sender">Sender always to spam</string>
+    <string name="dcmail_block_sender_confirm">From now on, the mail server moves all mails from %1$s directly to spam. This mail goes to spam too.</string>
+    <string name="dcmail_block_sender_ok">Always to spam</string>
+    <string name="dcmail_block_sender_done">%1$s now always goes to spam</string>
+    <string name="dcmail_block_sender_failed">Could not set server rule: %1$s</string>
     <string name="dcmail_vacation_no_account">Account not found. Please open the out-of-office reply again from the account settings.</string>
     <string name="dcmail_crash_title">Last crash</string>
     <string name="dcmail_crash_copied">Copied</string>
