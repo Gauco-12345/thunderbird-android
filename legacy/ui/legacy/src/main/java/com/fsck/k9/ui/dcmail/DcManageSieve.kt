@@ -156,7 +156,7 @@ class DcManageSieve private constructor(
         const val DEFAULT_PORT = 4190
         private const val CONNECT_TIMEOUT_MS = 10_000
         private const val READ_TIMEOUT_MS = 20_000
-        private val LITERAL = Regex("^\\{(\\d+)\\+?}$")
+        private val LITERAL = Regex("^\\{(\\d+)\\+?\\}$")
 
         /**
          * Connects with STARTTLS and logs in. Throws [IOException] or [SieveException] with a readable message.

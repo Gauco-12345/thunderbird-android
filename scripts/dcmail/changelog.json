@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "Abwesenheitsnotiz: „Verbindung prüfen“ scheiterte an einem Programmfehler in DC Mail."
+        }
+      ]
+    },
+    {
       "build": 17,
       "date": "2026-10-19",
       "notes": [

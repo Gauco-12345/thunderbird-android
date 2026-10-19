@@ -222,7 +222,7 @@
     <string name="dcmail_vacation_unsupported">The server does not report support for out-of-office (vacation).</string>
     <string name="dcmail_vacation_scripts">Filter scripts on the server:</string>
     <string name="dcmail_vacation_active">active</string>
-    <string name="dcmail_vacation_failed">✗ No connection: %1$s\n\nThe server probably does not allow Sieve access from outside. Please send me this message.</string>
+    <string name="dcmail_vacation_failed">✗ No connection: %1$s\n\nPlease send me this message.</string>
     <string name="dcmail_vacation_no_account">Account not found. Please open the out-of-office reply again from the account settings.</string>
     <string name="dcmail_crash_title">Last crash</string>
     <string name="dcmail_crash_copied">Copied</string>
