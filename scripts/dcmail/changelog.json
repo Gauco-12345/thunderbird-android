@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Abwesenheitsnotiz: Eine bereits auf dem Server eingerichtete Notiz (z. B. aus Roundcube) wird geladen und angezeigt. Beim Speichern ersetzt DC Mail sie, damit nie zwei automatische Antworten verschickt werden."
+        }
+      ]
+    },
+    {
       "build": 21,
       "date": "2026-10-19",
       "notes": [

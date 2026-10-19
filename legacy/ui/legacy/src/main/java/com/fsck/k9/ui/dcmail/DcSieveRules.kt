@@ -37,6 +37,8 @@ object DcSieveRules {
     data class State(
         val vacation: Vacation,
         val blocked: List<String>,
+        /** Name of an existing out-of-office rule (e.g. from Roundcube) that was read and is replaced on saving. */
+        val importedRule: String? = null,
     )
 
     data class ServerConfig(val host: String, val port: Int)
@@ -121,9 +123,18 @@ object DcSieveRules {
     // --- parsing ---
 
     internal fun parseState(script: String): State {
-        var vacation = Vacation()
+        var vacation: Vacation? = null
         var blocked = emptyList<String>()
+        var imported: String? = null
+        var importedVacation: Vacation? = null
         for (block in splitRules(script).rules) {
+            val name = ruleName(block)
+            if (importedVacation == null && name != RULE_VACATION && name != RULE_BLOCKLIST) {
+                parseForeignVacation(block)?.let {
+                    importedVacation = it
+                    imported = name
+                }
+            }
             val meta = block.lines().firstOrNull { it.trim().startsWith(META_PREFIX) }
                 ?.trim()?.removePrefix(META_PREFIX) ?: continue
             try {
@@ -146,8 +157,50 @@ object DcSieveRules {
                 // Rule was edited elsewhere; it will be replaced on the next save
             }
         }
-        return State(vacation, blocked)
+        return if (vacation != null) {
+            State(vacation, blocked)
+        } else {
+            State(importedVacation ?: Vacation(), blocked, if (importedVacation != null) imported else null)
+        }
     }
+
+    private val VACATION_COMMAND = Regex("""(?s)\bvacation\b(.*?)(text:[ \t]*\r?\n(.*?)\r?\n\.\r?\n?|"((?:[^"\\]|\\.)*)")\s*;""")
+    private val DAYS = Regex(""":days\s+(\d+)""")
+    private val SUBJECT = Regex(""":subject\s+"((?:[^"\\]|\\.)*)"""")
+    private val DATE_GE = Regex(""""ge"\s+"date"\s+"(\d{4}-\d{2}-\d{2})"""")
+    private val DATE_LE = Regex(""""le"\s+"date"\s+"(\d{4}-\d{2}-\d{2})"""")
+
+    /**
+     * Reads an out-of-office rule written by another program (e.g. Roundcube). Only rules whose sole action is the
+     * vacation reply are taken over, so that replacing them never removes anything else.
+     */
+    private fun parseForeignVacation(block: String): Vacation? {
+        val body = block.lines().filterNot { it.trim().startsWith("#") }.joinToString("\n")
+        val match = VACATION_COMMAND.find(body) ?: return null
+        val rest = body.removeRange(match.range)
+            .replace(Regex("""\bstop\s*;"""), "")
+            .substringAfter("{", missingDelimiterValue = "")
+            .replace("}", "")
+        if (rest.isNotBlank()) return null
+
+        val options = match.groupValues[1]
+        val text = if (match.groupValues[3].isNotEmpty() || match.groupValues[2].startsWith("text:")) {
+            match.groupValues[3].lines().joinToString("\n") { if (it.startsWith("..")) it.substring(1) else it }
+        } else {
+            unquote(match.groupValues[4])
+        }
+        val condition = body.substringBefore("{")
+        return Vacation(
+            enabled = !Regex("""\bif\s+false\b""").containsMatchIn(condition),
+            subject = SUBJECT.find(options)?.groupValues?.get(1)?.let { unquote(it) }.orEmpty(),
+            text = text.trim(),
+            fromDate = DATE_GE.find(condition)?.groupValues?.get(1).orEmpty(),
+            untilDate = DATE_LE.find(condition)?.groupValues?.get(1).orEmpty(),
+            days = DAYS.find(options)?.groupValues?.get(1)?.toIntOrNull() ?: DEFAULT_DAYS,
+        )
+    }
+
+    private fun unquote(value: String) = value.replace("\\\"", "\"").replace("\\\\", "\\")
 
     private data class SplitScript(val requires: Set<String>, val header: String, val rules: List<String>)
 
@@ -184,7 +237,10 @@ object DcSieveRules {
 
     private fun buildScript(original: String, state: State, spamFolder: String?): String {
         val split = splitRules(original)
-        val otherRules = split.rules.filter { ruleName(it) != RULE_VACATION && ruleName(it) != RULE_BLOCKLIST }
+        val otherRules = split.rules.filter {
+            val name = ruleName(it)
+            name != RULE_VACATION && name != RULE_BLOCKLIST && (state.importedRule == null || name != state.importedRule)
+        }
 
         val ownRules = mutableListOf<String>()
         val requires = LinkedHashSet(split.requires)

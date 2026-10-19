@@ -209,7 +209,12 @@ class DcVacationActivity : BaseActivity() {
     private fun reload() {
         statusView.setText(R.string.dcmail_vacation_loading)
         runInBackground({ DcSieveRules.load(this, account) }) { state ->
-            statusView.setText(R.string.dcmail_vacation_connected)
+            val imported = state.importedRule
+            if (!blocklistMode && imported != null) {
+                statusView.text = getString(R.string.dcmail_vacation_imported, imported)
+            } else {
+                statusView.setText(R.string.dcmail_vacation_connected)
+            }
             form.visibility = View.VISIBLE
             showState(state)
         }

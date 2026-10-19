@@ -151,6 +151,7 @@
     <string name="dcmail_vacation_failed">✗ Keine Verbindung: %1$s\n\nSchick mir diese Meldung bitte.</string>
     <string name="dcmail_vacation_loading">Verbinde mit dem Mailserver …</string>
     <string name="dcmail_vacation_connected">Die Einstellungen liegen auf deinem Mailserver und gelten auch, wenn das Handy aus ist.</string>
+    <string name="dcmail_vacation_imported">Vom Server übernommen (Regel „%1$s“, z. B. aus Roundcube). Beim Speichern ersetzt DC Mail diese Regel – es gibt also nie zwei automatische Antworten.</string>
     <string name="dcmail_vacation_saving">Speichere …</string>
     <string name="dcmail_vacation_saved">Auf dem Server gespeichert</string>
     <string name="dcmail_vacation_enabled">Abwesenheitsnotiz aktiv</string>

@@ -227,6 +227,7 @@
     <string name="dcmail_vacation_failed">✗ No connection: %1$s\n\nPlease send me this message.</string>
     <string name="dcmail_vacation_loading">Connecting to the mail server…</string>
     <string name="dcmail_vacation_connected">Settings are stored on your mail server and apply even when your phone is off.</string>
+    <string name="dcmail_vacation_imported">Taken over from the server (rule “%1$s”, e.g. from Roundcube). When you save, DC Mail replaces this rule, so there is only ever one automatic reply.</string>
     <string name="dcmail_vacation_saving">Saving…</string>
     <string name="dcmail_vacation_saved">Saved on the server</string>
     <string name="dcmail_vacation_enabled">Out-of-office reply active</string>
