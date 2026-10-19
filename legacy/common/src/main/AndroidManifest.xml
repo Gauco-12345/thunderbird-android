@@ -167,6 +167,12 @@
             />
 
         <activity
+            android:name="com.fsck.k9.ui.dcmail.DcVacationActivity"
+            android:label="@string/dcmail_vacation_title"
+            android:windowSoftInputMode="adjustResize"
+            />
+
+        <activity
             android:name="com.fsck.k9.ui.dcmail.DcUpdateActivity"
             android:label="@string/dcmail_update_settings_title"
             />

@@ -113,6 +113,14 @@ class AccountSettingsFragment : PreferenceFragmentCompat(), ConfirmationDialogFr
         initializeCryptoSettings(account)
         initializeFolderSettings(account.id)
         initializeNotifications(account)
+        initializeDcVacation()
+    }
+
+    // DC Mail: out-of-office reply
+    private fun initializeDcVacation() {
+        findPreference<Preference>("dcmail_vacation")?.onClick {
+            com.fsck.k9.ui.dcmail.DcVacationActivity.start(requireActivity(), accountId.toString())
+        }
     }
 
     @Deprecated("Deprecated in Java")

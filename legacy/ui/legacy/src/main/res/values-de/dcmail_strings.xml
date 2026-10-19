@@ -132,4 +132,21 @@
     <string name="dcmail_send_later_custom">Datum und Uhrzeit wählen …</string>
     <string name="dcmail_send_later_past">Bitte eine Zeit in der Zukunft wählen.</string>
     <string name="dcmail_send_later_scheduled">Wird am %1$s gesendet. Bis dahin wartet sie im Postausgang.</string>
+
+    <!-- DC Mail: out-of-office -->
+    <string name="dcmail_vacation_title">Abwesenheitsnotiz</string>
+    <string name="dcmail_vacation_summary">Automatische Antwort, während du weg bist</string>
+    <string name="dcmail_vacation_intro">DC Mail richtet die Abwesenheitsnotiz direkt auf deinem Mailserver ein (Sieve). Prüfe zuerst, ob der Server das erlaubt. Deine bestehenden Filterregeln bleiben unverändert.</string>
+    <string name="dcmail_vacation_host">Server</string>
+    <string name="dcmail_vacation_port">Port (meist 4190)</string>
+    <string name="dcmail_vacation_test">Verbindung prüfen</string>
+    <string name="dcmail_vacation_testing">Prüfe …</string>
+    <string name="dcmail_vacation_no_password">Für dieses Konto ist kein Passwort gespeichert.</string>
+    <string name="dcmail_vacation_ok">✓ Verbindung klappt. Abwesenheitsnotiz und Spam-Regeln lassen sich aus DC Mail verwalten.</string>
+    <string name="dcmail_vacation_server">Server: %1$s</string>
+    <string name="dcmail_vacation_supported">Abwesenheitsnotiz (vacation) wird unterstützt.</string>
+    <string name="dcmail_vacation_unsupported">Der Server meldet keine Unterstützung für Abwesenheitsnotizen (vacation).</string>
+    <string name="dcmail_vacation_scripts">Filter-Skripte auf dem Server:</string>
+    <string name="dcmail_vacation_active">aktiv</string>
+    <string name="dcmail_vacation_failed">✗ Keine Verbindung: %1$s\n\nVermutlich erlaubt der Server keinen Sieve-Zugriff von außen. Schick mir diese Meldung bitte.</string>
 </resources>

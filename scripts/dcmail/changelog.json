@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Kontoeinstellungen → Abwesenheitsnotiz: erster Schritt mit „Verbindung prüfen“, ob der Mailserver Abwesenheitsnotizen aus der App erlaubt."
+        }
+      ]
+    },
+    {
       "build": 15,
       "date": "2026-10-19",
       "notes": [

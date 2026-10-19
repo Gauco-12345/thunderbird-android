@@ -26,6 +26,13 @@
         android:title="@string/account_settings_sync"
         />
 
+    <Preference
+        android:icon="@drawable/ic_mark_email_read"
+        android:key="dcmail_vacation"
+        android:summary="@string/dcmail_vacation_summary"
+        android:title="@string/dcmail_vacation_title"
+        />
+
 
     <Preference
         android:icon="@drawable/ic_edit"

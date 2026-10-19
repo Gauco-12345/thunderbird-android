@@ -206,4 +206,21 @@
     <string name="dcmail_send_later_custom">Pick date and time…</string>
     <string name="dcmail_send_later_past">Please pick a time in the future.</string>
     <string name="dcmail_send_later_scheduled">Will be sent on %1$s. Until then it waits in the Outbox.</string>
+
+    <!-- DC Mail: out-of-office -->
+    <string name="dcmail_vacation_title">Out-of-office reply</string>
+    <string name="dcmail_vacation_summary">Automatic reply while you are away</string>
+    <string name="dcmail_vacation_intro">DC Mail sets the out-of-office reply directly on your mail server (Sieve). First check whether the server allows this. Your existing filter rules stay unchanged.</string>
+    <string name="dcmail_vacation_host">Server</string>
+    <string name="dcmail_vacation_port">Port (usually 4190)</string>
+    <string name="dcmail_vacation_test">Check connection</string>
+    <string name="dcmail_vacation_testing">Checking…</string>
+    <string name="dcmail_vacation_no_password">No password is stored for this account.</string>
+    <string name="dcmail_vacation_ok">✓ Connection works. Out-of-office reply and spam rules can be managed from DC Mail.</string>
+    <string name="dcmail_vacation_server">Server: %1$s</string>
+    <string name="dcmail_vacation_supported">Out-of-office (vacation) is supported.</string>
+    <string name="dcmail_vacation_unsupported">The server does not report support for out-of-office (vacation).</string>
+    <string name="dcmail_vacation_scripts">Filter scripts on the server:</string>
+    <string name="dcmail_vacation_active">active</string>
+    <string name="dcmail_vacation_failed">✗ No connection: %1$s\n\nThe server probably does not allow Sieve access from outside. Please send me this message.</string>
 </resources>
