@@ -44,6 +44,7 @@ class DcVacationActivity : BaseActivity() {
     private var fromDate = ""
     private var untilDate = ""
     private var padding = 0
+    private var blocklistMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +52,8 @@ class DcVacationActivity : BaseActivity() {
         setLayout(R.layout.general_settings)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = getString(R.string.dcmail_vacation_title)
+        blocklistMode = intent.getBooleanExtra(EXTRA_BLOCKLIST, false)
+        title = getString(if (blocklistMode) R.string.dcmail_blocklist_title else R.string.dcmail_vacation_title)
         padding = (PADDING_DP * resources.displayMetrics.density).toInt()
 
         val accountId = intent.getStringExtra(EXTRA_ACCOUNT_ID)?.let {
@@ -82,7 +84,7 @@ class DcVacationActivity : BaseActivity() {
         form = LinearLayout(this)
         form.orientation = LinearLayout.VERTICAL
         form.visibility = View.GONE
-        buildForm(form)
+        if (blocklistMode) buildBlocklist(form) else buildForm(form)
         column.addView(form)
 
         buildServerSection(column)
@@ -152,13 +154,12 @@ class DcVacationActivity : BaseActivity() {
         saveParams.gravity = Gravity.END
         saveParams.topMargin = padding
         form.addView(saveButton, saveParams)
+    }
 
-        val blockedTitle = label(R.string.dcmail_blocklist_title)
-        blockedTitle.setTypeface(blockedTitle.typeface, Typeface.BOLD)
-        blockedTitle.setPadding(0, padding * 2, 0, 0)
-        form.addView(blockedTitle)
+    private fun buildBlocklist(form: LinearLayout) {
         val blockedHint = TextView(this)
         blockedHint.setText(R.string.dcmail_blocklist_hint)
+        blockedHint.setPadding(0, padding, 0, padding)
         form.addView(blockedHint)
         blockedList = LinearLayout(this)
         blockedList.orientation = LinearLayout.VERTICAL
@@ -215,6 +216,10 @@ class DcVacationActivity : BaseActivity() {
     }
 
     private fun showState(state: DcSieveRules.State) {
+        if (blocklistMode) {
+            showBlocklist(state)
+            return
+        }
         val vacation = state.vacation
         enabledSwitch.isChecked = vacation.enabled
         subjectInput.setText(vacation.subject)
@@ -223,7 +228,9 @@ class DcVacationActivity : BaseActivity() {
         untilDate = vacation.untilDate
         daysInput.setText(vacation.days.toString())
         updateDateButtons()
+    }
 
+    private fun showBlocklist(state: DcSieveRules.State) {
         blockedList.removeAllViews()
         if (state.blocked.isEmpty()) {
             val empty = TextView(this)
@@ -334,6 +341,7 @@ class DcVacationActivity : BaseActivity() {
 
     companion object {
         private const val EXTRA_ACCOUNT_ID = "accountId"
+        private const val EXTRA_BLOCKLIST = "blocklist"
         private const val PADDING_DP = 16
         private const val TEXT_MIN_LINES = 4
         private const val DEFAULT_DAYS = 3
@@ -342,6 +350,14 @@ class DcVacationActivity : BaseActivity() {
         fun start(context: Context, accountId: String) {
             context.startActivity(
                 Intent(context, DcVacationActivity::class.java).putExtra(EXTRA_ACCOUNT_ID, accountId),
+            )
+        }
+
+        fun startBlocklist(context: Context, accountId: String) {
+            context.startActivity(
+                Intent(context, DcVacationActivity::class.java)
+                    .putExtra(EXTRA_ACCOUNT_ID, accountId)
+                    .putExtra(EXTRA_BLOCKLIST, true),
             )
         }
     }

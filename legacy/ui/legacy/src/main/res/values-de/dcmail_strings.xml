@@ -158,7 +158,8 @@
     <string name="dcmail_vacation_days">Demselben Absender erst wieder antworten nach … Tagen</string>
     <string name="dcmail_vacation_server_section">Server (erweitert)</string>
     <string name="dcmail_blocklist_title">Absender immer nach Spam</string>
-    <string name="dcmail_blocklist_hint">Absender fügst du über das Sperr-Symbol in der Aktionsleiste unter einer Mail hinzu. Tippe auf einen Eintrag, um ihn zu entfernen.</string>
+    <string name="dcmail_blocklist_summary">Mails dieser Absender landen direkt im Spam (Regel auf dem Server)</string>
+    <string name="dcmail_blocklist_hint">Absender fügst du über das Sperr-Symbol in der Aktionsleiste unter einer Mail hinzu (einschalten unter Einstellungen → Aktionsleiste). Tippe auf einen Eintrag, um ihn zu entfernen – neue Mails dieses Absenders kommen dann wieder im Posteingang an.</string>
     <string name="dcmail_blocklist_entry">✕ %1$s</string>
     <string name="dcmail_blocklist_remove_confirm">Mails von %1$s nicht mehr nach Spam verschieben?</string>
     <string name="dcmail_block_sender">Absender immer nach Spam</string>

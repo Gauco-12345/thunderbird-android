@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "changed",
+          "text": "„Absender immer nach Spam“ hat einen eigenen Punkt in den Kontoeinstellungen und steht nicht mehr bei der Abwesenheitsnotiz."
+        }
+      ]
+    },
+    {
       "build": 19,
       "date": "2026-10-19",
       "notes": [

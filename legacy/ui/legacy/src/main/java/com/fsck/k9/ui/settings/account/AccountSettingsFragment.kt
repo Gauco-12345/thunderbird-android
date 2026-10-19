@@ -121,6 +121,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat(), ConfirmationDialogFr
         findPreference<Preference>("dcmail_vacation")?.onClick {
             com.fsck.k9.ui.dcmail.DcVacationActivity.start(requireActivity(), accountId.toString())
         }
+        findPreference<Preference>("dcmail_blocklist")?.onClick {
+            com.fsck.k9.ui.dcmail.DcVacationActivity.startBlocklist(requireActivity(), accountId.toString())
+        }
     }
 
     @Deprecated("Deprecated in Java")

@@ -33,6 +33,13 @@
         android:title="@string/dcmail_vacation_title"
         />
 
+    <Preference
+        android:icon="@drawable/ic_block"
+        android:key="dcmail_blocklist"
+        android:summary="@string/dcmail_blocklist_summary"
+        android:title="@string/dcmail_blocklist_title"
+        />
+
 
     <Preference
         android:icon="@drawable/ic_edit"

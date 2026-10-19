@@ -234,7 +234,8 @@
     <string name="dcmail_vacation_days">Reply to the same sender again after … days</string>
     <string name="dcmail_vacation_server_section">Server (advanced)</string>
     <string name="dcmail_blocklist_title">Senders always to spam</string>
-    <string name="dcmail_blocklist_hint">Add senders via the block icon in the action bar below a message. Tap an entry to remove it.</string>
+    <string name="dcmail_blocklist_summary">Mails from these senders go straight to spam (rule on the server)</string>
+    <string name="dcmail_blocklist_hint">Add senders via the block icon in the action bar below a message (enable it under Settings → Action bar). Tap an entry to remove it; new mails from that sender then arrive in the inbox again.</string>
     <string name="dcmail_blocklist_entry">✕ %1$s</string>
     <string name="dcmail_blocklist_remove_confirm">Stop moving mails from %1$s to spam?</string>
     <string name="dcmail_block_sender">Sender always to spam</string>
