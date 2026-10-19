@@ -249,8 +249,8 @@
     <string name="dcmail_blocklist_entry">✕ %1$s</string>
     <string name="dcmail_blocklist_remove_confirm">Stop moving mails from %1$s to spam?</string>
     <string name="dcmail_block_sender">Sender always to spam</string>
-    <string name="dcmail_block_sender_confirm">From now on, the mail server moves all mails from %1$s directly to spam. This mail goes to spam too.</string>
-    <string name="dcmail_block_sender_ok">Always to spam</string>
+    <string name="dcmail_block_choice_address">Only this sender: %1$s</string>
+    <string name="dcmail_block_choice_domain">Whole domain: everything from @%1$s</string>
     <string name="dcmail_block_sender_done">%1$s now always goes to spam</string>
     <string name="dcmail_block_sender_failed">Could not set server rule: %1$s</string>
     <string name="dcmail_vacation_no_account">Account not found. Please open the out-of-office reply again from the account settings.</string>

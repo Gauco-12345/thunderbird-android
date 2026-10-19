@@ -173,8 +173,8 @@
     <string name="dcmail_blocklist_entry">✕ %1$s</string>
     <string name="dcmail_blocklist_remove_confirm">Mails von %1$s nicht mehr nach Spam verschieben?</string>
     <string name="dcmail_block_sender">Absender immer nach Spam</string>
-    <string name="dcmail_block_sender_confirm">Ab jetzt verschiebt der Mailserver alle Mails von %1$s direkt in den Spam-Ordner. Diese Mail kommt auch dorthin.</string>
-    <string name="dcmail_block_sender_ok">Immer nach Spam</string>
+    <string name="dcmail_block_choice_address">Nur diesen Absender: %1$s</string>
+    <string name="dcmail_block_choice_domain">Ganze Domain: alles von @%1$s</string>
     <string name="dcmail_block_sender_done">%1$s landet ab jetzt immer im Spam</string>
     <string name="dcmail_block_sender_failed">Server-Regel konnte nicht gesetzt werden: %1$s</string>
     <string name="dcmail_vacation_no_account">Konto nicht gefunden. Bitte die Abwesenheitsnotiz erneut aus den Kontoeinstellungen öffnen.</string>

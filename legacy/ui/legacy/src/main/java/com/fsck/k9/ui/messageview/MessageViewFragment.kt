@@ -379,21 +379,28 @@ class MessageViewFragment :
         val address = message?.from?.firstOrNull()?.address?.trim()?.lowercase()
         if (address.isNullOrEmpty()) return
         val account = account
+        val domain = address.substringAfterLast('@', "")
+        val choices = mutableListOf(address)
+        if (domain.isNotEmpty()) choices.add("@$domain")
+        val labels = arrayOf<CharSequence>(
+            getString(R.string.dcmail_block_choice_address, address),
+            getString(R.string.dcmail_block_choice_domain, domain),
+        ).copyOf(choices.size).requireNoNulls()
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle(R.string.dcmail_block_sender)
-            .setMessage(getString(R.string.dcmail_block_sender_confirm, address))
-            .setPositiveButton(R.string.dcmail_block_sender_ok) { _, _ ->
+            .setItems(labels) { _, which ->
+                val entry = choices[which]
                 val appContext = requireContext().applicationContext
                 Thread {
                     val error = try {
-                        DcSieveRules.blockSender(appContext, account, address)
+                        DcSieveRules.blockSender(appContext, account, entry)
                         null
                     } catch (e: Throwable) {
                         e.message ?: e.javaClass.simpleName
                     }
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         val text = if (error == null) {
-                            appContext.getString(R.string.dcmail_block_sender_done, address)
+                            appContext.getString(R.string.dcmail_block_sender_done, entry)
                         } else {
                             appContext.getString(R.string.dcmail_block_sender_failed, error)
                         }

@@ -270,17 +270,28 @@ object DcSieveRules {
         }.replace("\n", "\r\n")
     }
 
+    /**
+     * Entries starting with "@" block a whole domain, all others the exact address.
+     */
     private fun blocklistRule(blocked: List<String>, spamFolder: String): String {
         val meta = JSONObject().put("blocked", JSONArray(blocked)).toString()
-        return """
-            # rule:[$RULE_BLOCKLIST]
-            $META_PREFIX$meta
-            if address :is "from" [${blocked.joinToString(",") { quote(it) }}]
-            {
-            	fileinto ${quote(spamFolder)};
-            	stop;
-            }
-        """.trimIndent()
+        val addresses = blocked.filterNot { it.startsWith("@") }
+        val domains = blocked.filter { it.startsWith("@") }.map { it.removePrefix("@") }
+        val tests = mutableListOf<String>()
+        if (addresses.isNotEmpty()) {
+            tests.add("address :is \"from\" [${addresses.joinToString(",") { quote(it) }}]")
+        }
+        if (domains.isNotEmpty()) {
+            tests.add("address :domain :is \"from\" [${domains.joinToString(",") { quote(it) }}]")
+        }
+        val test = if (tests.size == 1) tests[0] else "anyof (${tests.joinToString(", ")})"
+        return buildString {
+            append("# rule:[").append(RULE_BLOCKLIST).append("]\n")
+            append(META_PREFIX).append(meta).append("\n")
+            append("if ").append(test).append("\n{\n")
+            append("\tfileinto ").append(quote(spamFolder)).append(";\n")
+            append("\tstop;\n}")
+        }
     }
 
     private fun vacationRule(vacation: Vacation): String {
