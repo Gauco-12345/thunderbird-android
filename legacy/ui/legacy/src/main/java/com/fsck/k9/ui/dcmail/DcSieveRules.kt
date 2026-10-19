@@ -167,8 +167,8 @@ object DcSieveRules {
     private val VACATION_COMMAND = Regex("""(?s)\bvacation\b(.*?)(text:[ \t]*\r?\n(.*?)\r?\n\.\r?\n?|"((?:[^"\\]|\\.)*)")\s*;""")
     private val DAYS = Regex(""":days\s+(\d+)""")
     private val SUBJECT = Regex(""":subject\s+"((?:[^"\\]|\\.)*)"""")
-    private val DATE_GE = Regex(""""ge"\s+"date"\s+"(\d{4}-\d{2}-\d{2})"""")
-    private val DATE_LE = Regex(""""le"\s+"date"\s+"(\d{4}-\d{2}-\d{2})"""")
+    private val DATE_GE = Regex(""""ge"\s+"(?:date|iso8601)"\s+"(\d{4}-\d{2}-\d{2})""")
+    private val DATE_LE = Regex(""""le"\s+"(?:date|iso8601)"\s+"(\d{4}-\d{2}-\d{2})""")
 
     /**
      * Reads an out-of-office rule written by another program (e.g. Roundcube). Only rules whose sole action is the
@@ -305,18 +305,19 @@ object DcSieveRules {
             .toString()
 
         val conditions = mutableListOf<String>()
-        if (!vacation.enabled) conditions.add("false")
         if (vacation.fromDate.isNotBlank()) {
             conditions.add("currentdate :value \"ge\" \"date\" ${quote(vacation.fromDate)}")
         }
         if (vacation.untilDate.isNotBlank()) {
             conditions.add("currentdate :value \"le\" \"date\" ${quote(vacation.untilDate)}")
         }
-        val test = when (conditions.size) {
+        val active = when (conditions.size) {
             0 -> "true"
             1 -> conditions[0]
             else -> "allof (${conditions.joinToString(", ")})"
         }
+        // Same notation Roundcube uses for a switched-off rule, so Roundcube also shows it as "Aus"
+        val test = if (vacation.enabled) active else "false # $active"
 
         val subject = if (vacation.subject.isNotBlank()) " :subject ${quote(vacation.subject)}" else ""
         return buildString {
