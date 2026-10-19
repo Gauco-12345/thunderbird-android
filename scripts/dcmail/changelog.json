@@ -2,6 +2,24 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Newsletter abmelden mit einem Tipp: Über Newslettern erscheint „Abmelden“ – wenn möglich ohne Browser. Danach lassen sich alle bisherigen Mails des Absenders anzeigen und aufräumen. Kommt trotz Abmeldung wieder Post, bietet DC Mail das Sperren an."
+        },
+        {
+          "type": "new",
+          "text": "Phishing-Warnung: Hinweis über verdächtigen Mails, z. B. wenn „N26“ draufsteht, die Mail aber von einer fremden Adresse kommt, oder ein Link woandershin führt als angezeigt. Abschaltbar unter Einstellungen → Anzeige → Nachrichten."
+        },
+        {
+          "type": "new",
+          "text": "Rechnungen erkennen: Mails mit PDF-Rechnung bekommen einen Hinweis und lassen sich mit einem Tipp an eine feste Adresse weiterleiten (z. B. Lexware). Adresse unter Einstellungen → Anzeige → Nachrichten oder direkt im Hinweis festlegen."
+        }
+      ]
+    },
+    {
       "build": 24,
       "date": "2026-10-19",
       "notes": [

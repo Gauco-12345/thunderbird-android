@@ -28,6 +28,12 @@ import com.fsck.k9.ui.dcmail.DcAiSummary
 import com.fsck.k9.ui.dcmail.DcMessageAction
 import com.fsck.k9.ui.dcmail.DcMessageActions
 import com.fsck.k9.ui.dcmail.DcSieveRules
+import com.fsck.k9.ui.dcmail.DcBanners
+import com.fsck.k9.ui.dcmail.DcMessageInsights
+import com.fsck.k9.activity.MessageHomeActivity
+import net.thunderbird.feature.search.legacy.LocalMessageSearch
+import net.thunderbird.feature.search.legacy.api.MessageSearchField
+import net.thunderbird.feature.search.legacy.api.SearchAttribute
 import com.google.android.material.color.MaterialColors
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -705,6 +711,197 @@ class MessageViewFragment :
         if (messageViewInfo.subject != null) {
             displaySubject(messageViewInfo.subject)
         }
+
+        showDcBanners(messageViewInfo)
+    }
+
+    // DC Mail: hints above the message – phishing warning, invoice forwarding, newsletter unsubscribe
+    private fun showDcBanners(info: MessageViewInfo) {
+        val container = messageTopView.findViewById<LinearLayout>(R.id.dcmail_banners) ?: return
+        container.removeAllViews()
+        val context = container.context
+        val message = info.message
+        if (message == null) {
+            container.visibility = View.GONE
+            return
+        }
+        val inSpam = account.spamFolderId != null && messageReference.folderId == account.spamFolderId
+
+        if (DcMessageInsights.isPhishingWarningEnabled(context)) {
+            val reasons = try {
+                DcMessageInsights.phishingReasons(context, info)
+            } catch (e: RuntimeException) {
+                emptyList()
+            }
+            if (reasons.isNotEmpty()) {
+                container.addView(
+                    DcBanners.create(
+                        context,
+                        DcBanners.Kind.WARNING,
+                        getString(R.string.dcmail_phishing_title),
+                        reasons.joinToString("\n") { "• $it" },
+                        emptyList(),
+                    ),
+                )
+            }
+        }
+
+        if (!inSpam && DcMessageInsights.isInvoice(info)) {
+            val target = DcMessageInsights.invoiceForwardAddress(context)
+            val actions = if (target.isEmpty()) {
+                listOf(
+                    DcBanners.Action(getString(R.string.dcmail_invoice_set_address)) {
+                        DcBanners.askInvoiceAddress(requireContext()) { showDcBanners(info) }
+                    },
+                )
+            } else {
+                listOf(
+                    DcBanners.Action(getString(R.string.dcmail_invoice_change)) {
+                        DcBanners.askInvoiceAddress(requireContext()) { showDcBanners(info) }
+                    },
+                    DcBanners.Action(getString(R.string.dcmail_invoice_forward)) { onDcForwardInvoice(target) },
+                )
+            }
+            container.addView(
+                DcBanners.create(
+                    context,
+                    DcBanners.Kind.INFO,
+                    getString(R.string.dcmail_invoice_title),
+                    if (target.isEmpty()) {
+                        getString(R.string.dcmail_invoice_no_address)
+                    } else {
+                        getString(R.string.dcmail_invoice_target, target)
+                    },
+                    actions,
+                ),
+            )
+        }
+
+        val sender = DcMessageInsights.senderAddress(message)
+        if (!inSpam && sender != null) {
+            val messageDate = message.sentDate?.time ?: 0L
+            val unsubscribedAt = DcMessageInsights.unsubscribedButStillSending(context, sender, messageDate)
+            val unsubscribe = DcMessageInsights.unsubscribe(message)
+            if (unsubscribedAt != null) {
+                val date = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM)
+                    .format(java.util.Date(unsubscribedAt))
+                container.addView(
+                    DcBanners.create(
+                        context,
+                        DcBanners.Kind.WARNING,
+                        getString(R.string.dcmail_unsubscribe_again_title),
+                        getString(R.string.dcmail_unsubscribe_again_text, date),
+                        listOf(DcBanners.Action(getString(R.string.dcmail_block_sender)) { onDcBlockSender() }),
+                    ),
+                )
+            } else if (unsubscribe != null) {
+                val label = DcMessageInsights.senderLabel(message)
+                container.addView(
+                    DcBanners.create(
+                        context,
+                        DcBanners.Kind.INFO,
+                        getString(R.string.dcmail_unsubscribe_title, label),
+                        null,
+                        listOf(
+                            DcBanners.Action(getString(R.string.dcmail_unsubscribe_action)) {
+                                onDcUnsubscribe(unsubscribe, sender, label)
+                            },
+                        ),
+                    ),
+                )
+            }
+        }
+
+        container.visibility = if (container.childCount > 0) View.VISIBLE else View.GONE
+    }
+
+    private fun onDcForwardInvoice(target: String) {
+        val message = this.message ?: return
+        val intent = Intent(requireContext(), MessageCompose::class.java).apply {
+            putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, message.makeMessageReference().toIdentityString())
+            putExtra(MessageCompose.EXTRA_MESSAGE_DECRYPTION_RESULT, messageCryptoPresenter.decryptionResultForReply)
+            putExtra(MessageCompose.EXTRA_DC_FORWARD_TO, target)
+            action = MessageCompose.ACTION_FORWARD
+        }
+        startActivity(intent)
+    }
+
+    private fun onDcUnsubscribe(unsubscribe: DcMessageInsights.Unsubscribe, sender: String, label: String) {
+        val context = requireContext()
+        val oneClick = unsubscribe.oneClick
+        val mailto = unsubscribe.mailto
+        val https = unsubscribe.https
+        val explanation = when {
+            oneClick != null -> getString(R.string.dcmail_unsubscribe_oneclick, oneClick.host.orEmpty())
+            mailto != null -> getString(R.string.dcmail_unsubscribe_mailto, mailto.schemeSpecificPart.substringBefore('?'))
+            else -> getString(R.string.dcmail_unsubscribe_browser, https?.host.orEmpty())
+        }
+        androidx.appcompat.app.AlertDialog.Builder(context)
+            .setTitle(getString(R.string.dcmail_unsubscribe_title, label))
+            .setMessage(explanation)
+            .setPositiveButton(R.string.dcmail_unsubscribe_action) { _, _ ->
+                when {
+                    oneClick != null -> {
+                        val appContext = context.applicationContext
+                        Thread {
+                            val ok = DcMessageInsights.unsubscribeOneClick(oneClick)
+                            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                if (ok) {
+                                    DcMessageInsights.rememberUnsubscribed(appContext, sender)
+                                    Toast.makeText(appContext, R.string.dcmail_unsubscribe_done, Toast.LENGTH_LONG).show()
+                                    if (isAdded) offerDcCleanup(sender, label)
+                                } else if (isAdded) {
+                                    Toast.makeText(appContext, R.string.dcmail_unsubscribe_oneclick_failed, Toast.LENGTH_LONG)
+                                        .show()
+                                    DcMessageInsights.rememberUnsubscribed(appContext, sender)
+                                    offerDcCleanup(sender, label)
+                                    openDcUnsubscribeFallback(mailto, https)
+                                }
+                            }
+                        }.start()
+                    }
+                    else -> {
+                        DcMessageInsights.rememberUnsubscribed(context, sender)
+                        offerDcCleanup(sender, label)
+                        openDcUnsubscribeFallback(mailto, https)
+                    }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun openDcUnsubscribeFallback(mailto: Uri?, https: Uri?) {
+        val intent = when {
+            mailto != null -> Intent(requireContext(), MessageCompose::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = mailto
+                putExtra(MessageCompose.EXTRA_ACCOUNT, messageReference.accountId.toString())
+            }
+            https != null -> Intent(Intent.ACTION_VIEW, https)
+            else -> return
+        }
+        try {
+            startActivity(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun offerDcCleanup(sender: String, label: String) {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle(R.string.dcmail_unsubscribe_cleanup_title)
+            .setMessage(getString(R.string.dcmail_unsubscribe_cleanup_text, label))
+            .setPositiveButton(R.string.dcmail_unsubscribe_cleanup_show) { _, _ ->
+                val search = LocalMessageSearch().apply {
+                    isManualSearch = true
+                    addAccountId(account.id)
+                    and(MessageSearchField.SENDER, sender, SearchAttribute.CONTAINS)
+                }
+                MessageHomeActivity.actionDisplaySearch(requireContext(), search, true, false)
+            }
+            .setNegativeButton(R.string.dcmail_unsubscribe_cleanup_no, null)
+            .show()
     }
 
     private fun hideKeyboard() {

@@ -180,4 +180,39 @@
     <string name="dcmail_vacation_no_account">Konto nicht gefunden. Bitte die Abwesenheitsnotiz erneut aus den Kontoeinstellungen öffnen.</string>
     <string name="dcmail_crash_title">Letzter Absturz</string>
     <string name="dcmail_crash_copied">Kopiert</string>
+
+    <!-- DC Mail: message hints -->
+    <string name="dcmail_phishing_title">⚠ Vorsicht: möglicherweise Phishing</string>
+    <string name="dcmail_phishing_brand">Der Absender nennt sich „%1$s“, die Mail kommt aber von %2$s.</string>
+    <string name="dcmail_phishing_name_address">Im Namen steht %1$s, gesendet wurde aber von %2$s.</string>
+    <string name="dcmail_phishing_auth_failed">Dein Mailserver konnte nicht bestätigen, dass die Mail wirklich vom angegebenen Absender stammt.</string>
+    <string name="dcmail_phishing_ip_link">Ein Link führt auf eine nackte IP-Adresse (%1$s).</string>
+    <string name="dcmail_phishing_punycode">Ein Link führt auf eine Adresse mit Sonderzeichen, die wie eine bekannte Seite aussehen kann (%1$s).</string>
+    <string name="dcmail_phishing_link">Ein Link zeigt %1$s an, führt aber zu %2$s.</string>
+    <string name="dcmail_phishing_setting_title">Phishing-Warnung</string>
+    <string name="dcmail_phishing_setting_summary">Hinweis über verdächtigen Mails, z. B. falscher Bank-Absender oder irreführende Links</string>
+    <string name="dcmail_invoice_title">🧾 Rechnung erkannt</string>
+    <string name="dcmail_invoice_no_address">Leg fest, wohin Rechnungen weitergeleitet werden sollen, z. B. an dein Lexware-Postfach.</string>
+    <string name="dcmail_invoice_target">Mit einem Tipp an %1$s weiterleiten. Der PDF-Anhang geht mit.</string>
+    <string name="dcmail_invoice_set_address">Adresse festlegen</string>
+    <string name="dcmail_invoice_change">Ändern</string>
+    <string name="dcmail_invoice_forward">Weiterleiten</string>
+    <string name="dcmail_invoice_address_title">Rechnungen weiterleiten an</string>
+    <string name="dcmail_invoice_address_message">An diese Adresse leitet DC Mail erkannte Rechnungen weiter (z. B. Lexware-Belegeingang). Leer lassen zum Abschalten.</string>
+    <string name="dcmail_invoice_address_hint">z. B. belege@…</string>
+    <string name="dcmail_invoice_address_invalid">Bitte eine gültige E-Mail-Adresse eingeben.</string>
+    <string name="dcmail_invoice_setting_summary">Erkannte Rechnungen mit einem Tipp an diese Adresse weiterleiten</string>
+    <string name="dcmail_unsubscribe_title">Newsletter von %1$s</string>
+    <string name="dcmail_unsubscribe_action">Abmelden</string>
+    <string name="dcmail_unsubscribe_oneclick">DC Mail meldet dich direkt bei %1$s ab. Es öffnet sich keine Webseite.</string>
+    <string name="dcmail_unsubscribe_mailto">DC Mail öffnet eine fertige Abmelde-Mail an %1$s. Du musst sie nur noch senden.</string>
+    <string name="dcmail_unsubscribe_browser">Die Abmeldeseite von %1$s öffnet sich im Browser.</string>
+    <string name="dcmail_unsubscribe_done">Abgemeldet.</string>
+    <string name="dcmail_unsubscribe_oneclick_failed">Direktes Abmelden hat nicht geklappt – ich öffne den anderen Weg.</string>
+    <string name="dcmail_unsubscribe_cleanup_title">Aufräumen?</string>
+    <string name="dcmail_unsubscribe_cleanup_text">Alle bisherigen Mails von %1$s anzeigen? Dort kannst du sie markieren und löschen oder archivieren.</string>
+    <string name="dcmail_unsubscribe_cleanup_show">Anzeigen</string>
+    <string name="dcmail_unsubscribe_cleanup_no">Nein, danke</string>
+    <string name="dcmail_unsubscribe_again_title">Trotz Abmeldung wieder Post</string>
+    <string name="dcmail_unsubscribe_again_text">Du hast dich am %1$s von diesem Absender abgemeldet. Soll er künftig direkt im Spam landen?</string>
 </resources>

@@ -256,4 +256,39 @@
     <string name="dcmail_vacation_no_account">Account not found. Please open the out-of-office reply again from the account settings.</string>
     <string name="dcmail_crash_title">Last crash</string>
     <string name="dcmail_crash_copied">Copied</string>
+
+    <!-- DC Mail: message hints -->
+    <string name="dcmail_phishing_title">⚠ Careful: possibly phishing</string>
+    <string name="dcmail_phishing_brand">The sender calls itself “%1$s”, but the mail comes from %2$s.</string>
+    <string name="dcmail_phishing_name_address">The name shows %1$s, but it was sent from %2$s.</string>
+    <string name="dcmail_phishing_auth_failed">Your mail server could not confirm that the mail really comes from the stated sender.</string>
+    <string name="dcmail_phishing_ip_link">A link leads to a bare IP address (%1$s).</string>
+    <string name="dcmail_phishing_punycode">A link leads to an address with special characters that can look like a well-known site (%1$s).</string>
+    <string name="dcmail_phishing_link">A link shows %1$s but leads to %2$s.</string>
+    <string name="dcmail_phishing_setting_title">Phishing warning</string>
+    <string name="dcmail_phishing_setting_summary">Hint above suspicious mails, e.g. fake bank sender or misleading links</string>
+    <string name="dcmail_invoice_title">🧾 Invoice detected</string>
+    <string name="dcmail_invoice_no_address">Set where invoices should be forwarded to, e.g. your accounting mailbox.</string>
+    <string name="dcmail_invoice_target">Forward to %1$s with one tap. The PDF attachment is included.</string>
+    <string name="dcmail_invoice_set_address">Set address</string>
+    <string name="dcmail_invoice_change">Change</string>
+    <string name="dcmail_invoice_forward">Forward</string>
+    <string name="dcmail_invoice_address_title">Forward invoices to</string>
+    <string name="dcmail_invoice_address_message">DC Mail forwards detected invoices to this address (e.g. your accounting import mailbox). Leave empty to turn off.</string>
+    <string name="dcmail_invoice_address_hint">e.g. receipts@…</string>
+    <string name="dcmail_invoice_address_invalid">Please enter a valid e-mail address.</string>
+    <string name="dcmail_invoice_setting_summary">Forward detected invoices to this address with one tap</string>
+    <string name="dcmail_unsubscribe_title">Newsletter from %1$s</string>
+    <string name="dcmail_unsubscribe_action">Unsubscribe</string>
+    <string name="dcmail_unsubscribe_oneclick">DC Mail unsubscribes you directly at %1$s. No web page opens.</string>
+    <string name="dcmail_unsubscribe_mailto">DC Mail opens a ready unsubscribe mail to %1$s. You only need to send it.</string>
+    <string name="dcmail_unsubscribe_browser">The unsubscribe page of %1$s opens in the browser.</string>
+    <string name="dcmail_unsubscribe_done">Unsubscribed.</string>
+    <string name="dcmail_unsubscribe_oneclick_failed">Direct unsubscribe failed – opening the other way.</string>
+    <string name="dcmail_unsubscribe_cleanup_title">Clean up?</string>
+    <string name="dcmail_unsubscribe_cleanup_text">Show all previous mails from %1$s? There you can select and delete or archive them.</string>
+    <string name="dcmail_unsubscribe_cleanup_show">Show</string>
+    <string name="dcmail_unsubscribe_cleanup_no">No, thanks</string>
+    <string name="dcmail_unsubscribe_again_title">Mail again despite unsubscribing</string>
+    <string name="dcmail_unsubscribe_again_text">You unsubscribed from this sender on %1$s. Should it go straight to spam from now on?</string>
 </resources>

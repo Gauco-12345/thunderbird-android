@@ -385,6 +385,21 @@
                 />
 
             <CheckBoxPreference
+                android:key="dcmail_phishing_warning"
+                android:persistent="false"
+                android:defaultValue="true"
+                android:summary="@string/dcmail_phishing_setting_summary"
+                android:title="@string/dcmail_phishing_setting_title"
+                />
+
+            <Preference
+                android:key="dcmail_invoice_forward"
+                android:persistent="false"
+                android:summary="@string/dcmail_invoice_setting_summary"
+                android:title="@string/dcmail_invoice_address_title"
+                />
+
+            <CheckBoxPreference
                 android:key="messageview_autofit_width"
                 android:summary="@string/global_settings_messageview_autofit_width_summary"
                 android:title="@string/global_settings_messageview_autofit_width_label"

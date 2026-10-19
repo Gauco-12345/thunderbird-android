@@ -150,6 +150,24 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+        findPreference<CheckBoxPreference>("dcmail_phishing_warning")?.let { preference ->
+            preference.isChecked = com.fsck.k9.ui.dcmail.DcMessageInsights.isPhishingWarningEnabled(preference.context)
+            preference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                com.fsck.k9.ui.dcmail.DcMessageInsights.setPhishingWarningEnabled(pref.context, newValue == true)
+                true
+            }
+        }
+        findPreference<Preference>("dcmail_invoice_forward")?.let { preference ->
+            fun updateSummary() {
+                val address = com.fsck.k9.ui.dcmail.DcMessageInsights.invoiceForwardAddress(preference.context)
+                preference.summary = address.ifEmpty { getString(R.string.dcmail_invoice_setting_summary) }
+            }
+            updateSummary()
+            preference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                com.fsck.k9.ui.dcmail.DcBanners.askInvoiceAddress(requireContext()) { updateSummary() }
+                true
+            }
+        }
         findPreference<Preference>("remote_feature_flag")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 FeatureLauncherActivity.launch(

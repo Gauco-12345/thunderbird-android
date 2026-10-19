@@ -200,6 +200,7 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
     public static final String EXTRA_ACCOUNT = "account";
     public static final String EXTRA_MESSAGE_REFERENCE = "message_reference";
     public static final String EXTRA_MESSAGE_DECRYPTION_RESULT = "message_decryption_result";
+    public static final String EXTRA_DC_FORWARD_TO = "dcmail_forward_to";
 
     private static final String STATE_KEY_SOURCE_MESSAGE_PROCED =
             "com.fsck.k9.activity.MessageCompose.stateKeySourceMessageProced";
@@ -1662,6 +1663,12 @@ public class MessageCompose extends BaseActivity implements OnClickListener,
             attachmentPresenter.processMessageToForward(messageViewInfo);
         }
         setIdentityFromMessage(message);
+
+        // DC Mail: forward to a fixed address, e.g. invoices to the accounting import mailbox
+        String dcForwardTo = getIntent().getStringExtra(EXTRA_DC_FORWARD_TO);
+        if (!TextUtils.isEmpty(dcForwardTo)) {
+            recipientPresenter.initFromTrustIdAction(dcForwardTo);
+        }
     }
 
     private void setIdentityFromMessage(Message message) {
