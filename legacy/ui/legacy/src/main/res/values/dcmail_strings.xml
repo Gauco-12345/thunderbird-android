@@ -196,4 +196,5 @@
     <!-- DC Mail: push notification -->
     <string name="dcmail_push_notification_title">Hide \"Waiting for new mail\"</string>
     <string name="dcmail_push_notification_summary">Opens the system settings of the push notification. Switch it off there; push keeps working.</string>
+    <string name="dcmail_update_whats_new">What\'s new:</string>
 </resources>

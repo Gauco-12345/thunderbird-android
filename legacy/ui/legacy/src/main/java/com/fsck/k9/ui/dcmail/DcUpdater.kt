@@ -43,8 +43,9 @@ object DcUpdater {
     private const val HTTP_ERROR_THRESHOLD = 400
     private const val HTTP_REDIRECT_MIN = 300
     private const val APK_FILE_NAME = "dcmail-update.apk"
+    private const val CHANGELOG_PATH = "scripts/dcmail/changelog.json"
 
-    data class DcBuild(val number: Long, val runId: Long, val pageUrl: String)
+    data class DcBuild(val number: Long, val runId: Long, val pageUrl: String, val sha: String, val notes: String = "")
 
     class UpdateException(message: String) : Exception(message)
 
@@ -95,7 +96,15 @@ object DcUpdater {
         val appContext = activity.applicationContext
         Thread {
             val result = try {
-                Result.success(fetchLatestBuild())
+                val latest = fetchLatestBuild()
+                val installed = currentBuildNumber(appContext)
+                Result.success(
+                    if (latest != null && latest.number > installed) {
+                        latest.copy(notes = fetchNotes(latest, installed))
+                    } else {
+                        latest
+                    },
+                )
             } catch (e: UpdateException) {
                 Result.failure(e)
             } catch (e: IOException) {
@@ -131,7 +140,12 @@ object DcUpdater {
 
     private fun offerUpdate(activity: Activity, current: Long, latest: DcBuild) {
         val hasToken = getToken(activity).isNotBlank()
-        val message = activity.getString(R.string.dcmail_update_available, latest.number, current)
+        val headline = activity.getString(R.string.dcmail_update_available, latest.number, current)
+        val message = if (latest.notes.isBlank()) {
+            headline
+        } else {
+            headline + "\n\n" + activity.getString(R.string.dcmail_update_whats_new) + "\n" + latest.notes
+        }
 
         val builder = AlertDialog.Builder(activity)
             .setTitle(R.string.dcmail_update_title)
@@ -211,7 +225,36 @@ object DcUpdater {
             number = run.getLong("run_number"),
             runId = run.getLong("id"),
             pageUrl = run.optString("html_url", "https://github.com/$REPOSITORY/actions"),
+            sha = run.optString("head_sha"),
         )
+    }
+
+    /**
+     * Reads scripts/dcmail/changelog.json of the given build and returns the notes of all builds newer than [current].
+     */
+    private fun fetchNotes(build: DcBuild, current: Long): String {
+        if (build.sha.isBlank()) return ""
+        return try {
+            val raw = request("https://raw.githubusercontent.com/$REPOSITORY/${build.sha}/$CHANGELOG_PATH", null)
+            val releases = JSONObject(raw).getJSONArray("releases")
+            val text = StringBuilder()
+            for (index in 0 until releases.length()) {
+                val release = releases.getJSONObject(index)
+                val number = if (release.optString("build") == "next") build.number else release.optLong("build")
+                if (number <= current || number > build.number) continue
+                val notes = release.getJSONArray("notes")
+                for (noteIndex in 0 until notes.length()) {
+                    text.append("• ").append(notes.getJSONObject(noteIndex).optString("text")).append("\n")
+                }
+            }
+            text.toString().trim()
+        } catch (e: UpdateException) {
+            ""
+        } catch (e: IOException) {
+            ""
+        } catch (e: JSONException) {
+            ""
+        }
     }
 
     private fun downloadApk(runId: Long, token: String, target: File) {

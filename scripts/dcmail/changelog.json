@@ -1,0 +1,86 @@
+{
+  "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
+  "releases": [
+    {
+      "build": "next",
+      "date": "",
+      "notes": [
+        { "type": "new", "text": "Änderungsprotokoll: Nach einem Update zeigt DC Mail, was neu ist. Auch der Update-Dialog listet die Neuerungen auf." }
+      ]
+    },
+    {
+      "build": 13,
+      "date": "2026-10-19",
+      "notes": [
+        { "type": "changed", "text": "Neues App-Icon: Känguru im Umschlag." },
+        { "type": "new", "text": "Archivierte Mails werden automatisch als gelesen markiert, auch beim Verschieben in den Archivordner." },
+        { "type": "new", "text": "Bei mehreren neuen Mails zeigt die Statusleiste das Konto-Symbol doppelt." }
+      ]
+    },
+    {
+      "build": 12,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Känguru als Statusleisten-Symbol wählbar." },
+        { "type": "changed", "text": "Hinweis „Warte auf neue E-Mails“ erscheint nicht mehr in der Statusleiste und lässt sich unter Einstellungen → Benachrichtigungen ausblenden." }
+      ]
+    },
+    {
+      "build": 10,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "changed", "text": "Automatische Update-Prüfung ist optional und standardmäßig aus. „Jetzt suchen“ funktioniert immer." }
+      ]
+    },
+    {
+      "build": 9,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Absender-Logos (Favicons) in der Mailliste, abschaltbar." }
+      ]
+    },
+    {
+      "build": 8,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Updates direkt in der App suchen und installieren." },
+        { "type": "new", "text": "Mit Claude zusammenfassen in der Aktionsleiste." },
+        { "type": "new", "text": "Eigenes Statusleisten-Symbol pro Konto." },
+        { "type": "changed", "text": "API-Schlüssel und GitHub-Token werden verschlüsselt gespeichert." },
+        { "type": "fixed", "text": "Alte allgemeine ruhige Tage unterdrückten weiterhin alle Benachrichtigungen." }
+      ]
+    },
+    {
+      "build": 7,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Claude-Antwort: Anrede, Länge und Ton wählbar." },
+        { "type": "new", "text": "Empfängervorschläge aus bereits empfangenen Mails." },
+        { "type": "fixed", "text": "Allgemeine Einstellungen stürzten beim Öffnen ab." }
+      ]
+    },
+    {
+      "build": 6,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Antwort mit Claude aus Stichpunkten." },
+        { "type": "changed", "text": "Neues App-Icon." }
+      ]
+    },
+    {
+      "build": 5,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Ruhige Tage und Ruhezeit pro Konto." },
+        { "type": "new", "text": "Anpassbare Aktionsleiste unter der Nachricht." }
+      ]
+    },
+    {
+      "build": 4,
+      "date": "2026-10-18",
+      "notes": [
+        { "type": "new", "text": "Erste Version von DC Mail mit ruhigen Tagen und Vorlagen." }
+      ]
+    }
+  ]
+}

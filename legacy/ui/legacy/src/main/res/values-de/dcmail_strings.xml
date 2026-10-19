@@ -122,4 +122,5 @@
     <!-- DC Mail: push notification -->
     <string name="dcmail_push_notification_title">„Warte auf neue E-Mails“ ausblenden</string>
     <string name="dcmail_push_notification_summary">Öffnet die Android-Einstellung des Push-Hinweises. Dort ausschalten, Push läuft trotzdem weiter.</string>
+    <string name="dcmail_update_whats_new">Neu:</string>
 </resources>

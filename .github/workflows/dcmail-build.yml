@@ -58,6 +58,9 @@ jobs:
         with:
           write-cache: 'true'
 
+      - name: Änderungsprotokoll erzeugen
+        run: python3 scripts/dcmail/make_changelog.py scripts/dcmail/changelog.json app-thunderbird/src/release/res/raw ${{ github.run_number }}
+
       - name: APK bauen
         run: ./gradlew --no-daemon :app-thunderbird:assembleFossRelease -Pci=true -PdcBuildNumber=${{ github.run_number }}
 
