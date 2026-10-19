@@ -231,4 +231,15 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+    <!-- DC Mail: colour code stripe (contact, newsletter, spam suspicion, warning) -->
+    <View
+        android:id="@+id/dcmail_category_stripe"
+        android:layout_width="4dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

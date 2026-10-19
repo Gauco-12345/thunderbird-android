@@ -484,6 +484,7 @@ class LegacyMessageListFragment :
         initializeSwipeRefreshLayout(view)
         initializeFloatingActionButton(view)
         initializeRecyclerView(view)
+        initializeDcFilters(view)
         initializeRecentChangesSnackbar()
 
         // This needs to be done before loading the message list below
@@ -2012,6 +2013,59 @@ class LegacyMessageListFragment :
         return fragmentListener.startSearch(query, account?.id, folderId)
     }
 
+    // DC Mail: colour code and quick filters (all / contacts / newsletter)
+    private var dcAllMessageItems: List<MessageListItem> = emptyList()
+
+    private fun dcFilteredItems(items: List<MessageListItem>): List<MessageListItem> {
+        val filter = com.fsck.k9.ui.dcmail.DcMailCategories.filter
+        if (filter == com.fsck.k9.ui.dcmail.DcMailCategories.Filter.ALL || isThreadDisplay) return items
+        return items.filter { com.fsck.k9.ui.dcmail.DcMailCategories.matches(it, filter) }
+    }
+
+    private fun loadDcCategories(items: List<MessageListItem>) {
+        val context = context ?: return
+        com.fsck.k9.ui.dcmail.DcMailCategories.ensureLoaded(context, items) {
+            if (isAdded && view != null) applyDcFilter()
+        }
+    }
+
+    @android.annotation.SuppressLint("NotifyDataSetChanged")
+    private fun applyDcFilter() {
+        if (!isInitialized) return
+        val current = adapter.viewItems
+        val leading = current.filterIsInstance<MessageListViewItem.InAppNotificationBannerList>()
+        val trailing = current.filterIsInstance<MessageListViewItem.Footer>()
+        val newItems = leading + dcFilteredItems(dcAllMessageItems).map { MessageListViewItem.Message(it) } + trailing
+        if (newItems == current) {
+            adapter.notifyDataSetChanged()
+        } else {
+            adapter.viewItems = newItems
+        }
+    }
+
+    private fun initializeDcFilters(view: View) {
+        val bar = view.findViewById<View>(R.id.dcmail_filter_bar) ?: return
+        val chips = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.dcmail_filter_chips) ?: return
+        val enabled = com.fsck.k9.ui.dcmail.DcMailCategories.isEnabled(view.context)
+        bar.visibility = if (enabled && !isThreadDisplay) View.VISIBLE else View.GONE
+        if (!enabled) com.fsck.k9.ui.dcmail.DcMailCategories.filter = com.fsck.k9.ui.dcmail.DcMailCategories.Filter.ALL
+        chips.check(
+            when (com.fsck.k9.ui.dcmail.DcMailCategories.filter) {
+                com.fsck.k9.ui.dcmail.DcMailCategories.Filter.ALL -> R.id.dcmail_filter_all
+                com.fsck.k9.ui.dcmail.DcMailCategories.Filter.CONTACTS -> R.id.dcmail_filter_contacts
+                com.fsck.k9.ui.dcmail.DcMailCategories.Filter.NEWSLETTER -> R.id.dcmail_filter_newsletter
+            },
+        )
+        chips.setOnCheckedStateChangeListener { _, checkedIds ->
+            com.fsck.k9.ui.dcmail.DcMailCategories.filter = when (checkedIds.firstOrNull()) {
+                R.id.dcmail_filter_contacts -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.CONTACTS
+                R.id.dcmail_filter_newsletter -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.NEWSLETTER
+                else -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.ALL
+            }
+            applyDcFilter()
+        }
+    }
+
     private fun setMessageList(messageListInfo: MessageListInfo) {
         val messageListItems = messageListInfo.messageListItems
         if (isThreadDisplay && messageListItems.isEmpty()) {
@@ -2042,8 +2096,10 @@ class LegacyMessageListFragment :
             if (featureFlagProvider.provide(GeneratedFeatureFlagKey.DISPLAY_IN_APP_NOTIFICATIONS).isEnabled()) {
                 add(MessageListViewItem.InAppNotificationBannerList)
             }
-            addAll(messageListItems.map { MessageListViewItem.Message(it) })
+            dcAllMessageItems = messageListItems
+            addAll(dcFilteredItems(messageListItems).map { MessageListViewItem.Message(it) })
         }
+        loadDcCategories(messageListItems)
 
         rememberedSelected?.let {
             rememberedSelected = null

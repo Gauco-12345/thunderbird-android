@@ -8,22 +8,67 @@
     android:layout_height="match_parent"
     tools:context=".messagelist.LegacyMessageListFragment"
     >
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_action_button"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+    <!-- DC Mail: quick filters -->
+    <HorizontalScrollView
+        android:id="@+id/dcmail_filter_bar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/floatingActionButtonMargin"
-        android:contentDescription="@string/compose_action"
-        app:layout_behavior="com.fsck.k9.ui.fab.HideFabOnScrollBehavior"
-        app:srcCompat="@drawable/ic_edit"
-        android:focusable="true"
-        />
+        android:scrollbars="none"
+        android:paddingHorizontal="12dp"
+        android:visibility="gone"
+        >
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/dcmail_filter_chips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:chipSpacingHorizontal="8dp"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true"
+            >
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dcmail_filter_all"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/dcmail_filter_all"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dcmail_filter_contacts"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dcmail_filter_contacts"
+                />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dcmail_filter_newsletter"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dcmail_filter_newsletter"
+                />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         >
 
         <androidx.core.view.insets.ProtectionLayout
@@ -55,6 +100,20 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    </LinearLayout>
 
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floating_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/floatingActionButtonMargin"
+        android:contentDescription="@string/compose_action"
+        app:layout_behavior="com.fsck.k9.ui.fab.HideFabOnScrollBehavior"
+        app:srcCompat="@drawable/ic_edit"
+        android:focusable="true"
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

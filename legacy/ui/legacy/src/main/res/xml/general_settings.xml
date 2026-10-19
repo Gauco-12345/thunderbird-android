@@ -326,6 +326,14 @@
                 />
 
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="dcmail_categories"
+                android:persistent="false"
+                android:summary="@string/dcmail_categories_summary"
+                android:title="@string/dcmail_categories_title"
+                />
+
+            <CheckBoxPreference
                 android:key="messagelist_background_as_unread_indicator"
                 android:summary="@string/global_settings_background_as_unread_indicator_summary"
                 android:title="@string/global_settings_background_as_unread_indicator_label"

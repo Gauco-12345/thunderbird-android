@@ -291,4 +291,11 @@
     <string name="dcmail_unsubscribe_cleanup_no">No, thanks</string>
     <string name="dcmail_unsubscribe_again_title">Mail again despite unsubscribing</string>
     <string name="dcmail_unsubscribe_again_text">You unsubscribed from this sender on %1$s. Should it go straight to spam from now on?</string>
+
+    <!-- DC Mail: colour code -->
+    <string name="dcmail_filter_all">All</string>
+    <string name="dcmail_filter_contacts">Contacts</string>
+    <string name="dcmail_filter_newsletter">Newsletters</string>
+    <string name="dcmail_categories_title">Colour code in the message list</string>
+    <string name="dcmail_categories_summary">Stripe on the left: green = contact, grey = newsletter, orange = spam suspicion, red = caution. Plus filters above the list.</string>
 </resources>

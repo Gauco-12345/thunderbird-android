@@ -150,6 +150,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+        findPreference<CheckBoxPreference>("dcmail_categories")?.let { preference ->
+            preference.isChecked = com.fsck.k9.ui.dcmail.DcMailCategories.isEnabled(preference.context)
+            preference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->
+                com.fsck.k9.ui.dcmail.DcMailCategories.setEnabled(pref.context, newValue == true)
+                true
+            }
+        }
         findPreference<CheckBoxPreference>("dcmail_phishing_warning")?.let { preference ->
             preference.isChecked = com.fsck.k9.ui.dcmail.DcMessageInsights.isPhishingWarningEnabled(preference.context)
             preference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { pref, newValue ->

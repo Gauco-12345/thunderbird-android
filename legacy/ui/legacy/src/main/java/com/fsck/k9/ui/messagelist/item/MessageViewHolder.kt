@@ -56,6 +56,7 @@ class MessageViewHolder(
     val starClickAreaView: View = view.findViewById(R.id.star_click_area)
     val attachmentView: ImageView = view.findViewById(R.id.attachment)
     val statusView: ImageView = view.findViewById(R.id.status)
+    private val dcCategoryStripe: View? = view.findViewById(R.id.dcmail_category_stripe)
 
     @Suppress("LongMethod", "CyclomaticComplexMethod")
     fun bind(messageListItem: MessageListItem, isActive: Boolean, isSelected: Boolean) {
@@ -112,6 +113,7 @@ class MessageViewHolder(
                 setContactPicture(contactPictureView, displayAddress)
             }
             itemView.setBackgroundColor(selectBackgroundColor(isSelected, isRead, isActive))
+            bindDcCategory(messageListItem)
             updateWithThreadCount(displayThreadCount)
             val beforePreviewText = if (appearance.senderAboveSubject) subject else displayName
             val messageStringBuilder = SpannableStringBuilder(beforePreviewText)
@@ -242,6 +244,29 @@ class MessageViewHolder(
         }
     }
 
+    // DC Mail: coloured stripe on the left, newsletters slightly faded
+    private fun bindDcCategory(item: MessageListItem) {
+        val stripe = dcCategoryStripe ?: return
+        val enabled = com.fsck.k9.ui.dcmail.DcMailCategories.isEnabled(itemView.context)
+        val category = if (enabled) {
+            com.fsck.k9.ui.dcmail.DcMailCategories.category(item)
+        } else {
+            com.fsck.k9.ui.dcmail.DcMailCategories.Category.NONE
+        }
+        val color = category.color
+        if (color == null) {
+            stripe.visibility = View.INVISIBLE
+        } else {
+            stripe.setBackgroundColor(color)
+            stripe.visibility = View.VISIBLE
+        }
+        val alpha = if (category == com.fsck.k9.ui.dcmail.DcMailCategories.Category.NEWSLETTER) DC_FADED_ALPHA else 1f
+        subjectView.alpha = alpha
+        previewView.alpha = alpha
+        dateView.alpha = alpha
+        contactPictureView.alpha = alpha
+    }
+
     private fun selectBackgroundColor(selected: Boolean, read: Boolean, active: Boolean): Int {
         val backGroundAsReadIndicator = appearance().backGroundAsReadIndicator
         return when {
@@ -274,6 +299,8 @@ class MessageViewHolder(
     }
 
     companion object {
+        private const val DC_FADED_ALPHA = 0.55f
+
 
         @Suppress("LongParameterList")
         fun create(

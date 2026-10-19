@@ -137,6 +137,16 @@ object DcMessageInsights {
     /**
      * Returns human-readable reasons why the message might be phishing; empty if nothing suspicious was found.
      */
+    /** True if the display name pretends to be a known brand but the address belongs to another domain. */
+    fun brandMismatch(name: String?, address: String?): Boolean {
+        val domain = address?.lowercase()?.substringAfterLast('@', "").orEmpty()
+        if (domain.isEmpty() || name.isNullOrBlank()) return false
+        val lowerName = name.lowercase()
+        return BRANDS.any { (brand, domains) ->
+            Regex("""\b${Regex.escape(brand)}\b""").containsMatchIn(lowerName) && domains.none { domain.contains(it) }
+        }
+    }
+
     fun phishingReasons(context: Context, info: MessageViewInfo): List<String> {
         val message = info.message ?: return emptyList()
         val reasons = mutableListOf<String>()

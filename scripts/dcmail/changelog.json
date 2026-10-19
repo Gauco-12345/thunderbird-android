@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-19",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Farbcode in der Mailliste: ein Streifen links zeigt grün = bekannter Kontakt (du hast ihm geschrieben oder er ist in deinen Kontakten), grau und blasser = Newsletter, orange = Spam-Verdacht (Spam-Wert 3–5), rot = Vorsicht (Phishing-Zeichen oder Spam-Wert ab 5)."
+        },
+        {
+          "type": "new",
+          "text": "Filter über der Mailliste: Alle · Kontakte · Newsletter."
+        }
+      ]
+    },
+    {
       "build": 27,
       "date": "2026-10-19",
       "notes": [
