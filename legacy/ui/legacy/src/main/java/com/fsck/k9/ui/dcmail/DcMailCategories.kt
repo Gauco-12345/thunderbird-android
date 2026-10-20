@@ -230,7 +230,14 @@ object DcMailCategories {
                                 null,
                             ).use { cursor ->
                                 while (cursor.moveToNext()) {
-                                    found[cursor.getLong(0)] = cursor.getString(1).orEmpty()
+                                    // Headers are stored as raw bytes (BLOB), getString() would throw
+                                    val header = when (cursor.getType(1)) {
+                                        android.database.Cursor.FIELD_TYPE_BLOB ->
+                                            String(cursor.getBlob(1), Charsets.UTF_8)
+                                        android.database.Cursor.FIELD_TYPE_STRING -> cursor.getString(1)
+                                        else -> ""
+                                    }
+                                    found[cursor.getLong(0)] = header
                                 }
                             }
                         },

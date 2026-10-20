@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-20",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "Filter „Newsletter“ und Spam-Farben (orange/rot) in der Mailliste funktionierten nicht."
+        },
+        {
+          "type": "changed",
+          "text": "Neues App-Icon: Känguru mit @-Brief vor dem blauen Umschlag."
+        }
+      ]
+    },
+    {
       "build": 29,
       "date": "2026-10-19",
       "notes": [
