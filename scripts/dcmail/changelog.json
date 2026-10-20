@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-20",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Sicherung: Einstellungen → Interaktion → „Sicherung erstellen“ speichert Konten mit Passwörtern, alle Einstellungen, Vorlagen, Regeln und Tokens in eine mit deinem Passwort verschlüsselte Datei. „Sicherung wiederherstellen“ spielt sie ein, z. B. auf einem neuen Handy."
+        }
+      ]
+    },
+    {
       "build": 30,
       "date": "2026-10-20",
       "notes": [

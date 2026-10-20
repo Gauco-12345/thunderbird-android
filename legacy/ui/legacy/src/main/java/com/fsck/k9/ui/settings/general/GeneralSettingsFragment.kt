@@ -51,6 +51,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private var currentUiState: GeneralSettingsUiState? = null
     private var snackbar: Snackbar? = null
 
+    // DC Mail: password-protected backup
+    private val dcBackupCreateContract =
+        registerForActivityResult(CreateDocument("application/octet-stream")) { contentUri ->
+            val activity = activity
+            if (contentUri != null && activity != null) {
+                com.fsck.k9.ui.dcmail.DcBackupUi.createBackup(activity, contentUri)
+            }
+        }
+    private val dcBackupRestoreContract =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri ->
+            val activity = activity
+            if (uri != null && activity != null) {
+                com.fsck.k9.ui.dcmail.DcBackupUi.restoreBackup(activity, uri)
+            }
+        }
+
     private val exportLogsResultContract = registerForActivityResult(CreateDocument("text/plain")) { contentUri ->
         if (contentUri != null) {
             viewModel.exportLogs(contentUri)
@@ -123,6 +139,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("dcmail_update")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 context?.let { DcUpdateActivity.start(it) }
+                true
+            }
+        findPreference<Preference>("dcmail_backup_create")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                dcBackupCreateContract.launch(com.fsck.k9.ui.dcmail.DcBackupUi.suggestedFileName())
+                true
+            }
+        findPreference<Preference>("dcmail_backup_restore")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                dcBackupRestoreContract.launch(arrayOf("*/*"))
                 true
             }
         findPreference<Preference>("dcmail_ai_settings")?.onPreferenceClickListener =

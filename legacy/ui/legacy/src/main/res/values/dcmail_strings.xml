@@ -298,4 +298,28 @@
     <string name="dcmail_filter_newsletter">Newsletters</string>
     <string name="dcmail_categories_title">Colour code in the message list</string>
     <string name="dcmail_categories_summary">Stripe on the left: green = contact, grey = newsletter, orange = spam suspicion, red = caution. Plus filters above the list.</string>
+
+    <!-- DC Mail: backup -->
+    <string name="dcmail_backup_title">Backup</string>
+    <string name="dcmail_backup_create_title">Create backup</string>
+    <string name="dcmail_backup_create_summary">Accounts with passwords, settings, templates, rules and tokens in a password-protected file</string>
+    <string name="dcmail_backup_restore_title">Restore backup</string>
+    <string name="dcmail_backup_restore_summary">Restore a DC Mail backup, e.g. on a new phone</string>
+    <string name="dcmail_backup_password_message">The backup contains your mail passwords and tokens and is encrypted with this password. Without it the file can\'t be opened by anyone. Keep it safe!</string>
+    <string name="dcmail_backup_password_hint">Backup password (at least 8 characters)</string>
+    <string name="dcmail_backup_password_repeat">Repeat password</string>
+    <string name="dcmail_backup_password_too_short">The password must be at least 8 characters long.</string>
+    <string name="dcmail_backup_password_mismatch">The two passwords don\'t match.</string>
+    <string name="dcmail_backup_create_action">Back up</string>
+    <string name="dcmail_backup_creating">Creating backup…</string>
+    <string name="dcmail_backup_created">Backup saved. Keep the file somewhere safe, e.g. Google Drive or your PC.</string>
+    <string name="dcmail_backup_restore_message">Enter the backup password. Accounts that already exist on this phone stay unchanged; missing accounts are created. Settings, templates and tokens are restored.</string>
+    <string name="dcmail_backup_restore_action">Restore</string>
+    <string name="dcmail_backup_restoring">Restoring backup…</string>
+    <string name="dcmail_backup_restored">Done. Accounts created: %1$d, already present: %2$d.
+
+Please close DC Mail completely and open it again.</string>
+    <string name="dcmail_backup_restore_failed_accounts">%1$d account(s) could not be restored.</string>
+    <string name="dcmail_backup_wrong_password">Wrong password – or the file is damaged.</string>
+    <string name="dcmail_backup_error">That didn\'t work: %1$s</string>
 </resources>
