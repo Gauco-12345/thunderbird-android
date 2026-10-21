@@ -24,10 +24,10 @@ object DcClaudeClient {
     private const val HTTP_ERROR_THRESHOLD = 400
 
     @Throws(DcAiException::class)
-    fun complete(config: DcAiConfig, system: String, userMessage: String): String {
+    fun complete(config: DcAiConfig, system: String, userMessage: String, maxTokens: Int = MAX_TOKENS): String {
         val body = JSONObject()
             .put("model", config.model)
-            .put("max_tokens", MAX_TOKENS)
+            .put("max_tokens", maxTokens)
             .put("system", system)
             .put(
                 "messages",

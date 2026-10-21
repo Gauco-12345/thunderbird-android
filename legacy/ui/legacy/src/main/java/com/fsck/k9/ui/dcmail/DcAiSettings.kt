@@ -18,6 +18,8 @@ data class DcAiStyle(
     val address: Int,
     val length: Int,
     val tone: Int,
+    /** 0 = like the original mail, 1 = German, 2 = English */
+    val language: Int = 0,
 )
 
 object DcAiSettings {
@@ -30,6 +32,7 @@ object DcAiSettings {
     private const val KEY_STYLE_ADDRESS = "style_address"
     private const val KEY_STYLE_LENGTH = "style_length"
     private const val KEY_STYLE_TONE = "style_tone"
+    private const val KEY_STYLE_LANGUAGE = "style_language"
     private const val DEFAULT_LENGTH = 1
     private const val DEFAULT_TONE = 1
 
@@ -39,6 +42,7 @@ object DcAiSettings {
             address = preferences.getInt(KEY_STYLE_ADDRESS, 0),
             length = preferences.getInt(KEY_STYLE_LENGTH, DEFAULT_LENGTH),
             tone = preferences.getInt(KEY_STYLE_TONE, DEFAULT_TONE),
+            language = preferences.getInt(KEY_STYLE_LANGUAGE, 0),
         )
     }
 
@@ -48,6 +52,7 @@ object DcAiSettings {
             .putInt(KEY_STYLE_ADDRESS, style.address)
             .putInt(KEY_STYLE_LENGTH, style.length)
             .putInt(KEY_STYLE_TONE, style.tone)
+            .putInt(KEY_STYLE_LANGUAGE, style.language)
             .apply()
     }
 

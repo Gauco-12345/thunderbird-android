@@ -31,6 +31,23 @@ class K9NotificationResourceProvider(private val context: Context) : Notificatio
         "folder" -> Icons.Outlined.Folder
         "notifications" -> Icons.Outlined.Notifications
         "kangaroo" -> R.drawable.ic_dcmail_notification_kangaroo
+        "snowflake" -> R.drawable.ic_dcmail_notif_snowflake
+        "flower" -> R.drawable.ic_dcmail_notif_flower
+        "sun" -> R.drawable.ic_dcmail_notif_sun
+        "leaf" -> R.drawable.ic_dcmail_notif_leaf
+        "tree" -> R.drawable.ic_dcmail_notif_tree
+        "gift" -> R.drawable.ic_dcmail_notif_gift
+        "moon" -> R.drawable.ic_dcmail_notif_moon
+        "drop" -> R.drawable.ic_dcmail_notif_drop
+        "home" -> R.drawable.ic_dcmail_notif_home
+        "cart" -> R.drawable.ic_dcmail_notif_cart
+        "euro" -> R.drawable.ic_dcmail_notif_euro
+        "car" -> R.drawable.ic_dcmail_notif_car
+        "plane" -> R.drawable.ic_dcmail_notif_plane
+        "coffee" -> R.drawable.ic_dcmail_notif_coffee
+        "music" -> R.drawable.ic_dcmail_notif_music
+        "cake" -> R.drawable.ic_dcmail_notif_cake
+        "paw" -> R.drawable.ic_dcmail_notif_paw
         else -> iconNewMail
     }
     override val iconSendingMail: Int = Icons.Outlined.Sync

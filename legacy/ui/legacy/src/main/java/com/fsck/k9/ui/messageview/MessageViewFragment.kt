@@ -377,6 +377,7 @@ class MessageViewFragment :
             DcMessageAction.UNREAD -> onToggleRead()
             DcMessageAction.FLAG -> onToggleFlagged()
             DcMessageAction.SUMMARIZE -> onDcSummarize()
+            DcMessageAction.TRANSLATE -> onDcTranslate()
             DcMessageAction.DELETE -> onDelete()
         }
     }
@@ -419,6 +420,14 @@ class MessageViewFragment :
             .show()
     }
 
+    private fun dcPlainText(info: MessageViewInfo): String? =
+        info.textPlainFormatted?.takeIf { it.isNotBlank() } ?: info.text?.let { HtmlConverter.htmlToText(it) }
+
+    private fun onDcTranslate() {
+        val info = dcMessageViewInfo ?: return
+        com.fsck.k9.ui.dcmail.DcAiTranslate.show(requireActivity(), info.subject, dcPlainText(info))
+    }
+
     private fun onDcSummarize() {
         val info = dcMessageViewInfo ?: return
         val plainText = info.textPlainFormatted?.takeIf { it.isNotBlank() }
@@ -438,6 +447,7 @@ class MessageViewFragment :
         DcMessageAction.UNREAD -> DesignSystemR.drawable.ic_mark_email_unread
         DcMessageAction.FLAG -> DesignSystemR.drawable.ic_star
         DcMessageAction.SUMMARIZE -> DesignSystemR.drawable.ic_description
+        DcMessageAction.TRANSLATE -> R.drawable.ic_dcmail_translate
         DcMessageAction.DELETE -> DesignSystemR.drawable.ic_delete
     }
 
@@ -452,6 +462,7 @@ class MessageViewFragment :
         DcMessageAction.UNREAD -> R.string.mark_as_unread_action
         DcMessageAction.FLAG -> R.string.flag_action
         DcMessageAction.SUMMARIZE -> R.string.dcmail_ai_summarize
+        DcMessageAction.TRANSLATE -> R.string.dcmail_translate_action
         DcMessageAction.DELETE -> R.string.delete_action
     }
 
@@ -744,6 +755,18 @@ class MessageViewFragment :
                     ),
                 )
             }
+        }
+
+        if (!inSpam && DcMessageInsights.isEnglish(dcPlainText(info))) {
+            container.addView(
+                DcBanners.create(
+                    context,
+                    DcBanners.Kind.INFO,
+                    getString(R.string.dcmail_translate_banner),
+                    null,
+                    listOf(DcBanners.Action(getString(R.string.dcmail_translate_action)) { onDcTranslate() }),
+                ),
+            )
         }
 
         if (!inSpam && DcMessageInsights.isInvoice(info)) {

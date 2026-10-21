@@ -121,6 +121,23 @@
         <item>Ordner</item>
         <item>Glocke</item>
         <item>Känguru</item>
+        <item>Schneeflocke (Winter)</item>
+        <item>Blume (Frühling)</item>
+        <item>Sonne (Sommer)</item>
+        <item>Blatt (Herbst)</item>
+        <item>Tanne</item>
+        <item>Geschenk</item>
+        <item>Mond</item>
+        <item>Tropfen</item>
+        <item>Haus</item>
+        <item>Einkaufswagen</item>
+        <item>Euro</item>
+        <item>Auto</item>
+        <item>Flugzeug</item>
+        <item>Kaffee</item>
+        <item>Musik</item>
+        <item>Kuchen</item>
+        <item>Pfote</item>
     </string-array>
 
     <!-- DC Mail: favicons -->
@@ -246,4 +263,16 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
     <string name="dcmail_backup_restore_failed_accounts">%1$d Konto/Konten konnten nicht übernommen werden.</string>
     <string name="dcmail_backup_wrong_password">Falsches Passwort – oder die Datei ist beschädigt.</string>
     <string name="dcmail_backup_error">Das hat nicht geklappt: %1$s</string>
+
+    <!-- DC Mail: translation -->
+    <string name="dcmail_translate_action">Übersetzen</string>
+    <string name="dcmail_translate_title">Übersetzung</string>
+    <string name="dcmail_translate_working">Claude übersetzt …</string>
+    <string name="dcmail_translate_banner">Diese Mail ist auf Englisch</string>
+    <string name="dcmail_ai_language_label">Sprache der Antwort</string>
+    <string-array name="dcmail_ai_language_options">
+        <item>Wie die Mail</item>
+        <item>Deutsch</item>
+        <item>Englisch</item>
+    </string-array>
 </resources>

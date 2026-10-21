@@ -225,6 +225,34 @@ object DcMessageInsights {
         return labels.takeLast(keep).joinToString(".")
     }
 
+    // --- language ---
+
+    private val ENGLISH_WORDS = setOf(
+        "the", "and", "you", "your", "to", "of", "is", "for", "we", "our", "this", "that", "with", "please",
+        "have", "are", "will", "be", "on", "it", "from", "at", "as", "can", "not", "if", "would", "thank",
+        "thanks", "regards", "dear", "hello", "hi", "best", "kind", "or", "by", "us", "my", "i",
+    )
+    private val GERMAN_WORDS = setOf(
+        "der", "die", "das", "und", "ich", "sie", "ist", "nicht", "mit", "für", "den", "ein", "eine", "zu",
+        "auf", "wir", "ihr", "ihnen", "bitte", "vielen", "dank", "sehr", "haben", "wird", "von", "im", "des",
+        "auch", "es", "grüße", "gruß", "hallo", "liebe", "lieber", "dass", "wie", "oder", "bei", "uns", "mein",
+    )
+    private const val MIN_LANGUAGE_WORDS = 6
+    private const val ENGLISH_SHARE = 0.7
+
+    /** Simple offline check: mostly English function words and hardly any German ones. */
+    fun isEnglish(text: String?): Boolean {
+        if (text.isNullOrBlank()) return false
+        var english = 0
+        var german = 0
+        for (word in text.take(4000).lowercase().split(Regex("[^\\p{L}]+"))) {
+            if (word in ENGLISH_WORDS) english++
+            if (word in GERMAN_WORDS) german++
+        }
+        val total = english + german
+        return english >= MIN_LANGUAGE_WORDS && english.toDouble() / total >= ENGLISH_SHARE
+    }
+
     // --- invoices ---
 
     private val INVOICE_WORDS = Regex(

@@ -18,6 +18,7 @@ enum class DcMessageAction(val key: String) {
     UNREAD("unread"),
     FLAG("flag"),
     SUMMARIZE("summarize"),
+    TRANSLATE("translate"),
     DELETE("delete"),
 }
 

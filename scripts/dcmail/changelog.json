@@ -2,6 +2,24 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-21",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Übersetzen: Über englischen Mails erscheint „Diese Mail ist auf Englisch – Übersetzen“. Claude übersetzt ins Deutsche. Für andere Sprachen gibt es das Übersetzen-Symbol für die Aktionsleiste."
+        },
+        {
+          "type": "new",
+          "text": "Antwort mit Claude: neue Auswahl „Sprache der Antwort“ (wie die Mail, Deutsch, Englisch). Stichpunkte auf Deutsch, Antwort auf Englisch."
+        },
+        {
+          "type": "new",
+          "text": "Viele neue Statusleisten-Symbole pro Konto: Schneeflocke, Blume, Sonne, Blatt, Tanne, Geschenk, Mond, Haus, Auto, Flugzeug, Kaffee und mehr."
+        }
+      ]
+    },
+    {
       "build": 31,
       "date": "2026-10-20",
       "notes": [

@@ -63,6 +63,7 @@
         <item>@string/mark_as_unread_action</item>
         <item>@string/flag_action</item>
         <item>@string/dcmail_ai_summarize</item>
+        <item>@string/dcmail_translate_action</item>
         <item>@string/delete_action</item>
     </string-array>
 
@@ -88,6 +89,7 @@
         <item>unread</item>
         <item>flag</item>
         <item>summarize</item>
+        <item>translate</item>
         <item>delete</item>
     </string-array>
 
@@ -182,6 +184,23 @@
         <item>Folder</item>
         <item>Bell</item>
         <item>Kangaroo</item>
+        <item>Snowflake (winter)</item>
+        <item>Flower (spring)</item>
+        <item>Sun (summer)</item>
+        <item>Leaf (autumn)</item>
+        <item>Fir tree</item>
+        <item>Gift</item>
+        <item>Moon</item>
+        <item>Drop</item>
+        <item>House</item>
+        <item>Shopping cart</item>
+        <item>Euro</item>
+        <item>Car</item>
+        <item>Plane</item>
+        <item>Coffee</item>
+        <item>Music</item>
+        <item>Cake</item>
+        <item>Paw</item>
     </string-array>
     <string-array name="dcmail_notification_icon_values" translatable="false">
         <item>default</item>
@@ -197,6 +216,23 @@
         <item>folder</item>
         <item>notifications</item>
         <item>kangaroo</item>
+        <item>snowflake</item>
+        <item>flower</item>
+        <item>sun</item>
+        <item>leaf</item>
+        <item>tree</item>
+        <item>gift</item>
+        <item>moon</item>
+        <item>drop</item>
+        <item>home</item>
+        <item>cart</item>
+        <item>euro</item>
+        <item>car</item>
+        <item>plane</item>
+        <item>coffee</item>
+        <item>music</item>
+        <item>cake</item>
+        <item>paw</item>
     </string-array>
 
     <!-- DC Mail: favicons -->
@@ -322,4 +358,16 @@ Please close DC Mail completely and open it again.</string>
     <string name="dcmail_backup_restore_failed_accounts">%1$d account(s) could not be restored.</string>
     <string name="dcmail_backup_wrong_password">Wrong password – or the file is damaged.</string>
     <string name="dcmail_backup_error">That didn\'t work: %1$s</string>
+
+    <!-- DC Mail: translation -->
+    <string name="dcmail_translate_action">Translate</string>
+    <string name="dcmail_translate_title">Translation</string>
+    <string name="dcmail_translate_working">Claude is translating…</string>
+    <string name="dcmail_translate_banner">This mail is in English</string>
+    <string name="dcmail_ai_language_label">Language of the reply</string>
+    <string-array name="dcmail_ai_language_options">
+        <item>Like the mail</item>
+        <item>German</item>
+        <item>English</item>
+    </string-array>
 </resources>

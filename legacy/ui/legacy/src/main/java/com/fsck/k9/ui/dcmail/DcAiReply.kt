@@ -27,7 +27,6 @@ object DcAiReply {
             "jetzt ihrem Absender. Schreibe aus Sicht des Nutzers in der Ich-Form an diesen Absender.\n" +
             "Setze die Stichpunkte des Nutzers inhaltlich genau um. Erfinde keine Fakten, Zusagen, " +
             "Preise oder Termine.\n" +
-            "Antworte in der Sprache der Original-E-Mail, ohne Original-E-Mail auf Deutsch.\n" +
             "Gib ausschließlich den Text der E-Mail aus: keine Betreffzeile, keine Erklärungen, " +
             "keine Platzhalter wie [Name] und keine Signatur, die fügt die App selbst an."
 
@@ -66,6 +65,7 @@ object DcAiReply {
         val addressSpinner = optionSpinner(activity, R.array.dcmail_ai_address_options, style.address)
         val lengthSpinner = optionSpinner(activity, R.array.dcmail_ai_length_options, style.length)
         val toneSpinner = optionSpinner(activity, R.array.dcmail_ai_tone_options, style.tone)
+        val languageSpinner = optionSpinner(activity, R.array.dcmail_ai_language_options, style.language)
 
         val container = LinearLayout(activity)
         container.orientation = LinearLayout.VERTICAL
@@ -77,6 +77,8 @@ object DcAiReply {
         container.addView(lengthSpinner)
         container.addView(optionLabel(activity, R.string.dcmail_ai_tone_label, padding))
         container.addView(toneSpinner)
+        container.addView(optionLabel(activity, R.string.dcmail_ai_language_label, padding))
+        container.addView(languageSpinner)
 
         val scrollView = android.widget.ScrollView(activity)
         scrollView.addView(container)
@@ -89,6 +91,7 @@ object DcAiReply {
                     address = addressSpinner.selectedItemPosition,
                     length = lengthSpinner.selectedItemPosition,
                     tone = toneSpinner.selectedItemPosition,
+                    language = languageSpinner.selectedItemPosition,
                 )
                 DcAiSettings.saveStyle(activity, chosenStyle)
 
@@ -123,6 +126,8 @@ object DcAiReply {
             append(LENGTH_RULES.getOrElse(style.length) { LENGTH_RULES[1] })
             append("\n")
             append(TONE_RULES.getOrElse(style.tone) { TONE_RULES[1] })
+            append("\n")
+            append(LANGUAGE_RULES.getOrElse(style.language) { LANGUAGE_RULES[0] })
             if (config.instructions.isNotBlank()) {
                 append("\n\nZusätzliche Anweisungen des Nutzers:\n")
                 append(config.instructions.trim())
@@ -196,6 +201,14 @@ object DcAiReply {
     }
 
     // Order must match the string arrays dcmail_ai_*_options
+    private val LANGUAGE_RULES = listOf(
+        "Sprache: Antworte in der Sprache der Original-E-Mail, ohne Original-E-Mail auf Deutsch. " +
+            "Die Stichpunkte des Nutzers können auf Deutsch sein, übertrage sie sinngemäß.",
+        "Sprache: Antworte auf Deutsch.",
+        "Sprache: Antworte auf Englisch. Die Stichpunkte des Nutzers können auf Deutsch sein, " +
+            "übertrage sie sinngemäß in natürliches, höfliches Geschäftsenglisch.",
+    )
+
     private val ADDRESS_RULES = listOf(
         "Anrede: Übernimm Du oder Sie aus der Original-E-Mail. Ohne Original-E-Mail siezen.",
         "Anrede: Duze den Empfänger.",
