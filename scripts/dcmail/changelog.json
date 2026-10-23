@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-23",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Neuer Schnellfilter „★ Markiert“ über der Mailliste: zeigt nur Mails mit Stern."
+        }
+      ]
+    },
+    {
       "build": 32,
       "date": "2026-10-21",
       "notes": [

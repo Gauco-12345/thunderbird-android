@@ -34,7 +34,7 @@ object DcMailCategories {
         NONE(null),
     }
 
-    enum class Filter { ALL, CONTACTS, NEWSLETTER }
+    enum class Filter { ALL, FLAGGED, CONTACTS, NEWSLETTER }
 
     private data class HeaderInfo(val newsletter: Boolean, val spamScore: Float?, val authFailed: Boolean)
 
@@ -92,6 +92,7 @@ object DcMailCategories {
 
     fun matches(item: MessageListItem, filter: Filter): Boolean = when (filter) {
         Filter.ALL -> true
+        Filter.FLAGGED -> item.isStarred
         Filter.CONTACTS -> category(item) == Category.CONTACT
         Filter.NEWSLETTER -> isNewsletter(item)
     }

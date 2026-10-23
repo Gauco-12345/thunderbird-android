@@ -2052,12 +2052,14 @@ class LegacyMessageListFragment :
         chips.check(
             when (com.fsck.k9.ui.dcmail.DcMailCategories.filter) {
                 com.fsck.k9.ui.dcmail.DcMailCategories.Filter.ALL -> R.id.dcmail_filter_all
+                com.fsck.k9.ui.dcmail.DcMailCategories.Filter.FLAGGED -> R.id.dcmail_filter_flagged
                 com.fsck.k9.ui.dcmail.DcMailCategories.Filter.CONTACTS -> R.id.dcmail_filter_contacts
                 com.fsck.k9.ui.dcmail.DcMailCategories.Filter.NEWSLETTER -> R.id.dcmail_filter_newsletter
             },
         )
         chips.setOnCheckedStateChangeListener { _, checkedIds ->
             com.fsck.k9.ui.dcmail.DcMailCategories.filter = when (checkedIds.firstOrNull()) {
+                R.id.dcmail_filter_flagged -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.FLAGGED
                 R.id.dcmail_filter_contacts -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.CONTACTS
                 R.id.dcmail_filter_newsletter -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.NEWSLETTER
                 else -> com.fsck.k9.ui.dcmail.DcMailCategories.Filter.ALL
