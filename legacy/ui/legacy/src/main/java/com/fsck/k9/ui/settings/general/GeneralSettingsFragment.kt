@@ -141,11 +141,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 context?.let { DcUpdateActivity.start(it) }
                 true
             }
-        findPreference<Preference>("dcmail_unified_inbox")?.onPreferenceClickListener =
-            Preference.OnPreferenceClickListener {
-                activity?.let { com.fsck.k9.ui.dcmail.DcUnifiedInbox.show(it) }
-                true
-            }
         findPreference<Preference>("dcmail_backup_create")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 dcBackupCreateContract.launch(com.fsck.k9.ui.dcmail.DcBackupUi.suggestedFileName())

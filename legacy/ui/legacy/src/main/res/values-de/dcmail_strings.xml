@@ -276,10 +276,4 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
         <item>Deutsch</item>
         <item>Englisch</item>
     </string-array>
-
-    <!-- DC Mail: unified inbox -->
-    <string name="dcmail_unified_title">Gemeinsamer Posteingang</string>
-    <string name="dcmail_unified_summary">Auswählen, welche Konten im gemeinsamen Posteingang zusammengefasst werden</string>
-    <string name="dcmail_unified_saved">Gespeichert</string>
-    <string name="dcmail_unified_none">Keine Konten mit Posteingang gefunden</string>
 </resources>

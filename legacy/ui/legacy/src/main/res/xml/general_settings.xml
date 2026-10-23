@@ -325,13 +325,6 @@
                 android:title="@string/dcmail_favicons_title"
                 />
 
-            <Preference
-                android:key="dcmail_unified_inbox"
-                android:persistent="false"
-                android:summary="@string/dcmail_unified_summary"
-                android:title="@string/dcmail_unified_title"
-                />
-
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="dcmail_categories"
