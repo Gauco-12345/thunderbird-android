@@ -371,4 +371,10 @@ Please close DC Mail completely and open it again.</string>
         <item>German</item>
         <item>English</item>
     </string-array>
+
+    <!-- DC Mail: unified inbox -->
+    <string name="dcmail_unified_title">Unified inbox</string>
+    <string name="dcmail_unified_summary">Choose which accounts are combined in the unified inbox</string>
+    <string name="dcmail_unified_saved">Saved</string>
+    <string name="dcmail_unified_none">No accounts with an inbox found</string>
 </resources>
