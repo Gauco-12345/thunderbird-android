@@ -45,6 +45,14 @@
                 />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/dcmail_filter_unread"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dcmail_filter_unread"
+                />
+
+            <com.google.android.material.chip.Chip
                 android:id="@+id/dcmail_filter_flagged"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"

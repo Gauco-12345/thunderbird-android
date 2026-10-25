@@ -330,6 +330,7 @@
 
     <!-- DC Mail: colour code -->
     <string name="dcmail_filter_all">All</string>
+    <string name="dcmail_filter_unread">Unread</string>
     <string name="dcmail_filter_flagged">★ Flagged</string>
     <string name="dcmail_filter_contacts">Contacts</string>
     <string name="dcmail_filter_newsletter">Newsletters</string>

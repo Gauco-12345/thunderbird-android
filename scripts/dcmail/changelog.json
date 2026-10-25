@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-25",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Neuer Schnellfilter „Ungelesen“ über der Mailliste."
+        },
+        {
+          "type": "changed",
+          "text": "Newsletter werden in der Mailliste nicht mehr blasser dargestellt, nur noch mit grauem Streifen markiert."
+        }
+      ]
+    },
+    {
       "build": 33,
       "date": "2026-10-23",
       "notes": [

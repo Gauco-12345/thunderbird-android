@@ -235,6 +235,7 @@
 
     <!-- DC Mail: colour code -->
     <string name="dcmail_filter_all">Alle</string>
+    <string name="dcmail_filter_unread">Ungelesen</string>
     <string name="dcmail_filter_flagged">★ Markiert</string>
     <string name="dcmail_filter_contacts">Kontakte</string>
     <string name="dcmail_filter_newsletter">Newsletter</string>

@@ -244,7 +244,7 @@ class MessageViewHolder(
         }
     }
 
-    // DC Mail: coloured stripe on the left, newsletters slightly faded
+    // DC Mail: coloured stripe on the left
     private fun bindDcCategory(item: MessageListItem) {
         val stripe = dcCategoryStripe ?: return
         val enabled = com.fsck.k9.ui.dcmail.DcMailCategories.isEnabled(itemView.context)
@@ -260,11 +260,6 @@ class MessageViewHolder(
             stripe.setBackgroundColor(color)
             stripe.visibility = View.VISIBLE
         }
-        val alpha = if (category == com.fsck.k9.ui.dcmail.DcMailCategories.Category.NEWSLETTER) DC_FADED_ALPHA else 1f
-        subjectView.alpha = alpha
-        previewView.alpha = alpha
-        dateView.alpha = alpha
-        contactPictureView.alpha = alpha
     }
 
     private fun selectBackgroundColor(selected: Boolean, read: Boolean, active: Boolean): Int {
@@ -299,7 +294,6 @@ class MessageViewHolder(
     }
 
     companion object {
-        private const val DC_FADED_ALPHA = 0.55f
 
 
         @Suppress("LongParameterList")
