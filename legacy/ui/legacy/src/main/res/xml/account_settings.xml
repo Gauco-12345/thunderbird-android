@@ -167,6 +167,22 @@
             app:pref_summaryHasTime="%s"
             />
 
+        <Preference
+            android:dependency="account_notify"
+            android:key="dcmail_keywords_always"
+            android:persistent="false"
+            android:summary="@string/dcmail_keywords_always_summary"
+            android:title="@string/dcmail_keywords_always_title"
+            />
+
+        <Preference
+            android:dependency="account_notify"
+            android:key="dcmail_keywords_never"
+            android:persistent="false"
+            android:summary="@string/dcmail_keywords_never_summary"
+            android:title="@string/dcmail_keywords_never_title"
+            />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="account_notify"

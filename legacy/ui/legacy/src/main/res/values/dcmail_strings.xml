@@ -372,4 +372,12 @@ Please close DC Mail completely and open it again.</string>
         <item>German</item>
         <item>English</item>
     </string-array>
+
+    <!-- DC Mail: notification keywords -->
+    <string name="dcmail_keywords_always_title">Always notify for subject keywords</string>
+    <string name="dcmail_keywords_always_summary">Notifies even during quiet days and quiet hours, e.g. urgent, outage</string>
+    <string name="dcmail_keywords_never_title">Never notify for subject keywords</string>
+    <string name="dcmail_keywords_never_summary">These mails arrive silently, e.g. newsletter, invoice</string>
+    <string name="dcmail_keywords_message">Separate terms with commas or new lines. Upper and lower case don\'t matter; a term matches anywhere in the subject.</string>
+    <string name="dcmail_keywords_hint">e.g. urgent, outage, order</string>
 </resources>

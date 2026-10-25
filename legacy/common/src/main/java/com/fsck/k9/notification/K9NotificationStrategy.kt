@@ -36,17 +36,26 @@ class K9NotificationStrategy(
     ): Boolean {
         val account = accountManager.findById(accountId) ?: return false
 
-        if (account.isDcQuietNow) {
+        // DC Mail: subject keywords per account
+        val subject = message.subject
+        if (DcNotifyKeywords.matches(DcNotifyKeywords.Kind.NEVER, accountId.toString(), subject)) {
+            Log.v(TAG, "No notification: Subject contains a never-notify keyword")
+            return false
+        }
+        val isDcAlways = DcNotifyKeywords.matches(DcNotifyKeywords.Kind.ALWAYS, accountId.toString(), subject)
+
+        if (!isDcAlways && account.isDcQuietNow) {
             Log.v(TAG, "No notification: Quiet days or quiet hours of this account")
             return false
         }
 
-        if (generalSettingsManager.getConfig().notification.isQuietDay) {
+        if (!isDcAlways && generalSettingsManager.getConfig().notification.isQuietDay) {
             Log.v(TAG, "No notification: Today is a quiet day")
             return false
         }
 
-        if (!generalSettingsManager.getConfig().notification.isNotificationDuringQuietTimeEnabled &&
+        if (!isDcAlways &&
+            !generalSettingsManager.getConfig().notification.isNotificationDuringQuietTimeEnabled &&
             generalSettingsManager.getConfig().notification.isQuietTime
         ) {
             Log.v(TAG, "No notification: Quiet time is active")

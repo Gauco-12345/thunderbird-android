@@ -277,4 +277,12 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
         <item>Deutsch</item>
         <item>Englisch</item>
     </string-array>
+
+    <!-- DC Mail: notification keywords -->
+    <string name="dcmail_keywords_always_title">Immer melden bei Begriffen im Betreff</string>
+    <string name="dcmail_keywords_always_summary">Benachrichtigt auch während Ruhetagen und Ruhezeit, z. B. dringend, Störung</string>
+    <string name="dcmail_keywords_never_title">Nie melden bei Begriffen im Betreff</string>
+    <string name="dcmail_keywords_never_summary">Diese Mails kommen still rein, z. B. Newsletter, Rechnung</string>
+    <string name="dcmail_keywords_message">Begriffe mit Komma oder Zeilenumbruch trennen. Groß- und Kleinschreibung ist egal, der Begriff darf irgendwo im Betreff stehen.</string>
+    <string name="dcmail_keywords_hint">z. B. dringend, Störung, Bestellung</string>
 </resources>

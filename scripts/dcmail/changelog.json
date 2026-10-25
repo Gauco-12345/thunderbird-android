@@ -16,6 +16,10 @@
         {
           "type": "changed",
           "text": "Neues App-Icon: weißes Känguru mit „DC“ und orangem Briefumschlag auf Dunkelblau."
+        },
+        {
+          "type": "new",
+          "text": "Benachrichtigungen pro Konto nach Begriffen im Betreff: „Immer melden“ (auch in der Ruhezeit, z. B. „dringend“) und „Nie melden“ (z. B. „Newsletter“). Kontoeinstellungen → Benachrichtigungen."
         }
       ]
     },

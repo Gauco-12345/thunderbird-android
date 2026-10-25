@@ -50,6 +50,7 @@ object DcBackup {
         "dcmail_favicons",
         "dcmail_insights",
         "dcmail_message_actions",
+        "dcmail_notify_keywords",
         "dcmail_sieve",
         "dcmail_templates",
         "dcmail_update",
@@ -188,6 +189,7 @@ object DcBackup {
         restoreSecrets(context, payload.optJSONObject("secrets") ?: JSONObject())
         val result = restoreK9Settings(Base64.decode(payload.getString("k9"), Base64.NO_WRAP))
         restoreAccountExtras(payload.optJSONObject("accounts") ?: JSONObject(), result.second)
+        remapAccountKeys(context, result.second)
         return result.first
     }
 
@@ -280,6 +282,20 @@ object DcBackup {
                 // Keep the account as imported
             }
         }
+    }
+
+    /** Per-account keyword lists are stored under the account ID, which changes when an account is re-created. */
+    private fun remapAccountKeys(context: Context, mapping: Map<String, String>) {
+        val preferences = context.getSharedPreferences("dcmail_notify_keywords", Context.MODE_PRIVATE)
+        val editor = preferences.edit()
+        for ((original, target) in mapping) {
+            if (original == target) continue
+            for (prefix in listOf("always_", "never_")) {
+                val value = preferences.getString(prefix + original, null) ?: continue
+                editor.putString(prefix + target, value).remove(prefix + original)
+            }
+        }
+        editor.apply()
     }
 
     private fun deriveKey(password: CharArray, salt: ByteArray, iterations: Int): SecretKeySpec {

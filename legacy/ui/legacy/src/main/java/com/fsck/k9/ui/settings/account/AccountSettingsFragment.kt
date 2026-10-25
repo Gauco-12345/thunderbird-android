@@ -114,6 +114,53 @@ class AccountSettingsFragment : PreferenceFragmentCompat(), ConfirmationDialogFr
         initializeFolderSettings(account.id)
         initializeNotifications(account)
         initializeDcVacation()
+        initializeDcKeywords()
+    }
+
+    // DC Mail: subject keywords that always / never notify
+    private fun initializeDcKeywords() {
+        bindDcKeywords("dcmail_keywords_always", com.fsck.k9.notification.DcNotifyKeywords.Kind.ALWAYS,
+            R.string.dcmail_keywords_always_title, R.string.dcmail_keywords_always_summary)
+        bindDcKeywords("dcmail_keywords_never", com.fsck.k9.notification.DcNotifyKeywords.Kind.NEVER,
+            R.string.dcmail_keywords_never_title, R.string.dcmail_keywords_never_summary)
+    }
+
+    private fun bindDcKeywords(
+        key: String,
+        kind: com.fsck.k9.notification.DcNotifyKeywords.Kind,
+        titleRes: Int,
+        summaryRes: Int,
+    ) {
+        val preference = findPreference<Preference>(key) ?: return
+        val id = accountId.toString()
+        fun updateSummary() {
+            val words = com.fsck.k9.notification.DcNotifyKeywords.parse(
+                com.fsck.k9.notification.DcNotifyKeywords.load(requireContext(), kind, id),
+            )
+            preference.summary = if (words.isEmpty()) getString(summaryRes) else words.joinToString(", ")
+        }
+        updateSummary()
+        preference.onClick {
+            val input = android.widget.EditText(requireContext())
+            input.setText(com.fsck.k9.notification.DcNotifyKeywords.load(requireContext(), kind, id))
+            input.hint = getString(R.string.dcmail_keywords_hint)
+            input.minLines = 3
+            input.gravity = android.view.Gravity.TOP or android.view.Gravity.START
+            val padding = (24 * resources.displayMetrics.density).toInt()
+            val container = android.widget.FrameLayout(requireContext())
+            container.setPadding(padding, padding / 2, padding, 0)
+            container.addView(input)
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle(titleRes)
+                .setMessage(R.string.dcmail_keywords_message)
+                .setView(container)
+                .setPositiveButton(R.string.dcmail_template_save) { _, _ ->
+                    com.fsck.k9.notification.DcNotifyKeywords.save(requireContext(), kind, id, input.text.toString())
+                    updateSummary()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
     }
 
     // DC Mail: out-of-office reply
