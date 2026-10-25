@@ -12,6 +12,10 @@
         {
           "type": "changed",
           "text": "Newsletter werden in der Mailliste nicht mehr blasser dargestellt, nur noch mit grauem Streifen markiert."
+        },
+        {
+          "type": "changed",
+          "text": "Neues App-Icon: weißes Känguru mit „DC“ und orangem Briefumschlag auf Dunkelblau."
         }
       ]
     },
