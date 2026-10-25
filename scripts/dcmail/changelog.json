@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-25",
+      "notes": [
+        {
+          "type": "changed",
+          "text": "App-Icon gespiegelt: „DC“ und Umschlag links, Känguru rechts."
+        },
+        {
+          "type": "fixed",
+          "text": "Update-Hinweise erzeugten eine Zahl am App-Icon, obwohl keine neuen Mails gemeldet wurden. Alte Update-Hinweise werden beim Öffnen der App entfernt."
+        }
+      ]
+    },
+    {
       "build": 36,
       "date": "2026-10-25",
       "notes": [

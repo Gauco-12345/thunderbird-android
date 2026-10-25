@@ -655,6 +655,7 @@ open class MessageHomeActivity :
 
         com.fsck.k9.ui.dcmail.DcCrashLog.install(this)
         com.fsck.k9.ui.dcmail.DcUpdater.checkAutomatically(this)
+        com.fsck.k9.ui.dcmail.DcUpdater.clearStaleNotification(this)
 
         if (messageListActivityConfig == null) {
             messageListActivityConfig = MessageListActivityConfig.create(generalSettingsManager)

@@ -50,7 +50,8 @@ object DcUpdater {
     private const val APK_FILE_NAME = "dcmail-update.apk"
     private const val ZIP_FILE_NAME = "dcmail-update.zip"
     private const val KEY_DOWNLOAD_ID = "download_id"
-    private const val CHANNEL_ID = "dcmail_update"
+    private const val CHANNEL_ID = "dcmail_update_v2"
+    private const val OLD_CHANNEL_ID = "dcmail_update"
     private const val NOTIFICATION_ID = 0x0DC0
     const val ACTION_INSTALL_AGAIN = "de.datacreate.dcmail.action.INSTALL_UPDATE"
     private const val CHANGELOG_PATH = "scripts/dcmail/changelog.json"
@@ -297,13 +298,17 @@ object DcUpdater {
     private fun ensureChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = context.getSystemService(NotificationManager::class.java)
+            manager.deleteNotificationChannel(OLD_CHANNEL_ID)
             if (manager.getNotificationChannel(CHANNEL_ID) == null) {
                 manager.createNotificationChannel(
                     NotificationChannel(
                         CHANNEL_ID,
                         context.getString(R.string.dcmail_update_channel),
                         NotificationManager.IMPORTANCE_HIGH,
-                    ),
+                    ).apply {
+                        // Update hints must not show up as a number on the app icon
+                        setShowBadge(false)
+                    },
                 )
             }
         }
@@ -351,6 +356,18 @@ object DcUpdater {
             builder.setContentText(message + " – " + context.getString(R.string.dcmail_update_tap_retry))
         }
         show(context, builder.build())
+    }
+
+    /**
+     * After an update was installed (or the app is simply opened again) an old "update ready" hint is obsolete;
+     * remove it together with the old badge-showing channel.
+     */
+    @JvmStatic
+    fun clearStaleNotification(context: Context) {
+        cancelNotification(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.getSystemService(NotificationManager::class.java)?.deleteNotificationChannel(OLD_CHANNEL_ID)
+        }
     }
 
     internal fun cancelNotification(context: Context) {
