@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import app.k9mail.legacy.message.controller.MessageReference
 import com.fsck.k9.mailstore.MessageViewInfo
 import androidx.core.content.FileProvider
+import com.fsck.k9.provider.AttachmentTempFileProvider
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -88,7 +89,7 @@ object DcShareToClaude {
 
         val progress = DcAiReply.showProgress(activity, R.string.dcmail_claude_preparing)
         Thread {
-            val files = ArrayList<File>()
+            val files = ArrayList<Pair<File, String>>()
             val included = StringBuilder()
             val skipped = mutableListOf<String>()
             var error: String? = null
@@ -117,9 +118,10 @@ object DcShareToClaude {
                     append("\n").append(plainText?.trim().orEmpty())
                     if (included.isNotEmpty()) append("\n\n").append(included)
                 }
-                val mailFile = File(dir, safeFileName(subject.ifBlank { "E-Mail" }) + ".txt")
+                val mailName = safeFileName(subject.ifBlank { "E-Mail" }) + ".txt"
+                val mailFile = newFile(dir, mailName)
                 mailFile.writeText(mailText, Charsets.UTF_8)
-                files.add(0, mailFile)
+                files.add(0, mailFile to mailName)
             } catch (e: java.io.IOException) {
                 error = e.message ?: e.javaClass.simpleName
             } catch (e: RuntimeException) {
@@ -157,7 +159,7 @@ object DcShareToClaude {
         name: String,
         bytes: ByteArray,
         dir: File,
-        files: MutableList<File>,
+        files: MutableList<Pair<File, String>>,
         included: StringBuilder,
         skipped: MutableList<String>,
         total: LongArray,
@@ -170,9 +172,9 @@ object DcShareToClaude {
                     skipped.add(name)
                     return
                 }
-                val target = uniqueFile(dir, safeFileName(name))
+                val target = newFile(dir, safeFileName(name))
                 target.writeBytes(bytes)
-                files.add(target)
+                files.add(target to safeFileName(name))
             }
             in TEXT_TYPES -> addTextFile(name, decodeText(bytes, extension), dir, files, included, skipped)
             in OFFICE_TYPES -> {
@@ -189,7 +191,7 @@ object DcShareToClaude {
         zipName: String,
         bytes: ByteArray,
         dir: File,
-        files: MutableList<File>,
+        files: MutableList<Pair<File, String>>,
         included: StringBuilder,
         skipped: MutableList<String>,
         total: LongArray,
@@ -227,7 +229,7 @@ object DcShareToClaude {
         name: String,
         text: String,
         dir: File,
-        files: MutableList<File>,
+        files: MutableList<Pair<File, String>>,
         included: StringBuilder,
         skipped: MutableList<String>,
     ) {
@@ -235,10 +237,12 @@ object DcShareToClaude {
             appendText(included, name, text)
             return
         }
-        val fileName = safeFileName(name).let { if (it.lowercase().endsWith(".txt")) it else "$it.txt" }
-        val target = uniqueFile(dir, fileName)
+        // CSV keeps its name and type (the Claude app reads CSV); everything else becomes a .txt file
+        val safe = safeFileName(name)
+        val fileName = if (safe.lowercase().endsWith(".csv") || safe.lowercase().endsWith(".txt")) safe else "$safe.txt"
+        val target = newFile(dir, fileName)
         target.writeText(text, Charsets.UTF_8)
-        files.add(target)
+        files.add(target to fileName)
         if (text.isBlank()) skipped.add(name)
     }
 
@@ -298,19 +302,15 @@ object DcShareToClaude {
         return output.toByteArray()
     }
 
-    private fun uniqueFile(dir: File, name: String): File {
-        var file = File(dir, name)
-        var index = 2
-        while (file.exists()) {
-            file = File(dir, name.substringBeforeLast('.') + " ($index)." + name.substringAfterLast('.', "bin"))
-            index++
-        }
-        return file
-    }
+    /** Physical file with a unique name in the temp directory; the display name is passed separately. */
+    private fun newFile(dir: File, displayName: String): File =
+        File(dir, "claude-" + System.currentTimeMillis() + "-" + (counter++) + "-" + displayName.take(MAX_FILE_NAME))
 
-    private fun startShare(activity: Activity, text: String, subject: String, files: List<File>) {
-        val uris = ArrayList(files.map { uriFor(activity, it) })
-        val types = files.map { mimeType(it) }.distinct()
+    private var counter = 0
+
+    private fun startShare(activity: Activity, text: String, subject: String, files: List<Pair<File, String>>) {
+        val uris = ArrayList(files.map { (file, name) -> uriFor(activity, file, name) })
+        val types = files.map { mimeType(it.second) }.distinct()
         val type = when {
             types.size == 1 -> types.first()
             types.all { it.startsWith("image/") } -> "image/*"
@@ -342,12 +342,13 @@ object DcShareToClaude {
         }
     }
 
-    private fun mimeType(file: File): String = when (file.extension.lowercase()) {
+    private fun mimeType(name: String): String = when (name.substringAfterLast('.', "").lowercase()) {
         "pdf" -> "application/pdf"
         "png" -> "image/png"
         "jpg", "jpeg" -> "image/jpeg"
         "gif" -> "image/gif"
         "webp" -> "image/webp"
+        "csv" -> "text/csv"
         else -> "text/plain"
     }
 
@@ -364,13 +365,19 @@ object DcShareToClaude {
     private const val BUFFER_SIZE = 64 * 1024
 
     private fun newShareDirectory(activity: Activity): File {
-        val dir = File(File(activity.cacheDir, "temp"), "claude-" + System.currentTimeMillis())
+        val dir = File(activity.cacheDir, "temp")
         if (!dir.mkdirs() && !dir.isDirectory) throw java.io.IOException("Kein Zwischenspeicher")
         return dir
     }
 
-    private fun uriFor(activity: Activity, file: File): Uri =
-        FileProvider.getUriForFile(activity, activity.packageName + ".tempfileprovider", file)
+    /**
+     * The receiving app sees [displayName] and the MIME type; without the type in the URI the provider answers
+     * "null" and the Claude app refuses the attachment.
+     */
+    private fun uriFor(activity: Activity, file: File, displayName: String): Uri {
+        val uri = FileProvider.getUriForFile(activity, activity.packageName + ".tempfileprovider", file, displayName)
+        return AttachmentTempFileProvider.getMimeTypeUri(uri, mimeType(displayName))
+    }
 
     private fun safeFileName(value: String): String =
         value.replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_").trim().take(MAX_FILE_NAME).ifBlank { "E-Mail" }

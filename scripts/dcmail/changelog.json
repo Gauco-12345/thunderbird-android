@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-26",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "„An Claude“: Die weitergegebenen Dateien hatten keinen Dateityp, deshalb lehnte die Claude-App jeden Anhang ab – auch einfache Textdateien. Jetzt wird der Typ mitgegeben; CSV-Dateien kommen als CSV an."
+        }
+      ]
+    },
+    {
       "build": 42,
       "date": "2026-10-26",
       "notes": [
