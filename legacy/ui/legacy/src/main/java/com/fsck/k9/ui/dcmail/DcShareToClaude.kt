@@ -174,10 +174,10 @@ object DcShareToClaude {
                 target.writeBytes(bytes)
                 files.add(target)
             }
-            in TEXT_TYPES -> appendText(included, name, decodeText(bytes, extension))
+            in TEXT_TYPES -> addTextFile(name, decodeText(bytes, extension), dir, files, included, skipped)
             in OFFICE_TYPES -> {
                 val text = officeText(bytes, extension)
-                if (text.isBlank()) skipped.add(name) else appendText(included, name, text)
+                if (text.isBlank()) skipped.add(name) else addTextFile(name, text, dir, files, included, skipped)
             }
             "zip" -> if (depth > 0) skipped.add(name) else unzip(name, bytes, dir, files, included, skipped, total)
             else -> skipped.add(name)
@@ -216,6 +216,30 @@ object DcShareToClaude {
                 entry = zip.nextEntry
             }
         }
+    }
+
+    /**
+     * Text content (e.g. a CSV file) becomes its own .txt file with the original name, e.g. "umsatz.csv.txt", so the
+     * Claude app accepts it and the structure of the data stays intact.
+     */
+    @Suppress("LongParameterList")
+    private fun addTextFile(
+        name: String,
+        text: String,
+        dir: File,
+        files: MutableList<File>,
+        included: StringBuilder,
+        skipped: MutableList<String>,
+    ) {
+        if (files.size >= MAX_FILES) {
+            appendText(included, name, text)
+            return
+        }
+        val fileName = safeFileName(name).let { if (it.lowercase().endsWith(".txt")) it else "$it.txt" }
+        val target = uniqueFile(dir, fileName)
+        target.writeText(text, Charsets.UTF_8)
+        files.add(target)
+        if (text.isBlank()) skipped.add(name)
     }
 
     private fun appendText(target: StringBuilder, name: String, text: String) {

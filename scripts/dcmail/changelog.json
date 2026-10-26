@@ -7,7 +7,7 @@
       "notes": [
         {
           "type": "fixed",
-          "text": "„An Claude“: Die Claude-App meldete einen Fehler beim Anhang. Jetzt gehen nur noch PDFs und Bilder als Dateien mit; Text aus Word-, Excel-, PowerPoint-, CSV- und Textdateien (auch aus ZIP-Archiven) steht direkt in der Mail-Textdatei."
+          "text": "„An Claude“: Die Claude-App meldete einen Fehler beim Anhang. Jetzt gehen PDFs und Bilder als Dateien mit; CSV-, Text-, Word-, Excel- und PowerPoint-Dateien (auch aus ZIP-Archiven) als einzelne Textdateien, z. B. „umsatz.csv.txt“."
         }
       ]
     },
