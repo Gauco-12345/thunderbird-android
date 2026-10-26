@@ -306,4 +306,24 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
     <string name="dcmail_claude_eml_note">Die komplette Mail mit allen Anhängen liegt als .eml-Datei bei.</string>
     <string name="dcmail_claude_files_note">Anbei: die Mail „%1$s“ als Textdatei und ihre Anhänge (ZIP-Dateien entpackt).</string>
     <string name="dcmail_claude_skipped">Nicht mitgeschickt (Dateityp nicht unterstützt): %1$s</string>
+
+    <!-- DC Mail: Claude prompts -->
+    <string name="dcmail_prompts_title">Claude-Prompts</string>
+    <string name="dcmail_prompts_summary">Eigene fertige Aufgaben für „An Claude“ anlegen und bearbeiten</string>
+    <string name="dcmail_prompts_add">＋ Neuer Prompt</string>
+    <string name="dcmail_prompts_done">Fertig</string>
+    <string name="dcmail_prompts_reset">Standard</string>
+    <string name="dcmail_prompts_reset_confirm">Alle eigenen Prompts durch die Standard-Prompts ersetzen?</string>
+    <string name="dcmail_prompts_new">Neuer Prompt</string>
+    <string name="dcmail_prompts_edit">Prompt bearbeiten</string>
+    <string name="dcmail_prompts_name_hint">Kurzname, z. B. Lexware-Check</string>
+    <string name="dcmail_prompts_text_hint">Was soll Claude tun? z. B. Prüfe die CSV-Dateien auf fehlende Belegnummern und liste Auffälligkeiten als Tabelle auf.</string>
+    <string name="dcmail_prompts_text_missing">Bitte einen Prompt-Text eingeben.</string>
+    <string-array name="dcmail_claude_prompt_names">
+        <item>Antwort entwerfen</item>
+        <item>Aufgaben und Fristen</item>
+        <item>Termin daraus machen</item>
+        <item>Angebot/Rechnung prüfen</item>
+        <item>Zusammenfassen</item>
+    </string-array>
 </resources>

@@ -51,7 +51,7 @@ object DcShareToClaude {
                 .show()
             return
         }
-        val tasks = activity.resources.getStringArray(R.array.dcmail_claude_tasks)
+        val prompts = DcClaudePrompts.load(activity)
         val input = EditText(activity)
         input.hint = activity.getString(R.string.dcmail_claude_task_hint)
         input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or
@@ -66,11 +66,14 @@ object DcShareToClaude {
         val dialog = AlertDialog.Builder(activity)
             .setTitle(R.string.dcmail_claude_title)
             .setView(container)
-            .setItems(tasks) { _, which -> share(activity, info, plainText, messageReference, tasks[which]) }
+            .setItems(prompts.map { it.name }.toTypedArray()) { _, which ->
+                share(activity, info, plainText, messageReference, prompts[which].text)
+            }
             .setPositiveButton(R.string.dcmail_claude_send) { _, _ ->
                 share(activity, info, plainText, messageReference, input.text.toString().trim())
             }
             .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.dcmail_prompts_title) { _, _ -> DcClaudePrompts.showManager(activity) }
             .create()
         dialog.show()
     }

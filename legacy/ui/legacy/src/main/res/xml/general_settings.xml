@@ -456,6 +456,12 @@
             />
 
         <Preference
+            android:key="dcmail_claude_prompts"
+            android:summary="@string/dcmail_prompts_summary"
+            android:title="@string/dcmail_prompts_title"
+            />
+
+        <Preference
             android:key="dcmail_templates"
             android:summary="@string/dcmail_templates_summary"
             android:title="@string/dcmail_templates_title"

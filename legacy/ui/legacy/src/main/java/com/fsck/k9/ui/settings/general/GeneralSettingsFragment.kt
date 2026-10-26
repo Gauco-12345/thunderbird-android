@@ -151,6 +151,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 dcBackupRestoreContract.launch(arrayOf("*/*"))
                 true
             }
+        findPreference<Preference>("dcmail_claude_prompts")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                activity?.let { com.fsck.k9.ui.dcmail.DcClaudePrompts.showManager(it) }
+                true
+            }
         findPreference<Preference>("dcmail_ai_settings")?.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 context?.let { DcAiSettingsActivity.start(it) }

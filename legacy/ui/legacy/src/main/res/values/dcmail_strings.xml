@@ -403,4 +403,24 @@ Please close DC Mail completely and open it again.</string>
     <string name="dcmail_claude_eml_note">The complete mail including all attachments is attached as .eml file.</string>
     <string name="dcmail_claude_files_note">Attached: the mail “%1$s” as text file plus its attachments (ZIP files unpacked).</string>
     <string name="dcmail_claude_skipped">Not included (file type not supported): %1$s</string>
+
+    <!-- DC Mail: Claude prompts -->
+    <string name="dcmail_prompts_title">Claude prompts</string>
+    <string name="dcmail_prompts_summary">Create and edit your own ready-made tasks for “Send to Claude”</string>
+    <string name="dcmail_prompts_add">＋ New prompt</string>
+    <string name="dcmail_prompts_done">Done</string>
+    <string name="dcmail_prompts_reset">Defaults</string>
+    <string name="dcmail_prompts_reset_confirm">Replace all your prompts with the default prompts?</string>
+    <string name="dcmail_prompts_new">New prompt</string>
+    <string name="dcmail_prompts_edit">Edit prompt</string>
+    <string name="dcmail_prompts_name_hint">Short name, e.g. accounting check</string>
+    <string name="dcmail_prompts_text_hint">What should Claude do? E.g. check the CSV files for missing receipt numbers and list issues as a table.</string>
+    <string name="dcmail_prompts_text_missing">Please enter a prompt text.</string>
+    <string-array name="dcmail_claude_prompt_names">
+        <item>Draft a reply</item>
+        <item>Tasks and deadlines</item>
+        <item>Create an appointment</item>
+        <item>Check offer/invoice</item>
+        <item>Summarize</item>
+    </string-array>
 </resources>

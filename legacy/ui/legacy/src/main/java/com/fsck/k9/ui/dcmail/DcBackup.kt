@@ -46,6 +46,7 @@ object DcBackup {
     /** DC Mail preference files that are part of the backup. */
     private val PREFERENCE_FILES = listOf(
         "dcmail_ai",
+        "dcmail_claude_prompts",
         "dcmail_categories",
         "dcmail_favicons",
         "dcmail_insights",

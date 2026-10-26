@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-26",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Eigene Claude-Prompts: Einstellungen → Interaktion → „Claude-Prompts“ oder direkt im „An Claude“-Fenster über „Claude-Prompts“. Prompts anlegen, bearbeiten, löschen; sie erscheinen als Auswahl bei „An Claude“."
+        }
+      ]
+    },
+    {
       "build": 43,
       "date": "2026-10-26",
       "notes": [
