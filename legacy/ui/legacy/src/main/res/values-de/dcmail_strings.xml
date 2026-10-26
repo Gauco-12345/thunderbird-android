@@ -299,4 +299,9 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
         <item>Prüfe dieses Angebot bzw. diese Rechnung.</item>
         <item>Fasse diese Mail kurz zusammen.</item>
     </string-array>
+    <string name="dcmail_claude_incomplete">Von dieser Mail ist erst ein Teil heruntergeladen. Lade zuerst die komplette Mail, damit alle Anhänge mit zu Claude gehen, und tippe dann noch einmal auf „An Claude“.</string>
+    <string name="dcmail_claude_download">Komplette Mail laden</string>
+    <string name="dcmail_claude_preparing">Mail wird vorbereitet …</string>
+    <string name="dcmail_claude_error">Mail konnte nicht vorbereitet werden: %1$s</string>
+    <string name="dcmail_claude_eml_note">Die komplette Mail mit allen Anhängen liegt als .eml-Datei bei.</string>
 </resources>

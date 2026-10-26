@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-26",
+      "notes": [
+        {
+          "type": "changed",
+          "text": "„An Claude“ gibt die komplette Mail als .eml-Datei mit allen Anhängen weiter, PDFs und Bilder zusätzlich als eigene Dateien. Ist die Mail nur teilweise geladen, bietet DC Mail an, sie vorher komplett zu laden."
+        }
+      ]
+    },
+    {
       "build": 38,
       "date": "2026-10-26",
       "notes": [

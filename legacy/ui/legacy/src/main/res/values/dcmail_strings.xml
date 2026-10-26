@@ -396,4 +396,9 @@ Please close DC Mail completely and open it again.</string>
         <item>Check this offer/invoice</item>
         <item>Summarize</item>
     </string-array>
+    <string name="dcmail_claude_incomplete">Only part of this mail has been downloaded so far. Load the complete mail first so that all attachments go to Claude; then tap \u201cSend to Claude\u201d again.</string>
+    <string name="dcmail_claude_download">Load complete mail</string>
+    <string name="dcmail_claude_preparing">Preparing mail…</string>
+    <string name="dcmail_claude_error">Could not prepare the mail: %1$s</string>
+    <string name="dcmail_claude_eml_note">The complete mail including all attachments is attached as .eml file.</string>
 </resources>

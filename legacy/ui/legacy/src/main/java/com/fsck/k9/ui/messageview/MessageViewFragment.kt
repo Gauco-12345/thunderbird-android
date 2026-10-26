@@ -426,7 +426,9 @@ class MessageViewFragment :
 
     private fun onDcShareToClaude() {
         val info = dcMessageViewInfo ?: return
-        com.fsck.k9.ui.dcmail.DcShareToClaude.show(requireActivity(), info, dcPlainText(info))
+        com.fsck.k9.ui.dcmail.DcShareToClaude.show(requireActivity(), info, dcPlainText(info), messageReference) {
+            onDownloadButtonClicked()
+        }
     }
 
     private fun onDcTranslate() {
