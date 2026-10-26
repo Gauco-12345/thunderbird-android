@@ -13,8 +13,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import app.k9mail.legacy.message.controller.MessageReference
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.provider.AttachmentTempFileProvider
-import com.fsck.k9.provider.RawMessageProvider
+import androidx.core.content.FileProvider
+import java.io.File
+import java.util.zip.ZipInputStream
 import com.fsck.k9.ui.R
 import java.text.DateFormat
 
@@ -82,42 +83,53 @@ object DcShareToClaude {
         val date = message?.sentDate?.let { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(it) }
         val subject = info.subject ?: message?.subject.orEmpty()
 
-        val text = buildString {
-            if (task.isNotEmpty()) append(task).append("\n\n")
-            append(activity.getString(R.string.dcmail_claude_eml_note)).append("\n\n")
-            append("--- E-Mail ---\n")
-            if (from.isNotEmpty()) append("Von: ").append(from).append("\n")
-            if (!date.isNullOrEmpty()) append("Datum: ").append(date).append("\n")
-            if (subject.isNotEmpty()) append("Betreff: ").append(subject).append("\n")
-            append("\n").append(plainText?.trim().orEmpty().take(MAX_TEXT_CHARS))
-        }
-
         val progress = DcAiReply.showProgress(activity, R.string.dcmail_claude_preparing)
         Thread {
             val uris = ArrayList<Uri>()
+            val skipped = mutableListOf<String>()
             var error: String? = null
             try {
-                // The complete mail incl. all attachments as .eml file
-                val fileName = safeFileName(subject.ifBlank { "E-Mail" }) + ".eml"
-                val rawUri = RawMessageProvider.getRawMessageUri(messageReference)
-                uris.add(AttachmentTempFileProvider.createTempUriForContentUri(activity, rawUri, fileName))
+                val dir = newShareDirectory(activity)
 
-                // PDFs and images additionally as separate files, so Claude can open them directly
+                // The mail itself as readable text file (headers + body); Claude can't open .eml files
+                val mailText = buildString {
+                    if (from.isNotEmpty()) append("Von: ").append(from).append("\n")
+                    if (!date.isNullOrEmpty()) append("Datum: ").append(date).append("\n")
+                    if (subject.isNotEmpty()) append("Betreff: ").append(subject).append("\n")
+                    append("\n").append(plainText?.trim().orEmpty())
+                }
+                val mailFile = File(dir, safeFileName(subject.ifBlank { "E-Mail" }) + ".txt")
+                mailFile.writeText(mailText, Charsets.UTF_8)
+                uris.add(uriFor(activity, mailFile))
+
                 for (attachment in info.attachments.orEmpty()) {
-                    val type = attachment.mimeType.orEmpty().lowercase()
                     if (attachment.inlineAttachment) continue
-                    if (type != "application/pdf" && !type.startsWith("image/")) continue
                     val name = attachment.displayName?.takeIf { it.isNotBlank() } ?: "Anhang"
+                    val extension = name.substringAfterLast('.', "").lowercase()
                     try {
-                        uris.add(AttachmentTempFileProvider.createTempUriForContentUri(activity, attachment.internalUri, name))
+                        when {
+                            extension == "zip" || attachment.mimeType.orEmpty().lowercase().contains("zip") ->
+                                unzip(activity, attachment.internalUri, dir, uris, skipped)
+                            extension in SUPPORTED || attachment.mimeType.orEmpty().lowercase().startsWith("image/") ->
+                                uris.add(copy(activity, attachment.internalUri, File(dir, safeFileName(name))))
+                            else -> skipped.add(name)
+                        }
                     } catch (e: java.io.IOException) {
-                        // Skip attachments that can't be read; they are still inside the .eml
+                        skipped.add(name)
                     }
                 }
             } catch (e: java.io.IOException) {
                 error = e.message ?: e.javaClass.simpleName
             } catch (e: RuntimeException) {
                 error = e.message ?: e.javaClass.simpleName
+            }
+
+            val text = buildString {
+                if (task.isNotEmpty()) append(task).append("\n\n")
+                append(activity.getString(R.string.dcmail_claude_files_note, subject.ifBlank { "E-Mail" }))
+                if (skipped.isNotEmpty()) {
+                    append("\n").append(activity.getString(R.string.dcmail_claude_skipped, skipped.joinToString(", ")))
+                }
             }
 
             activity.runOnUiThread {
@@ -159,6 +171,74 @@ object DcShareToClaude {
             Toast.makeText(activity, R.string.dcmail_claude_no_app, Toast.LENGTH_LONG).show()
         }
     }
+
+    /** File types the Claude app can read. Images are accepted by MIME type as well. */
+    private val SUPPORTED = setOf(
+        "pdf", "txt", "csv", "md", "json", "xml", "html", "htm", "docx", "xlsx", "pptx", "rtf",
+        "png", "jpg", "jpeg", "gif", "webp",
+    )
+    private const val MAX_ZIP_ENTRIES = 20
+    private const val MAX_ENTRY_BYTES = 30L * 1024 * 1024
+    private const val MAX_TOTAL_BYTES = 100L * 1024 * 1024
+
+    private fun newShareDirectory(activity: Activity): File {
+        val dir = File(File(activity.cacheDir, "temp"), "claude-" + System.currentTimeMillis())
+        if (!dir.mkdirs() && !dir.isDirectory) throw java.io.IOException("Kein Zwischenspeicher")
+        return dir
+    }
+
+    private fun uriFor(activity: Activity, file: File): Uri =
+        FileProvider.getUriForFile(activity, activity.packageName + ".tempfileprovider", file)
+
+    private fun copy(activity: Activity, source: Uri, target: File): Uri {
+        val input = activity.contentResolver.openInputStream(source) ?: throw java.io.IOException("Anhang fehlt")
+        input.use { stream -> target.outputStream().use { stream.copyTo(it) } }
+        return uriFor(activity, target)
+    }
+
+    /** Unpacks readable files from a ZIP attachment (flat, with size limits) so Claude can open them. */
+    private fun unzip(activity: Activity, source: Uri, dir: File, uris: MutableList<Uri>, skipped: MutableList<String>) {
+        val input = activity.contentResolver.openInputStream(source) ?: throw java.io.IOException("Anhang fehlt")
+        var count = 0
+        var total = 0L
+        ZipInputStream(input).use { zip ->
+            var entry = zip.nextEntry
+            while (entry != null) {
+                // Only the file name is used, never the path inside the archive
+                val name = entry.name.substringAfterLast('/').substringAfterLast('\\')
+                val extension = name.substringAfterLast('.', "").lowercase()
+                when {
+                    entry.isDirectory || name.isBlank() || name.startsWith(".") -> Unit
+                    extension !in SUPPORTED || count >= MAX_ZIP_ENTRIES -> skipped.add(name)
+                    else -> {
+                        val target = File(dir, safeFileName(name))
+                        var written = 0L
+                        target.outputStream().use { output ->
+                            val buffer = ByteArray(BUFFER_SIZE)
+                            while (true) {
+                                val read = zip.read(buffer)
+                                if (read < 0) break
+                                written += read
+                                total += read
+                                if (written > MAX_ENTRY_BYTES || total > MAX_TOTAL_BYTES) break
+                                output.write(buffer, 0, read)
+                            }
+                        }
+                        if (written > MAX_ENTRY_BYTES || total > MAX_TOTAL_BYTES) {
+                            target.delete()
+                            skipped.add(name)
+                        } else {
+                            uris.add(uriFor(activity, target))
+                            count++
+                        }
+                    }
+                }
+                entry = zip.nextEntry
+            }
+        }
+    }
+
+    private const val BUFFER_SIZE = 64 * 1024
 
     private fun safeFileName(value: String): String =
         value.replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_").trim().take(MAX_FILE_NAME).ifBlank { "E-Mail" }

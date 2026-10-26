@@ -401,4 +401,6 @@ Please close DC Mail completely and open it again.</string>
     <string name="dcmail_claude_preparing">Preparing mail…</string>
     <string name="dcmail_claude_error">Could not prepare the mail: %1$s</string>
     <string name="dcmail_claude_eml_note">The complete mail including all attachments is attached as .eml file.</string>
+    <string name="dcmail_claude_files_note">Attached: the mail “%1$s” as text file plus its attachments (ZIP files unpacked).</string>
+    <string name="dcmail_claude_skipped">Not included (file type not supported): %1$s</string>
 </resources>

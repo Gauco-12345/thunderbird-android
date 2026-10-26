@@ -304,4 +304,6 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
     <string name="dcmail_claude_preparing">Mail wird vorbereitet …</string>
     <string name="dcmail_claude_error">Mail konnte nicht vorbereitet werden: %1$s</string>
     <string name="dcmail_claude_eml_note">Die komplette Mail mit allen Anhängen liegt als .eml-Datei bei.</string>
+    <string name="dcmail_claude_files_note">Anbei: die Mail „%1$s“ als Textdatei und ihre Anhänge (ZIP-Dateien entpackt).</string>
+    <string name="dcmail_claude_skipped">Nicht mitgeschickt (Dateityp nicht unterstützt): %1$s</string>
 </resources>
