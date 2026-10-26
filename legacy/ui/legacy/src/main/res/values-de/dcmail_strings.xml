@@ -326,4 +326,5 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
         <item>Angebot/Rechnung prüfen</item>
         <item>Zusammenfassen</item>
     </string-array>
+    <string name="dcmail_claude_prompt_copied">Prompt kopiert – in Claude ins Chatfeld einfügen (lange drücken) und senden.</string>
 </resources>

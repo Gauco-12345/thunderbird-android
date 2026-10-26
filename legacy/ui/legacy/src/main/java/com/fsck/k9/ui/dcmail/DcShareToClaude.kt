@@ -115,6 +115,8 @@ object DcShareToClaude {
                 // The mail itself as text file; text from Word/Excel/text attachments is added to it,
                 // because the Claude app reliably reads only text, PDF and image files
                 val mailText = buildString {
+                    // The Claude app ignores the share text when files are attached, so the task goes into the file
+                    if (task.isNotEmpty()) append("AUFGABE FÜR CLAUDE:\n").append(task).append("\n\n=== E-Mail ===\n")
                     if (from.isNotEmpty()) append("Von: ").append(from).append("\n")
                     if (!date.isNullOrEmpty()) append("Datum: ").append(date).append("\n")
                     if (subject.isNotEmpty()) append("Betreff: ").append(subject).append("\n")
@@ -146,6 +148,13 @@ object DcShareToClaude {
                     Toast.makeText(activity, activity.getString(R.string.dcmail_claude_error, error), Toast.LENGTH_LONG)
                         .show()
                     return@runOnUiThread
+                }
+                if (task.isNotEmpty()) {
+                    // Also on the clipboard: paste it into the Claude chat field with a long press
+                    val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                        as? android.content.ClipboardManager
+                    clipboard?.setPrimaryClip(ClipData.newPlainText("Claude-Prompt", task))
+                    Toast.makeText(activity, R.string.dcmail_claude_prompt_copied, Toast.LENGTH_LONG).show()
                 }
                 startShare(activity, text, subject, files)
             }

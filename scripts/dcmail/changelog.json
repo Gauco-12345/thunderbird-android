@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-26",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "„An Claude“: Der Prompt kam nicht an, weil die Claude-App bei Dateien den Begleittext verwirft. Jetzt steht er oben in der Mail-Textdatei („AUFGABE FÜR CLAUDE“) und liegt zusätzlich in der Zwischenablage zum Einfügen."
+        }
+      ]
+    },
+    {
       "build": 44,
       "date": "2026-10-26",
       "notes": [

@@ -423,4 +423,5 @@ Please close DC Mail completely and open it again.</string>
         <item>Check offer/invoice</item>
         <item>Summarize</item>
     </string-array>
+    <string name="dcmail_claude_prompt_copied">Prompt copied – paste it into the Claude chat field (long press) and send.</string>
 </resources>
