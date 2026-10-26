@@ -64,6 +64,7 @@
         <item>@string/flag_action</item>
         <item>@string/dcmail_ai_summarize</item>
         <item>@string/dcmail_translate_action</item>
+        <item>@string/dcmail_claude_action</item>
         <item>@string/delete_action</item>
     </string-array>
 
@@ -90,6 +91,7 @@
         <item>flag</item>
         <item>summarize</item>
         <item>translate</item>
+        <item>claude</item>
         <item>delete</item>
     </string-array>
 
@@ -380,4 +382,18 @@ Please close DC Mail completely and open it again.</string>
     <string name="dcmail_keywords_never_summary">These mails arrive silently, e.g. newsletter, invoice</string>
     <string name="dcmail_keywords_message">Separate terms with commas or new lines. Upper and lower case don\'t matter; a term matches anywhere in the subject.</string>
     <string name="dcmail_keywords_hint">e.g. urgent, outage, order</string>
+
+    <!-- DC Mail: share to Claude -->
+    <string name="dcmail_claude_action">Send to Claude</string>
+    <string name="dcmail_claude_title">Send to Claude</string>
+    <string name="dcmail_claude_task_hint">Your own task for Claude (optional)</string>
+    <string name="dcmail_claude_send">Send</string>
+    <string name="dcmail_claude_no_app">No app found to share with. Is the Claude app installed?</string>
+    <string-array name="dcmail_claude_tasks">
+        <item>Draft a reply</item>
+        <item>Extract tasks and deadlines</item>
+        <item>Create an appointment from it</item>
+        <item>Check this offer/invoice</item>
+        <item>Summarize</item>
+    </string-array>
 </resources>

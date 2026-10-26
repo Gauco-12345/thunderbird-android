@@ -285,4 +285,18 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
     <string name="dcmail_keywords_never_summary">Diese Mails kommen still rein, z. B. Newsletter, Rechnung</string>
     <string name="dcmail_keywords_message">Begriffe mit Komma oder Zeilenumbruch trennen. Groß- und Kleinschreibung ist egal, der Begriff darf irgendwo im Betreff stehen.</string>
     <string name="dcmail_keywords_hint">z. B. dringend, Störung, Bestellung</string>
+
+    <!-- DC Mail: share to Claude -->
+    <string name="dcmail_claude_action">An Claude</string>
+    <string name="dcmail_claude_title">An Claude geben</string>
+    <string name="dcmail_claude_task_hint">Eigene Aufgabe für Claude (optional)</string>
+    <string name="dcmail_claude_send">Senden</string>
+    <string name="dcmail_claude_no_app">Keine App zum Teilen gefunden. Ist die Claude-App installiert?</string>
+    <string-array name="dcmail_claude_tasks">
+        <item>Entwirf eine Antwort auf diese Mail.</item>
+        <item>Liste alle Aufgaben und Fristen aus dieser Mail auf.</item>
+        <item>Mach daraus einen Termin mit allen Details.</item>
+        <item>Prüfe dieses Angebot bzw. diese Rechnung.</item>
+        <item>Fasse diese Mail kurz zusammen.</item>
+    </string-array>
 </resources>

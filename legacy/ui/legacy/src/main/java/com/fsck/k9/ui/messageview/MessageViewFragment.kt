@@ -378,6 +378,7 @@ class MessageViewFragment :
             DcMessageAction.FLAG -> onToggleFlagged()
             DcMessageAction.SUMMARIZE -> onDcSummarize()
             DcMessageAction.TRANSLATE -> onDcTranslate()
+            DcMessageAction.CLAUDE -> onDcShareToClaude()
             DcMessageAction.DELETE -> onDelete()
         }
     }
@@ -423,6 +424,11 @@ class MessageViewFragment :
     private fun dcPlainText(info: MessageViewInfo): String? =
         info.textPlainFormatted?.takeIf { it.isNotBlank() } ?: info.text?.let { HtmlConverter.htmlToText(it) }
 
+    private fun onDcShareToClaude() {
+        val info = dcMessageViewInfo ?: return
+        com.fsck.k9.ui.dcmail.DcShareToClaude.show(requireActivity(), info, dcPlainText(info))
+    }
+
     private fun onDcTranslate() {
         val info = dcMessageViewInfo ?: return
         com.fsck.k9.ui.dcmail.DcAiTranslate.show(requireActivity(), info.subject, dcPlainText(info))
@@ -448,6 +454,7 @@ class MessageViewFragment :
         DcMessageAction.FLAG -> DesignSystemR.drawable.ic_star
         DcMessageAction.SUMMARIZE -> DesignSystemR.drawable.ic_description
         DcMessageAction.TRANSLATE -> R.drawable.ic_dcmail_translate
+        DcMessageAction.CLAUDE -> R.drawable.ic_dcmail_claude
         DcMessageAction.DELETE -> DesignSystemR.drawable.ic_delete
     }
 
@@ -463,6 +470,7 @@ class MessageViewFragment :
         DcMessageAction.FLAG -> R.string.flag_action
         DcMessageAction.SUMMARIZE -> R.string.dcmail_ai_summarize
         DcMessageAction.TRANSLATE -> R.string.dcmail_translate_action
+        DcMessageAction.CLAUDE -> R.string.dcmail_claude_action
         DcMessageAction.DELETE -> R.string.delete_action
     }
 

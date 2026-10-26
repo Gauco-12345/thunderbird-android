@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-26",
+      "notes": [
+        {
+          "type": "new",
+          "text": "„An Claude“ in der Aktionsleiste: gibt die Mail samt PDF- und Bild-Anhängen direkt an die Claude-App weiter – mit einer Aufgabe wie „Antwort entwerfen“, „Aufgaben und Fristen auflisten“, „Termin daraus machen“ oder einer eigenen."
+        }
+      ]
+    },
+    {
       "build": 37,
       "date": "2026-10-25",
       "notes": [
