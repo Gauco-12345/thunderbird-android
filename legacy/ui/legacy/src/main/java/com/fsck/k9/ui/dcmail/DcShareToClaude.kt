@@ -14,7 +14,10 @@ import androidx.appcompat.app.AlertDialog
 import app.k9mail.legacy.message.controller.MessageReference
 import com.fsck.k9.mailstore.MessageViewInfo
 import androidx.core.content.FileProvider
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
 import java.util.zip.ZipInputStream
 import com.fsck.k9.ui.R
 import java.text.DateFormat
@@ -85,39 +88,38 @@ object DcShareToClaude {
 
         val progress = DcAiReply.showProgress(activity, R.string.dcmail_claude_preparing)
         Thread {
-            val uris = ArrayList<Uri>()
+            val files = ArrayList<File>()
+            val included = StringBuilder()
             val skipped = mutableListOf<String>()
             var error: String? = null
             try {
                 val dir = newShareDirectory(activity)
+                val total = longArrayOf(0)
+                for (attachment in info.attachments.orEmpty()) {
+                    if (attachment.inlineAttachment) continue
+                    val name = attachment.displayName?.takeIf { it.isNotBlank() } ?: "Anhang"
+                    try {
+                        val bytes = activity.contentResolver.openInputStream(attachment.internalUri)?.use {
+                            readLimited(it, total)
+                        }
+                        if (bytes == null) skipped.add(name) else handle(name, bytes, dir, files, included, skipped, total, 0)
+                    } catch (e: java.io.IOException) {
+                        skipped.add(name)
+                    }
+                }
 
-                // The mail itself as readable text file (headers + body); Claude can't open .eml files
+                // The mail itself as text file; text from Word/Excel/text attachments is added to it,
+                // because the Claude app reliably reads only text, PDF and image files
                 val mailText = buildString {
                     if (from.isNotEmpty()) append("Von: ").append(from).append("\n")
                     if (!date.isNullOrEmpty()) append("Datum: ").append(date).append("\n")
                     if (subject.isNotEmpty()) append("Betreff: ").append(subject).append("\n")
                     append("\n").append(plainText?.trim().orEmpty())
+                    if (included.isNotEmpty()) append("\n\n").append(included)
                 }
                 val mailFile = File(dir, safeFileName(subject.ifBlank { "E-Mail" }) + ".txt")
                 mailFile.writeText(mailText, Charsets.UTF_8)
-                uris.add(uriFor(activity, mailFile))
-
-                for (attachment in info.attachments.orEmpty()) {
-                    if (attachment.inlineAttachment) continue
-                    val name = attachment.displayName?.takeIf { it.isNotBlank() } ?: "Anhang"
-                    val extension = name.substringAfterLast('.', "").lowercase()
-                    try {
-                        when {
-                            extension == "zip" || attachment.mimeType.orEmpty().lowercase().contains("zip") ->
-                                unzip(activity, attachment.internalUri, dir, uris, skipped)
-                            extension in SUPPORTED || attachment.mimeType.orEmpty().lowercase().startsWith("image/") ->
-                                uris.add(copy(activity, attachment.internalUri, File(dir, safeFileName(name))))
-                            else -> skipped.add(name)
-                        }
-                    } catch (e: java.io.IOException) {
-                        skipped.add(name)
-                    }
-                }
+                files.add(0, mailFile)
             } catch (e: java.io.IOException) {
                 error = e.message ?: e.javaClass.simpleName
             } catch (e: RuntimeException) {
@@ -140,16 +142,160 @@ object DcShareToClaude {
                         .show()
                     return@runOnUiThread
                 }
-                startShare(activity, text, subject, uris)
+                startShare(activity, text, subject, files)
             }
         }.start()
     }
 
-    private fun startShare(activity: Activity, text: String, subject: String, uris: ArrayList<Uri>) {
+    /**
+     * PDFs and images become own files; text, CSV, HTML, Word, Excel, PowerPoint and OpenDocument files are
+     * converted to text and added to the mail text file; ZIP files are unpacked (one level). Everything else is listed
+     * as not included.
+     */
+    @Suppress("LongParameterList")
+    private fun handle(
+        name: String,
+        bytes: ByteArray,
+        dir: File,
+        files: MutableList<File>,
+        included: StringBuilder,
+        skipped: MutableList<String>,
+        total: LongArray,
+        depth: Int,
+    ) {
+        val extension = name.substringAfterLast('.', "").lowercase()
+        when (extension) {
+            in FILE_TYPES -> {
+                if (files.size >= MAX_FILES) {
+                    skipped.add(name)
+                    return
+                }
+                val target = uniqueFile(dir, safeFileName(name))
+                target.writeBytes(bytes)
+                files.add(target)
+            }
+            in TEXT_TYPES -> appendText(included, name, decodeText(bytes, extension))
+            in OFFICE_TYPES -> {
+                val text = officeText(bytes, extension)
+                if (text.isBlank()) skipped.add(name) else appendText(included, name, text)
+            }
+            "zip" -> if (depth > 0) skipped.add(name) else unzip(name, bytes, dir, files, included, skipped, total)
+            else -> skipped.add(name)
+        }
+    }
+
+    @Suppress("LongParameterList")
+    private fun unzip(
+        zipName: String,
+        bytes: ByteArray,
+        dir: File,
+        files: MutableList<File>,
+        included: StringBuilder,
+        skipped: MutableList<String>,
+        total: LongArray,
+    ) {
+        var count = 0
+        ZipInputStream(ByteArrayInputStream(bytes)).use { zip ->
+            var entry = zip.nextEntry
+            while (entry != null) {
+                // Only the file name is used, never the path inside the archive
+                val name = entry.name.substringAfterLast('/').substringAfterLast('\\')
+                if (!entry.isDirectory && name.isNotBlank() && !name.startsWith(".") && !name.startsWith("__MACOSX")) {
+                    if (count >= MAX_ZIP_ENTRIES) {
+                        skipped.add("$zipName/$name")
+                    } else {
+                        count++
+                        try {
+                            handle(name, readLimited(zip, total), dir, files,
+                                included, skipped, total, 1)
+                        } catch (e: java.io.IOException) {
+                            skipped.add(name)
+                        }
+                    }
+                }
+                entry = zip.nextEntry
+            }
+        }
+    }
+
+    private fun appendText(target: StringBuilder, name: String, text: String) {
+        target.append("=== Anhang: ").append(name).append(" ===\n")
+        target.append(text.trim().take(MAX_ATTACHMENT_CHARS)).append("\n\n")
+    }
+
+    private fun decodeText(bytes: ByteArray, extension: String): String {
+        val text = String(bytes, Charsets.UTF_8)
+        return if (extension == "html" || extension == "htm" || extension == "xml") stripTags(text) else text
+    }
+
+    private fun stripTags(xml: String): String = xml
+        .replace(Regex("(?s)<(script|style)[^>]*>.*?</(script|style)>"), " ")
+        .replace(Regex("</(w:p|a:p|text:p|p|div|br|tr|row)>|<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
+        .replace(Regex("</(w:tc|c|td|th|table:table-cell)>", RegexOption.IGNORE_CASE), "\t")
+        .replace(Regex("<[^>]+>"), "")
+        .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&apos;", "'")
+        .replace(Regex("[ \\t]+\n"), "\n").replace(Regex("\n{3,}"), "\n\n")
+
+    /** Word, Excel, PowerPoint and OpenDocument files are ZIP archives with XML inside; the text is taken from there. */
+    private fun officeText(bytes: ByteArray, extension: String): String {
+        val wanted: (String) -> Boolean = when (extension) {
+            "docx" -> { name -> name == "word/document.xml" }
+            "xlsx" -> { name -> name == "xl/sharedStrings.xml" || name.startsWith("xl/worksheets/sheet") }
+            "pptx" -> { name -> name.startsWith("ppt/slides/slide") && name.endsWith(".xml") }
+            else -> { name -> name == "content.xml" }
+        }
+        val parts = sortedMapOf<String, String>()
+        try {
+            ZipInputStream(ByteArrayInputStream(bytes)).use { zip ->
+                var entry = zip.nextEntry
+                while (entry != null) {
+                    if (wanted(entry.name)) parts[entry.name] = stripTags(String(zip.readBytes(), Charsets.UTF_8))
+                    entry = zip.nextEntry
+                }
+            }
+        } catch (e: java.io.IOException) {
+            return ""
+        }
+        return parts.values.joinToString("\n\n").trim()
+    }
+
+    private fun readLimited(input: InputStream, total: LongArray): ByteArray {
+        val output = ByteArrayOutputStream()
+        val buffer = ByteArray(BUFFER_SIZE)
+        var size = 0L
+        while (true) {
+            val read = input.read(buffer)
+            if (read < 0) break
+            size += read
+            total[0] += read
+            if (size > MAX_ENTRY_BYTES || total[0] > MAX_TOTAL_BYTES) throw java.io.IOException("zu groß")
+            output.write(buffer, 0, read)
+        }
+        return output.toByteArray()
+    }
+
+    private fun uniqueFile(dir: File, name: String): File {
+        var file = File(dir, name)
+        var index = 2
+        while (file.exists()) {
+            file = File(dir, name.substringBeforeLast('.') + " ($index)." + name.substringAfterLast('.', "bin"))
+            index++
+        }
+        return file
+    }
+
+    private fun startShare(activity: Activity, text: String, subject: String, files: List<File>) {
+        val uris = ArrayList(files.map { uriFor(activity, it) })
+        val types = files.map { mimeType(it) }.distinct()
+        val type = when {
+            types.size == 1 -> types.first()
+            types.all { it.startsWith("image/") } -> "image/*"
+            else -> "*/*"
+        }
         val intent = if (uris.size == 1) {
-            Intent(Intent.ACTION_SEND).setType("*/*").putExtra(Intent.EXTRA_STREAM, uris.first())
+            Intent(Intent.ACTION_SEND).setType(type).putExtra(Intent.EXTRA_STREAM, uris.first())
         } else {
-            Intent(Intent.ACTION_SEND_MULTIPLE).setType("*/*").putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+            Intent(Intent.ACTION_SEND_MULTIPLE).setType(type).putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
         }
         if (uris.isNotEmpty()) {
             val clip = ClipData.newRawUri(null, uris.first())
@@ -172,14 +318,26 @@ object DcShareToClaude {
         }
     }
 
-    /** File types the Claude app can read. Images are accepted by MIME type as well. */
-    private val SUPPORTED = setOf(
-        "pdf", "txt", "csv", "md", "json", "xml", "html", "htm", "docx", "xlsx", "pptx", "rtf",
-        "png", "jpg", "jpeg", "gif", "webp",
-    )
-    private const val MAX_ZIP_ENTRIES = 20
+    private fun mimeType(file: File): String = when (file.extension.lowercase()) {
+        "pdf" -> "application/pdf"
+        "png" -> "image/png"
+        "jpg", "jpeg" -> "image/jpeg"
+        "gif" -> "image/gif"
+        "webp" -> "image/webp"
+        else -> "text/plain"
+    }
+
+    /** Sent as own files: the Claude app reads these reliably. */
+    private val FILE_TYPES = setOf("pdf", "png", "jpg", "jpeg", "gif", "webp")
+    /** Added as text to the mail text file. */
+    private val TEXT_TYPES = setOf("txt", "csv", "md", "json", "xml", "html", "htm", "log", "ics", "vcf")
+    private val OFFICE_TYPES = setOf("docx", "xlsx", "pptx", "odt", "ods", "odp")
+    private const val MAX_FILES = 20
+    private const val MAX_ZIP_ENTRIES = 30
+    private const val MAX_ATTACHMENT_CHARS = 100_000
     private const val MAX_ENTRY_BYTES = 30L * 1024 * 1024
     private const val MAX_TOTAL_BYTES = 100L * 1024 * 1024
+    private const val BUFFER_SIZE = 64 * 1024
 
     private fun newShareDirectory(activity: Activity): File {
         val dir = File(File(activity.cacheDir, "temp"), "claude-" + System.currentTimeMillis())
@@ -189,56 +347,6 @@ object DcShareToClaude {
 
     private fun uriFor(activity: Activity, file: File): Uri =
         FileProvider.getUriForFile(activity, activity.packageName + ".tempfileprovider", file)
-
-    private fun copy(activity: Activity, source: Uri, target: File): Uri {
-        val input = activity.contentResolver.openInputStream(source) ?: throw java.io.IOException("Anhang fehlt")
-        input.use { stream -> target.outputStream().use { stream.copyTo(it) } }
-        return uriFor(activity, target)
-    }
-
-    /** Unpacks readable files from a ZIP attachment (flat, with size limits) so Claude can open them. */
-    private fun unzip(activity: Activity, source: Uri, dir: File, uris: MutableList<Uri>, skipped: MutableList<String>) {
-        val input = activity.contentResolver.openInputStream(source) ?: throw java.io.IOException("Anhang fehlt")
-        var count = 0
-        var total = 0L
-        ZipInputStream(input).use { zip ->
-            var entry = zip.nextEntry
-            while (entry != null) {
-                // Only the file name is used, never the path inside the archive
-                val name = entry.name.substringAfterLast('/').substringAfterLast('\\')
-                val extension = name.substringAfterLast('.', "").lowercase()
-                when {
-                    entry.isDirectory || name.isBlank() || name.startsWith(".") -> Unit
-                    extension !in SUPPORTED || count >= MAX_ZIP_ENTRIES -> skipped.add(name)
-                    else -> {
-                        val target = File(dir, safeFileName(name))
-                        var written = 0L
-                        target.outputStream().use { output ->
-                            val buffer = ByteArray(BUFFER_SIZE)
-                            while (true) {
-                                val read = zip.read(buffer)
-                                if (read < 0) break
-                                written += read
-                                total += read
-                                if (written > MAX_ENTRY_BYTES || total > MAX_TOTAL_BYTES) break
-                                output.write(buffer, 0, read)
-                            }
-                        }
-                        if (written > MAX_ENTRY_BYTES || total > MAX_TOTAL_BYTES) {
-                            target.delete()
-                            skipped.add(name)
-                        } else {
-                            uris.add(uriFor(activity, target))
-                            count++
-                        }
-                    }
-                }
-                entry = zip.nextEntry
-            }
-        }
-    }
-
-    private const val BUFFER_SIZE = 64 * 1024
 
     private fun safeFileName(value: String): String =
         value.replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_").trim().take(MAX_FILE_NAME).ifBlank { "E-Mail" }

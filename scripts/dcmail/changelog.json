@@ -2,6 +2,16 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-10-26",
+      "notes": [
+        {
+          "type": "fixed",
+          "text": "„An Claude“: Die Claude-App meldete einen Fehler beim Anhang. Jetzt gehen nur noch PDFs und Bilder als Dateien mit; Text aus Word-, Excel-, PowerPoint-, CSV- und Textdateien (auch aus ZIP-Archiven) steht direkt in der Mail-Textdatei."
+        }
+      ]
+    },
+    {
       "build": 40,
       "date": "2026-10-26",
       "notes": [
