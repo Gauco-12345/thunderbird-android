@@ -2,6 +2,20 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-11-03",
+      "notes": [
+        {
+          "type": "new",
+          "text": "Absender antippen (Name oder Bild oben in der Mail): „Absender vertrauen (nie Spam)“ oder „Absender sperren (immer Spam)“ direkt anlegen – in jedem Ordner, wahlweise für die Adresse oder die ganze Domain."
+        },
+        {
+          "type": "new",
+          "text": "Auch in der Detailansicht (⋮ neben jeder Adresse) gibt es jetzt Vertrauen und Sperren."
+        }
+      ]
+    },
+    {
       "build": 47,
       "date": "2026-11-03",
       "notes": [

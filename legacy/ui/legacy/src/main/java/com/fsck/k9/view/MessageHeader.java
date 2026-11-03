@@ -119,6 +119,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         TooltipCompat.setTooltipText(menuOverflowView, menuOverflowDescription);
 
         findViewById(R.id.participants_container).setOnClickListener(this);
+        fromView.setOnClickListener(this);
+        contactPictureView.setOnClickListener(this);
 
         attachmentSummaryContainer = findViewById(R.id.attachment_summary_container);
         attachmentSummaryContainer.setOnClickListener(this);
@@ -136,6 +138,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             performPrimaryReplyAction();
         } else if (id == R.id.menu_overflow) {
             showOverflowMenu(view);
+        } else if (id == R.id.from || id == R.id.contact_picture) {
+            messageHeaderClickListener.onSenderClick(view);
         } else if (id == R.id.participants_container) {
             messageHeaderClickListener.onParticipantsContainerClick();
         } else if (id == R.id.view_all_attachments || id == R.id.attachment_summary_container) {

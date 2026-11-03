@@ -27,7 +27,7 @@ import com.fsck.k9.message.html.HtmlConverter
 import com.fsck.k9.ui.dcmail.DcAiSummary
 import com.fsck.k9.ui.dcmail.DcMessageAction
 import com.fsck.k9.ui.dcmail.DcMessageActions
-import com.fsck.k9.ui.dcmail.DcSieveRules
+import com.fsck.k9.ui.dcmail.DcSenderRulesUi
 import com.fsck.k9.ui.dcmail.DcBanners
 import com.fsck.k9.ui.dcmail.DcMessageInsights
 import com.fsck.k9.activity.MessageHomeActivity
@@ -383,76 +383,49 @@ class MessageViewFragment :
         }
     }
 
+    private fun dcSenderAddress(): String? = message?.from?.firstOrNull()?.address
+
+    private val dcInSpam: Boolean
+        get() = account.spamFolderId != null && messageReference.folderId == account.spamFolderId
+
     private fun onDcBlockSender() {
-        dcChooseSender(R.string.dcmail_block_sender, R.string.dcmail_block_sender_done) { appContext, account, entry ->
-            DcSieveRules.blockSender(appContext, account, entry)
-        } ?: return
-        if (account.spamFolderId != null) onSpam()
+        DcSenderRulesUi.choose(requireContext(), account, dcSenderAddress(), DcSenderRulesUi.Rule.BLOCK) {
+            if (account.spamFolderId != null && !dcInSpam) onSpam()
+        }
     }
 
     /** "Kein Spam": back to the inbox, optionally trusting the sender from now on. */
     private fun onDcNotSpam(trustSender: Boolean) {
-        val moveBack = {
-            account.inboxFolderId?.let { inbox -> onRefile(inbox) }
-            Unit
-        }
-        if (!trustSender) {
+        val moveBack = { if (dcInSpam) account.inboxFolderId?.let { inbox -> onRefile(inbox) } }
+        if (trustSender) {
+            DcSenderRulesUi.choose(requireContext(), account, dcSenderAddress(), DcSenderRulesUi.Rule.TRUST) {
+                moveBack()
+            }
+        } else {
             moveBack()
-            return
         }
-        dcChooseSender(
-            R.string.dcmail_allow_sender,
-            R.string.dcmail_allow_sender_done,
-            onChosen = moveBack,
-        ) { appContext, account, entry -> DcSieveRules.allowSender(appContext, account, entry) }
     }
 
-    /**
-     * Asks whether the exact sender address or the whole domain is meant, then runs [work] for it in the background.
-     * Returns null when the message has no sender.
-     */
-    private fun dcChooseSender(
-        titleRes: Int,
-        doneRes: Int,
-        onChosen: () -> Unit = {},
-        work: (android.content.Context, LegacyAccount, String) -> Unit,
-    ): Unit? {
-        val address = message?.from?.firstOrNull()?.address?.trim()?.lowercase()
-        if (address.isNullOrEmpty()) return null
-        val account = account
-        val domain = address.substringAfterLast('@', "")
-        val choices = mutableListOf(address)
-        if (domain.isNotEmpty()) choices.add("@$domain")
-        val labels = arrayOf<CharSequence>(
-            getString(R.string.dcmail_block_choice_address, address),
-            getString(R.string.dcmail_block_choice_domain, domain),
-        ).copyOf(choices.size).requireNoNulls()
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle(titleRes)
-            .setItems(labels) { _, which ->
-                val entry = choices[which]
-                val appContext = requireContext().applicationContext
-                Thread {
-                    val error = try {
-                        work(appContext, account, entry)
-                        null
-                    } catch (e: Throwable) {
-                        e.message ?: e.javaClass.simpleName
-                    }
-                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                        val text = if (error == null) {
-                            appContext.getString(doneRes, entry)
-                        } else {
-                            appContext.getString(R.string.dcmail_block_sender_failed, error)
-                        }
-                        Toast.makeText(appContext, text, Toast.LENGTH_LONG).show()
-                    }
-                }.start()
-                onChosen()
+    /** Tap on the sender: create a trust or block rule right away, or open the details. */
+    private fun onDcSenderClick(anchor: View) {
+        val address = dcSenderAddress()
+        if (address.isNullOrBlank()) {
+            messageHeaderClickListener.onParticipantsContainerClick()
+            return
+        }
+        val popup = androidx.appcompat.widget.PopupMenu(requireContext(), anchor)
+        popup.menu.add(0, DC_MENU_TRUST, 0, getString(R.string.dcmail_sender_menu_trust))
+        popup.menu.add(0, DC_MENU_BLOCK, 1, getString(R.string.dcmail_sender_menu_block))
+        popup.menu.add(0, DC_MENU_DETAILS, 2, getString(R.string.dcmail_sender_menu_details))
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                DC_MENU_TRUST -> onDcNotSpam(true)
+                DC_MENU_BLOCK -> onDcBlockSender()
+                else -> messageHeaderClickListener.onParticipantsContainerClick()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-        return Unit
+            true
+        }
+        popup.show()
     }
 
     private fun dcPlainText(info: MessageViewInfo): String? =
@@ -780,7 +753,7 @@ class MessageViewFragment :
             container.visibility = View.GONE
             return
         }
-        val inSpam = account.spamFolderId != null && messageReference.folderId == account.spamFolderId
+        val inSpam = dcInSpam
 
         if (DcMessageInsights.isPhishingWarningEnabled(context)) {
             val reasons = try {
@@ -1012,6 +985,10 @@ class MessageViewFragment :
     }
 
     private val messageHeaderClickListener = object : MessageHeaderClickListener {
+        override fun onSenderClick(anchor: View) {
+            onDcSenderClick(anchor)
+        }
+
         override fun onParticipantsContainerClick() {
             val messageDetailsFragment = MessageDetailsFragment.create(messageReference)
             messageDetailsFragment.cryptoResult = messageCryptoPresenter.cryptoResultAnnotation
@@ -1709,6 +1686,9 @@ class MessageViewFragment :
     }
 
     companion object {
+        private const val DC_MENU_TRUST = 1
+        private const val DC_MENU_BLOCK = 2
+        private const val DC_MENU_DETAILS = 3
         const val REQUEST_MASK_LOADER_HELPER = 1 shl 8
         const val REQUEST_MASK_CRYPTO_PRESENTER = 1 shl 9
         const val PROGRESS_THRESHOLD_MILLIS = 500 * 1000

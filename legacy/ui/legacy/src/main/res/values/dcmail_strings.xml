@@ -426,7 +426,7 @@ Please close DC Mail completely and open it again.</string>
     <string name="dcmail_claude_prompt_copied">Prompt copied – paste it into the Claude chat field (long press) and send.</string>
     <string name="dcmail_allowlist_title">Senders never to spam</string>
     <string name="dcmail_allowlist_summary">Mails from these senders or domains always stay in the inbox (rule on the server)</string>
-    <string name="dcmail_allowlist_hint">The spam filter never moves mails from these senders. Add them here or via “Trust sender” on a mail in the spam folder. Tap an entry to remove it.</string>
+    <string name="dcmail_allowlist_hint">The spam filter never moves mails from these senders. Add them here, by tapping the sender of an opened mail, or via “Trust sender” on a mail in the spam folder. Tap an entry to remove it.</string>
     <string name="dcmail_allowlist_remove_confirm">Stop trusting %1$s? The spam filter will check their mails normally again.</string>
     <string name="dcmail_senderlist_add">Add</string>
     <string name="dcmail_senderlist_add_hint">name@company.com or @company.com</string>
@@ -437,4 +437,7 @@ Please close DC Mail completely and open it again.</string>
     <string name="dcmail_not_spam_banner">This mail is in the spam folder. Wrongly?</string>
     <string name="dcmail_not_spam_action">Not spam</string>
     <string name="dcmail_trust_sender_action">Trust sender</string>
+    <string name="dcmail_sender_menu_trust">Trust sender (never spam)</string>
+    <string name="dcmail_sender_menu_block">Block sender (always spam)</string>
+    <string name="dcmail_sender_menu_details">Show details</string>
 </resources>

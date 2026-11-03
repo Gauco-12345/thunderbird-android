@@ -329,7 +329,7 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
     <string name="dcmail_claude_prompt_copied">Prompt kopiert – in Claude ins Chatfeld einfügen (lange drücken) und senden.</string>
     <string name="dcmail_allowlist_title">Absender nie nach Spam</string>
     <string name="dcmail_allowlist_summary">Mails dieser Absender oder Domains bleiben immer im Posteingang (Regel auf dem Server)</string>
-    <string name="dcmail_allowlist_hint">Diese Absender werden vom Spamfilter nie verschoben. Hinzufügen kannst du sie hier oder bei einer Mail im Spam-Ordner über „Absender vertrauen“. Tippe auf einen Eintrag, um ihn zu entfernen.</string>
+    <string name="dcmail_allowlist_hint">Diese Absender werden vom Spamfilter nie verschoben. Hinzufügen kannst du sie hier, durch Antippen des Absenders in einer geöffneten Mail oder über „Absender vertrauen“ bei Mails im Spam-Ordner. Tippe auf einen Eintrag, um ihn zu entfernen.</string>
     <string name="dcmail_allowlist_remove_confirm">%1$s nicht mehr vertrauen? Der Spamfilter prüft die Mails dann wieder normal.</string>
     <string name="dcmail_senderlist_add">Hinzufügen</string>
     <string name="dcmail_senderlist_add_hint">name@firma.de oder @firma.de</string>
@@ -340,4 +340,7 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
     <string name="dcmail_not_spam_banner">Diese Mail liegt im Spam-Ordner. Zu Unrecht?</string>
     <string name="dcmail_not_spam_action">Kein Spam</string>
     <string name="dcmail_trust_sender_action">Absender vertrauen</string>
+    <string name="dcmail_sender_menu_trust">Absender vertrauen (nie Spam)</string>
+    <string name="dcmail_sender_menu_block">Absender sperren (immer Spam)</string>
+    <string name="dcmail_sender_menu_details">Details anzeigen</string>
 </resources>

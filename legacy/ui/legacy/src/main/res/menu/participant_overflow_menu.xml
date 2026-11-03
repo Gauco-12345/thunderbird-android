@@ -16,4 +16,14 @@
             android:title="@string/action_copy_name_and_email_address"
             />
     </group>
+    <group android:id="@+id/group_dcmail_rules">
+        <item
+            android:id="@+id/dcmail_trust_sender"
+            android:title="@string/dcmail_sender_menu_trust"
+            />
+        <item
+            android:id="@+id/dcmail_block_sender"
+            android:title="@string/dcmail_sender_menu_block"
+            />
+    </group>
 </menu>

@@ -333,7 +333,16 @@ class MessageDetailsFragment : ToolbarBottomSheetDialogFragment() {
             R.id.compose_to -> composeMessageToAddress(participant.address)
             R.id.copy_email_address -> viewModel.onCopyEmailAddressToClipboard(participant)
             R.id.copy_name_and_email_address -> viewModel.onCopyNameAndEmailAddressToClipboard(participant)
+            R.id.dcmail_trust_sender -> onDcSenderRule(participant, com.fsck.k9.ui.dcmail.DcSenderRulesUi.Rule.TRUST)
+            R.id.dcmail_block_sender -> onDcSenderRule(participant, com.fsck.k9.ui.dcmail.DcSenderRulesUi.Rule.BLOCK)
         }
+    }
+
+    // DC Mail: trust or block any participant via a server rule
+    private fun onDcSenderRule(participant: Participant, rule: com.fsck.k9.ui.dcmail.DcSenderRulesUi.Rule) {
+        val account = app.k9mail.legacy.di.DI.get(net.thunderbird.core.android.account.LegacyAccountManager::class.java)
+            .findById(messageReference.accountId) ?: return
+        com.fsck.k9.ui.dcmail.DcSenderRulesUi.choose(requireContext(), account, participant.address.address, rule)
     }
 
     private fun composeMessageToAddress(address: Address) {
