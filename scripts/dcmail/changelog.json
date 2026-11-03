@@ -5,9 +5,18 @@
       "build": "next",
       "date": "2026-11-03",
       "notes": [
-        "Neu: „Absender nie nach Spam“ – vertrauenswürdige Adressen oder ganze Domains bleiben immer im Posteingang (Konto-Einstellungen, Regel auf dem Server)",
-        "Neu: Bei Mails im Spam-Ordner gibt es die Knöpfe „Kein Spam“ und „Absender vertrauen“",
-        "Sperrliste und Vertrauensliste: Einträge jetzt auch von Hand hinzufügbar"
+        {
+          "type": "new",
+          "text": "„Absender nie nach Spam“: Vertrauenswürdige Adressen oder ganze Domains bleiben immer im Posteingang (Konto-Einstellungen, Regel auf dem Server)."
+        },
+        {
+          "type": "new",
+          "text": "Bei Mails im Spam-Ordner gibt es oben die Knöpfe „Kein Spam“ und „Absender vertrauen“."
+        },
+        {
+          "type": "changed",
+          "text": "Sperrliste und Vertrauensliste: Einträge lassen sich jetzt auch von Hand hinzufügen."
+        }
       ]
     },
     {
