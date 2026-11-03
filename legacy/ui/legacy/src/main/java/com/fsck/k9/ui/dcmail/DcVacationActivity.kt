@@ -45,6 +45,8 @@ class DcVacationActivity : BaseActivity() {
     private var untilDate = ""
     private var padding = 0
     private var blocklistMode = false
+    private var allowlistMode = false
+    private val listMode get() = blocklistMode || allowlistMode
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +55,14 @@ class DcVacationActivity : BaseActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         blocklistMode = intent.getBooleanExtra(EXTRA_BLOCKLIST, false)
-        title = getString(if (blocklistMode) R.string.dcmail_blocklist_title else R.string.dcmail_vacation_title)
+        allowlistMode = intent.getBooleanExtra(EXTRA_ALLOWLIST, false)
+        title = getString(
+            when {
+                allowlistMode -> R.string.dcmail_allowlist_title
+                blocklistMode -> R.string.dcmail_blocklist_title
+                else -> R.string.dcmail_vacation_title
+            },
+        )
         padding = (PADDING_DP * resources.displayMetrics.density).toInt()
 
         val accountId = intent.getStringExtra(EXTRA_ACCOUNT_ID)?.let {
@@ -84,7 +93,7 @@ class DcVacationActivity : BaseActivity() {
         form = LinearLayout(this)
         form.orientation = LinearLayout.VERTICAL
         form.visibility = View.GONE
-        if (blocklistMode) buildBlocklist(form) else buildForm(form)
+        if (listMode) buildBlocklist(form) else buildForm(form)
         column.addView(form)
 
         buildServerSection(column)
@@ -158,12 +167,63 @@ class DcVacationActivity : BaseActivity() {
 
     private fun buildBlocklist(form: LinearLayout) {
         val blockedHint = TextView(this)
-        blockedHint.setText(R.string.dcmail_blocklist_hint)
+        blockedHint.setText(if (allowlistMode) R.string.dcmail_allowlist_hint else R.string.dcmail_blocklist_hint)
         blockedHint.setPadding(0, padding, 0, padding)
         form.addView(blockedHint)
         blockedList = LinearLayout(this)
         blockedList.orientation = LinearLayout.VERTICAL
         form.addView(blockedList)
+
+        val addButton = Button(this)
+        addButton.setText(R.string.dcmail_senderlist_add)
+        addButton.setOnClickListener { askNewEntry() }
+        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.gravity = Gravity.END
+        params.topMargin = padding / 2
+        form.addView(addButton, params)
+    }
+
+    private fun askNewEntry() {
+        val input = EditText(this)
+        input.setSingleLine(true)
+        input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        input.hint = getString(R.string.dcmail_senderlist_add_hint)
+        val container = FrameLayout(this)
+        container.setPadding(padding, padding / 2, padding, 0)
+        container.addView(input)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.dcmail_senderlist_add)
+            .setMessage(R.string.dcmail_senderlist_add_message)
+            .setView(container)
+            .setPositiveButton(R.string.dcmail_template_save) { _, _ ->
+                val entry = normalizeEntry(input.text.toString())
+                if (entry == null) {
+                    Toast.makeText(this, R.string.dcmail_senderlist_add_invalid, Toast.LENGTH_SHORT).show()
+                } else {
+                    statusView.setText(R.string.dcmail_vacation_saving)
+                    runInBackground({
+                        if (allowlistMode) {
+                            DcSieveRules.allowSender(this, account, entry)
+                        } else {
+                            DcSieveRules.blockSender(this, account, entry)
+                        }
+                    }) { reload() }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    /** "name@firma.de" stays an address; "@firma.de" or "firma.de" becomes a whole domain. */
+    private fun normalizeEntry(raw: String): String? {
+        val value = raw.trim().lowercase(Locale.ROOT).removePrefix("*")
+        if (value.isEmpty() || value.any { it.isWhitespace() || it == '"' || it == '\\' }) return null
+        return when {
+            value.startsWith("@") -> value.takeIf { it.length > 3 && it.substring(1).contains('.') }
+            value.contains('@') -> value.takeIf { value.indexOf('@') > 0 && value.substringAfter('@').contains('.') }
+            value.contains('.') -> "@$value"
+            else -> null
+        }
     }
 
     private fun buildServerSection(column: LinearLayout) {
@@ -210,7 +270,7 @@ class DcVacationActivity : BaseActivity() {
         statusView.setText(R.string.dcmail_vacation_loading)
         runInBackground({ DcSieveRules.load(this, account) }) { state ->
             val imported = state.importedRule
-            if (!blocklistMode && imported != null) {
+            if (!listMode && imported != null) {
                 statusView.text = getString(R.string.dcmail_vacation_imported, imported)
             } else {
                 statusView.setText(R.string.dcmail_vacation_connected)
@@ -221,7 +281,7 @@ class DcVacationActivity : BaseActivity() {
     }
 
     private fun showState(state: DcSieveRules.State) {
-        if (blocklistMode) {
+        if (listMode) {
             showBlocklist(state)
             return
         }
@@ -237,12 +297,13 @@ class DcVacationActivity : BaseActivity() {
 
     private fun showBlocklist(state: DcSieveRules.State) {
         blockedList.removeAllViews()
-        if (state.blocked.isEmpty()) {
+        val entries = if (allowlistMode) state.allowed else state.blocked
+        if (entries.isEmpty()) {
             val empty = TextView(this)
             empty.text = "–"
             blockedList.addView(empty)
         }
-        for (address in state.blocked) {
+        for (address in entries) {
             val row = TextView(this)
             row.text = getString(R.string.dcmail_blocklist_entry, address)
             row.setPadding(0, padding / 2, 0, padding / 2)
@@ -274,9 +335,20 @@ class DcVacationActivity : BaseActivity() {
 
     private fun confirmUnblock(address: String) {
         AlertDialog.Builder(this)
-            .setMessage(getString(R.string.dcmail_blocklist_remove_confirm, address))
+            .setMessage(
+                getString(
+                    if (allowlistMode) R.string.dcmail_allowlist_remove_confirm else R.string.dcmail_blocklist_remove_confirm,
+                    address,
+                ),
+            )
             .setPositiveButton(R.string.dcmail_template_delete) { _, _ ->
-                runInBackground({ DcSieveRules.unblockSender(this, account, address) }) { reload() }
+                runInBackground({
+                    if (allowlistMode) {
+                        DcSieveRules.disallowSender(this, account, address)
+                    } else {
+                        DcSieveRules.unblockSender(this, account, address)
+                    }
+                }) { reload() }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -347,6 +419,7 @@ class DcVacationActivity : BaseActivity() {
     companion object {
         private const val EXTRA_ACCOUNT_ID = "accountId"
         private const val EXTRA_BLOCKLIST = "blocklist"
+        private const val EXTRA_ALLOWLIST = "allowlist"
         private const val PADDING_DP = 16
         private const val TEXT_MIN_LINES = 4
         private const val DEFAULT_DAYS = 3
@@ -363,6 +436,14 @@ class DcVacationActivity : BaseActivity() {
                 Intent(context, DcVacationActivity::class.java)
                     .putExtra(EXTRA_ACCOUNT_ID, accountId)
                     .putExtra(EXTRA_BLOCKLIST, true),
+            )
+        }
+
+        fun startAllowlist(context: Context, accountId: String) {
+            context.startActivity(
+                Intent(context, DcVacationActivity::class.java)
+                    .putExtra(EXTRA_ACCOUNT_ID, accountId)
+                    .putExtra(EXTRA_ALLOWLIST, true),
             )
         }
     }

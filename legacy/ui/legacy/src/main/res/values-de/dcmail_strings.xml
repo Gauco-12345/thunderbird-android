@@ -327,4 +327,17 @@ Bitte DC Mail einmal ganz schließen und neu öffnen.</string>
         <item>Zusammenfassen</item>
     </string-array>
     <string name="dcmail_claude_prompt_copied">Prompt kopiert – in Claude ins Chatfeld einfügen (lange drücken) und senden.</string>
+    <string name="dcmail_allowlist_title">Absender nie nach Spam</string>
+    <string name="dcmail_allowlist_summary">Mails dieser Absender oder Domains bleiben immer im Posteingang (Regel auf dem Server)</string>
+    <string name="dcmail_allowlist_hint">Diese Absender werden vom Spamfilter nie verschoben. Hinzufügen kannst du sie hier oder bei einer Mail im Spam-Ordner über „Absender vertrauen“. Tippe auf einen Eintrag, um ihn zu entfernen.</string>
+    <string name="dcmail_allowlist_remove_confirm">%1$s nicht mehr vertrauen? Der Spamfilter prüft die Mails dann wieder normal.</string>
+    <string name="dcmail_senderlist_add">Hinzufügen</string>
+    <string name="dcmail_senderlist_add_hint">name@firma.de oder @firma.de</string>
+    <string name="dcmail_senderlist_add_message">Eine genaue Adresse oder mit @ davor eine ganze Domain.</string>
+    <string name="dcmail_senderlist_add_invalid">Das ist keine gültige Adresse oder Domain.</string>
+    <string name="dcmail_allow_sender">Absender vertrauen</string>
+    <string name="dcmail_allow_sender_done">%1$s landet künftig nicht mehr im Spam</string>
+    <string name="dcmail_not_spam_banner">Diese Mail liegt im Spam-Ordner. Zu Unrecht?</string>
+    <string name="dcmail_not_spam_action">Kein Spam</string>
+    <string name="dcmail_trust_sender_action">Absender vertrauen</string>
 </resources>

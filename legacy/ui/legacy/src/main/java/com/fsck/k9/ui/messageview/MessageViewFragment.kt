@@ -384,8 +384,41 @@ class MessageViewFragment :
     }
 
     private fun onDcBlockSender() {
+        dcChooseSender(R.string.dcmail_block_sender, R.string.dcmail_block_sender_done) { appContext, account, entry ->
+            DcSieveRules.blockSender(appContext, account, entry)
+        } ?: return
+        if (account.spamFolderId != null) onSpam()
+    }
+
+    /** "Kein Spam": back to the inbox, optionally trusting the sender from now on. */
+    private fun onDcNotSpam(trustSender: Boolean) {
+        val moveBack = {
+            account.inboxFolderId?.let { inbox -> onRefile(inbox) }
+            Unit
+        }
+        if (!trustSender) {
+            moveBack()
+            return
+        }
+        dcChooseSender(
+            R.string.dcmail_allow_sender,
+            R.string.dcmail_allow_sender_done,
+            onChosen = moveBack,
+        ) { appContext, account, entry -> DcSieveRules.allowSender(appContext, account, entry) }
+    }
+
+    /**
+     * Asks whether the exact sender address or the whole domain is meant, then runs [work] for it in the background.
+     * Returns null when the message has no sender.
+     */
+    private fun dcChooseSender(
+        titleRes: Int,
+        doneRes: Int,
+        onChosen: () -> Unit = {},
+        work: (android.content.Context, LegacyAccount, String) -> Unit,
+    ): Unit? {
         val address = message?.from?.firstOrNull()?.address?.trim()?.lowercase()
-        if (address.isNullOrEmpty()) return
+        if (address.isNullOrEmpty()) return null
         val account = account
         val domain = address.substringAfterLast('@', "")
         val choices = mutableListOf(address)
@@ -395,30 +428,31 @@ class MessageViewFragment :
             getString(R.string.dcmail_block_choice_domain, domain),
         ).copyOf(choices.size).requireNoNulls()
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle(R.string.dcmail_block_sender)
+            .setTitle(titleRes)
             .setItems(labels) { _, which ->
                 val entry = choices[which]
                 val appContext = requireContext().applicationContext
                 Thread {
                     val error = try {
-                        DcSieveRules.blockSender(appContext, account, entry)
+                        work(appContext, account, entry)
                         null
                     } catch (e: Throwable) {
                         e.message ?: e.javaClass.simpleName
                     }
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         val text = if (error == null) {
-                            appContext.getString(R.string.dcmail_block_sender_done, entry)
+                            appContext.getString(doneRes, entry)
                         } else {
                             appContext.getString(R.string.dcmail_block_sender_failed, error)
                         }
                         Toast.makeText(appContext, text, Toast.LENGTH_LONG).show()
                     }
                 }.start()
-                if (account.spamFolderId != null) onSpam()
+                onChosen()
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+        return Unit
     }
 
     private fun dcPlainText(info: MessageViewInfo): String? =
@@ -765,6 +799,21 @@ class MessageViewFragment :
                     ),
                 )
             }
+        }
+
+        if (inSpam && account.inboxFolderId != null) {
+            container.addView(
+                DcBanners.create(
+                    context,
+                    DcBanners.Kind.INFO,
+                    getString(R.string.dcmail_not_spam_banner),
+                    null,
+                    listOf(
+                        DcBanners.Action(getString(R.string.dcmail_not_spam_action)) { onDcNotSpam(false) },
+                        DcBanners.Action(getString(R.string.dcmail_trust_sender_action)) { onDcNotSpam(true) },
+                    ),
+                ),
+            )
         }
 
         if (!inSpam && DcMessageInsights.isEnglish(dcPlainText(info))) {

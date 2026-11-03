@@ -9,7 +9,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 /**
- * DC Mail: out-of-office reply and sender block list, stored as Roundcube-compatible rules ("# rule:[...]") in the
+ * DC Mail: out-of-office reply, sender block list and trusted senders, stored as Roundcube-compatible rules ("# rule:[...]") in the
  * active Sieve script. All other rules in that script stay untouched. Before every change the previous script is saved
  * on the server as "dcmail-backup" (not active).
  *
@@ -18,12 +18,14 @@ import org.json.JSONObject
 object DcSieveRules {
     private const val RULE_VACATION = "DC Mail Abwesenheit"
     private const val RULE_BLOCKLIST = "DC Mail Sperrliste"
+    private const val RULE_ALLOWLIST = "DC Mail Vertrauenswürdig"
     private const val BACKUP_SCRIPT = "dcmail-backup"
     private const val NEW_SCRIPT = "dcmail"
     private const val META_PREFIX = "# dcmail:"
     private const val DEFAULT_DAYS = 3
 
     private const val PREFERENCES_NAME = "dcmail_sieve"
+    private val OWN_RULES = setOf(RULE_VACATION, RULE_BLOCKLIST, RULE_ALLOWLIST)
 
     data class Vacation(
         val enabled: Boolean = false,
@@ -39,6 +41,8 @@ object DcSieveRules {
         val blocked: List<String>,
         /** Name of an existing out-of-office rule (e.g. from Roundcube) that was read and is replaced on saving. */
         val importedRule: String? = null,
+        /** Senders (or "@domain") that always stay in the inbox, whatever the spam filter says. */
+        val allowed: List<String> = emptyList(),
     )
 
     data class ServerConfig(val host: String, val port: Int)
@@ -91,13 +95,33 @@ object DcSieveRules {
         val normalized = address.trim().lowercase()
         if (normalized.isEmpty()) return
         update(context, account) { state ->
-            if (normalized in state.blocked) state else state.copy(blocked = state.blocked + normalized)
+            state.copy(
+                blocked = if (normalized in state.blocked) state.blocked else state.blocked + normalized,
+                allowed = state.allowed.filter { it != normalized },
+            )
         }
     }
 
     fun unblockSender(context: Context, account: LegacyAccount, address: String) {
         val normalized = address.trim().lowercase()
         update(context, account) { state -> state.copy(blocked = state.blocked.filter { it != normalized }) }
+    }
+
+    /** Trusting a sender also removes it from the block list (and the other way round). */
+    fun allowSender(context: Context, account: LegacyAccount, address: String) {
+        val normalized = address.trim().lowercase()
+        if (normalized.isEmpty()) return
+        update(context, account) { state ->
+            state.copy(
+                allowed = if (normalized in state.allowed) state.allowed else state.allowed + normalized,
+                blocked = state.blocked.filter { it != normalized },
+            )
+        }
+    }
+
+    fun disallowSender(context: Context, account: LegacyAccount, address: String) {
+        val normalized = address.trim().lowercase()
+        update(context, account) { state -> state.copy(allowed = state.allowed.filter { it != normalized }) }
     }
 
     private fun update(context: Context, account: LegacyAccount, change: (State) -> State) {
@@ -125,11 +149,12 @@ object DcSieveRules {
     internal fun parseState(script: String): State {
         var vacation: Vacation? = null
         var blocked = emptyList<String>()
+        var allowed = emptyList<String>()
         var imported: String? = null
         var importedVacation: Vacation? = null
         for (block in splitRules(script).rules) {
             val name = ruleName(block)
-            if (importedVacation == null && name != RULE_VACATION && name != RULE_BLOCKLIST) {
+            if (importedVacation == null && name !in OWN_RULES) {
                 parseForeignVacation(block)?.let {
                     importedVacation = it
                     imported = name
@@ -152,15 +177,24 @@ object DcSieveRules {
                         val list = json.optJSONArray("blocked") ?: JSONArray()
                         blocked = (0 until list.length()).map { list.optString(it) }.filter { it.isNotBlank() }
                     }
+                    RULE_ALLOWLIST -> {
+                        val list = json.optJSONArray("allowed") ?: JSONArray()
+                        allowed = (0 until list.length()).map { list.optString(it) }.filter { it.isNotBlank() }
+                    }
                 }
             } catch (e: JSONException) {
                 // Rule was edited elsewhere; it will be replaced on the next save
             }
         }
         return if (vacation != null) {
-            State(vacation, blocked)
+            State(vacation, blocked, allowed = allowed)
         } else {
-            State(importedVacation ?: Vacation(), blocked, if (importedVacation != null) imported else null)
+            State(
+                importedVacation ?: Vacation(),
+                blocked,
+                if (importedVacation != null) imported else null,
+                allowed,
+            )
         }
     }
 
@@ -239,7 +273,7 @@ object DcSieveRules {
         val split = splitRules(original)
         val otherRules = split.rules.filter {
             val name = ruleName(it)
-            name != RULE_VACATION && name != RULE_BLOCKLIST && (state.importedRule == null || name != state.importedRule)
+            name !in OWN_RULES && (state.importedRule == null || name != state.importedRule)
         }
 
         val ownRules = mutableListOf<String>()
@@ -258,6 +292,11 @@ object DcSieveRules {
             }
             ownRules.add(vacationRule(vacation))
         }
+        // Trusted senders after the out-of-office reply (so they still get it), but before all other rules:
+        // "stop" ends the script before any spam rule can move the mail
+        if (state.allowed.isNotEmpty()) {
+            ownRules.add(allowlistRule(state.allowed))
+        }
 
         return buildString {
             if (requires.isNotEmpty()) {
@@ -273,10 +312,9 @@ object DcSieveRules {
     /**
      * Entries starting with "@" block a whole domain, all others the exact address.
      */
-    private fun blocklistRule(blocked: List<String>, spamFolder: String): String {
-        val meta = JSONObject().put("blocked", JSONArray(blocked)).toString()
-        val addresses = blocked.filterNot { it.startsWith("@") }
-        val domains = blocked.filter { it.startsWith("@") }.map { it.removePrefix("@") }
+    private fun senderTest(entries: List<String>): String {
+        val addresses = entries.filterNot { it.startsWith("@") }
+        val domains = entries.filter { it.startsWith("@") }.map { it.removePrefix("@") }
         val tests = mutableListOf<String>()
         if (addresses.isNotEmpty()) {
             tests.add("address :is \"from\" [${addresses.joinToString(",") { quote(it) }}]")
@@ -284,7 +322,23 @@ object DcSieveRules {
         if (domains.isNotEmpty()) {
             tests.add("address :domain :is \"from\" [${domains.joinToString(",") { quote(it) }}]")
         }
-        val test = if (tests.size == 1) tests[0] else "anyof (${tests.joinToString(", ")})"
+        return if (tests.size == 1) tests[0] else "anyof (${tests.joinToString(", ")})"
+    }
+
+    private fun allowlistRule(allowed: List<String>): String {
+        val meta = JSONObject().put("allowed", JSONArray(allowed)).toString()
+        return buildString {
+            append("# rule:[").append(RULE_ALLOWLIST).append("]\n")
+            append(META_PREFIX).append(meta).append("\n")
+            append("if ").append(senderTest(allowed)).append("\n{\n")
+            append("\tkeep;\n")
+            append("\tstop;\n}")
+        }
+    }
+
+    private fun blocklistRule(blocked: List<String>, spamFolder: String): String {
+        val meta = JSONObject().put("blocked", JSONArray(blocked)).toString()
+        val test = senderTest(blocked)
         return buildString {
             append("# rule:[").append(RULE_BLOCKLIST).append("]\n")
             append(META_PREFIX).append(meta).append("\n")

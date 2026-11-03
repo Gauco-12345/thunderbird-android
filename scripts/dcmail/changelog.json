@@ -2,6 +2,15 @@
   "comment": "DC Mail Änderungsprotokoll. Neueste Version zuerst. \"build\": \"next\" wird beim Bauen durch die GitHub-Laufnummer ersetzt.",
   "releases": [
     {
+      "build": "next",
+      "date": "2026-11-03",
+      "notes": [
+        "Neu: „Absender nie nach Spam“ – vertrauenswürdige Adressen oder ganze Domains bleiben immer im Posteingang (Konto-Einstellungen, Regel auf dem Server)",
+        "Neu: Bei Mails im Spam-Ordner gibt es die Knöpfe „Kein Spam“ und „Absender vertrauen“",
+        "Sperrliste und Vertrauensliste: Einträge jetzt auch von Hand hinzufügbar"
+      ]
+    },
+    {
       "build": 45,
       "date": "2026-10-26",
       "notes": [

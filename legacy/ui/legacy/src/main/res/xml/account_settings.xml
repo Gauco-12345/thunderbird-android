@@ -40,6 +40,13 @@
         android:title="@string/dcmail_blocklist_title"
         />
 
+    <Preference
+        android:icon="@drawable/ic_check_circle"
+        android:key="dcmail_allowlist"
+        android:summary="@string/dcmail_allowlist_summary"
+        android:title="@string/dcmail_allowlist_title"
+        />
+
 
     <Preference
         android:icon="@drawable/ic_edit"
